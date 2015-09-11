@@ -9,12 +9,13 @@
   <meta name="author" content="Your Name">
 
   
-  <meta name="description" content="mac电脑上搭建octopress博客 搭建octopress博客的文章很全很详细已经有很多了，我这里只简单记录下mac电脑上搭建octopress博客的步骤。 1、搭建环境 1
+  <meta name="description" content="搭建octopress博客的文章很详细已经有很多了，文章末尾就有相关的参考，我这里只简单记录下mac电脑上搭建octopress博客的步骤。 1、搭建环境 1
 2
 3
 4
 5
-git clone git://github.com/imathis/octopress.git &hellip;">
+git clone git://github.com/imathis/octopress.git octopress
+cd &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -92,11 +93,9 @@ git clone git://github.com/imathis/octopress.git &hellip;">
   </header>
 
 
-  <div class="entry-content"><h2>mac电脑上搭建octopress博客</h2>
+  <div class="entry-content"><p><strong>搭建octopress博客的文章很详细已经有很多了，文章末尾就有相关的参考，我这里只简单记录下mac电脑上搭建octopress博客的步骤。</strong></p>
 
-<p>搭建octopress博客的文章很全很详细已经有很多了，我这里只简单记录下mac电脑上搭建octopress博客的步骤。</p>
-
-<h3>1、搭建环境</h3>
+<h4>1、搭建环境</h4>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -112,13 +111,15 @@ git clone git://github.com/imathis/octopress.git &hellip;">
 
 <p>遇到的问题：</p>
 
-<p>1、<code>gem install bundler</code>失败了，需要更改一下<code>Gemfile</code>文件当中的源，将第一行<code>source "https://rubygems.org"</code> 更改成 <code>source "http://ruby.taobao.org/"</code>就行了。</p>
+<ul>
+<li><p><code>gem install bundler</code>失败了，需要更改一下<code>Gemfile</code>文件当中的源，将第一行<code>source "https://rubygems.org"</code> 更改成 <code>source "http://ruby.taobao.org/"</code>就行了。</p></li>
+<li><p>如果安装的时候报<code>“You don't have write permissions for the /Library/Ruby/Gems/2.0.0 directory”</code>这样的错误，请加上sudo权限。</p></li>
+</ul>
 
-<p>2、如果安装的时候报<code>“You don't have write permissions for the /Library/Ruby/Gems/2.0.0 directory”</code>这样的错误，请加上sudo权限。</p>
 
-<h3>2、将博客部署到github上</h3>
+<h4>2、将博客部署到github上</h4>
 
-<p>在github上创建一个username.github.io的仓库。</p>
+<p>在github上创建一个<code>username.github.io</code>的仓库。</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>rake setup_github_pages</span></code></pre></td></tr></table></div></figure>
@@ -126,13 +127,13 @@ git clone git://github.com/imathis/octopress.git &hellip;">
 
 <p>粘贴<code>username.github.io</code>仓库对应的url，例如我的就是<code>https://github.com/liuchungui/liuchungui.github.io.git</code></p>
 
-<p>3、生成博文</p>
+<h4>3、生成博文</h4>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>rake new_post['title']</span></code></pre></td></tr></table></div></figure>
 
 
-<p>生成新文章，文章在source/_post/目录下，文件名构成为时间和标题的拼音。</p>
+<p>生成新文章，文章在<code>source/_post/</code>目录下，文件名构成为时间和标题的拼音。</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -140,23 +141,30 @@ git clone git://github.com/imathis/octopress.git &hellip;">
 </span><span class='line'>rake preview</span></code></pre></td></tr></table></div></figure>
 
 
-<p>此时可以预览了，使用localhost:4000打开看效果，如果没有问题，则上传到github上</p>
+<p>此时可以预览了，使用<code>localhost:4000</code>打开看效果，如果没有问题，则上传到github上</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>rake deploy</span></code></pre></td></tr></table></div></figure>
 
 
-<p>上传之后，切换到source分支，将源代码上传到github仓库的source分支下</p>
+<p><code>rake deploy</code>会将<code>octopress/public</code>下的文件上传到你的仓库master分支下。
+上传之后，将源代码上传到github仓库的source分支下</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>git checkout source
-</span><span class='line'>git add .
+</pre></td><td class='code'><pre><code class=''><span class='line'>git add .
 </span><span class='line'>git commit -m 'add source file'
 </span><span class='line'>git push origin source</span></code></pre></td></tr></table></div></figure>
 
+
+<h4>4、更详细的搭建octopress博客，请参考以下几篇博文：</h4>
+
+<p><a href="http://blog.devtang.com/blog/2012/02/10/setup-blog-based-on-github/">象写程序一样写博客：搭建基于github的博客</a></p>
+
+<p><a href="http://matrixzk.github.io/blog/20141020/octopress-setup-and-analysis/#section">使用 Octopress 2.0 搭建基于 Github Pages 个人博客的详细过程及原理分析</a></p>
+
+<p><a href="http://www.jianshu.com/p/0ac2ac1a8e45">octopress博客搭建和个性化配置</a></p>
 </div>
   
   
