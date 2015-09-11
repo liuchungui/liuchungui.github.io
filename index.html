@@ -5,8 +5,8 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>My Octopress Blog</title>
-  <meta name="author" content="Your Name">
+  <title>liuchungui's Blog</title>
+  <meta name="author" content="刘春桂">
 
   
   <meta name="description" content="搭建octopress博客的文章很详细已经有很多了，文章末尾就有相关的参考，我这里只简单记录下mac电脑上搭建octopress博客的步骤。 1、搭建环境 1
@@ -27,7 +27,7 @@ cd &hellip;">
   <link rel="canonical" href="http://liuchungui.github.io/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <link href="/atom.xml" rel="alternate" title="liuchungui's Blog" type="application/atom+xml">
   <script src="/javascripts/modernizr-2.0.js"></script>
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
   <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
@@ -42,9 +42,9 @@ cd &hellip;">
 
 <body   >
   <header role="banner"><hgroup>
-  <h1><a href="/">My Octopress Blog</a></h1>
+  <h1><a href="/">liuchungui's Blog</a></h1>
   
-    <h2>A blogging framework for hackers.</h2>
+    <h2>代码嗨起来</h2>
   
 </hgroup>
 
@@ -112,7 +112,7 @@ cd &hellip;">
 <p>遇到的问题：</p>
 
 <ul>
-<li><p><code>gem install bundler</code>失败了，需要更改一下<code>Gemfile</code>文件当中的源，将第一行<code>source "https://rubygems.org"</code> 更改成 <code>source "http://ruby.taobao.org/"</code>就行了。</p></li>
+<li><p><code>gem install bundler</code>失败了，需要更改一下<code>octopress/Gemfile</code>文件当中的源，将第一行<code>source "https://rubygems.org"</code> 更改成 <code>source "http://ruby.taobao.org/"</code>就行了。</p></li>
 <li><p>如果安装的时候报<code>“You don't have write permissions for the /Library/Ruby/Gems/2.0.0 directory”</code>这样的错误，请加上sudo权限。</p></li>
 </ul>
 
@@ -127,7 +127,7 @@ cd &hellip;">
 
 <p>粘贴<code>username.github.io</code>仓库对应的url，例如我的就是<code>https://github.com/liuchungui/liuchungui.github.io.git</code></p>
 
-<h4>3、生成博文</h4>
+<h4>3、生成并编辑博客</h4>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>rake new_post['title']</span></code></pre></td></tr></table></div></figure>
@@ -158,7 +158,17 @@ cd &hellip;">
 </span><span class='line'>git push origin source</span></code></pre></td></tr></table></div></figure>
 
 
-<h4>4、更详细的搭建octopress博客，请参考以下几篇博文：</h4>
+<p>进入到<code>octopress/source/_posts</code>目录，找到对应的博文进行修改。博文采用的markdown语法，我推荐一款不错的编辑工具<strong>Mou</strong>，它可以实时编辑实时查看。</p>
+
+<h4>4、配置：</h4>
+
+<ul>
+<li>修改文件octopress/_config.yml文件，设置title、subtitle、author，注意最好把里面的 twitter 相关的信息全部删掉，否则由于 GFW 的原因，将会造成页面 load 很慢。</li>
+<li>修改定制文件 /source/_includes/custom/head.html 把 google 的自定义字体去掉，原因同上。</li>
+</ul>
+
+
+<h4>5、参考</h4>
 
 <p><a href="http://blog.devtang.com/blog/2012/02/10/setup-blog-based-on-github/">象写程序一样写博客：搭建基于github的博客</a></p>
 
@@ -201,7 +211,7 @@ cd &hellip;">
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2015 - Your Name -
+  Copyright &copy; 2015 - 刘春桂 -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 
@@ -213,16 +223,6 @@ cd &hellip;">
 
 
 
-
-  <script type="text/javascript">
-    (function(){
-      var twitterWidgets = document.createElement('script');
-      twitterWidgets.type = 'text/javascript';
-      twitterWidgets.async = true;
-      twitterWidgets.src = '//platform.twitter.com/widgets.js';
-      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
-    })();
-  </script>
 
 
 

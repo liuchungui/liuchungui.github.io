@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[My Octopress Blog]]></title>
+  <title><![CDATA[liuchungui's Blog]]></title>
   <link href="http://liuchungui.github.io/atom.xml" rel="self"/>
   <link href="http://liuchungui.github.io/"/>
-  <updated>2015-09-11T23:14:44+08:00</updated>
+  <updated>2015-09-11T23:45:19+08:00</updated>
   <id>http://liuchungui.github.io/</id>
   <author>
-    <name><![CDATA[Your Name]]></name>
+    <name><![CDATA[刘春桂]]></name>
     
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
@@ -37,7 +37,7 @@
 <p>遇到的问题：</p>
 
 <ul>
-<li><p><code>gem install bundler</code>失败了，需要更改一下<code>Gemfile</code>文件当中的源，将第一行<code>source "https://rubygems.org"</code> 更改成 <code>source "http://ruby.taobao.org/"</code>就行了。</p></li>
+<li><p><code>gem install bundler</code>失败了，需要更改一下<code>octopress/Gemfile</code>文件当中的源，将第一行<code>source "https://rubygems.org"</code> 更改成 <code>source "http://ruby.taobao.org/"</code>就行了。</p></li>
 <li><p>如果安装的时候报<code>“You don't have write permissions for the /Library/Ruby/Gems/2.0.0 directory”</code>这样的错误，请加上sudo权限。</p></li>
 </ul>
 
@@ -52,7 +52,7 @@
 
 <p>粘贴<code>username.github.io</code>仓库对应的url，例如我的就是<code>https://github.com/liuchungui/liuchungui.github.io.git</code></p>
 
-<h4>3、生成博文</h4>
+<h4>3、生成并编辑博客</h4>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>rake new_post['title']</span></code></pre></td></tr></table></div></figure>
@@ -83,7 +83,17 @@
 </span><span class='line'>git push origin source</span></code></pre></td></tr></table></div></figure>
 
 
-<h4>4、更详细的搭建octopress博客，请参考以下几篇博文：</h4>
+<p>进入到<code>octopress/source/_posts</code>目录，找到对应的博文进行修改。博文采用的markdown语法，我推荐一款不错的编辑工具<strong>Mou</strong>，它可以实时编辑实时查看。</p>
+
+<h4>4、配置：</h4>
+
+<ul>
+<li>修改文件octopress/_config.yml文件，设置title、subtitle、author，注意最好把里面的 twitter 相关的信息全部删掉，否则由于 GFW 的原因，将会造成页面 load 很慢。</li>
+<li>修改定制文件 /source/_includes/custom/head.html 把 google 的自定义字体去掉，原因同上。</li>
+</ul>
+
+
+<h4>5、参考</h4>
 
 <p><a href="http://blog.devtang.com/blog/2012/02/10/setup-blog-based-on-github/">象写程序一样写博客：搭建基于github的博客</a></p>
 
