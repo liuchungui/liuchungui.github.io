@@ -116,17 +116,29 @@ cd &hellip;">
 
 <h4>2、将博客部署到github上</h4>
 
-<p>在github上创建一个<code>username.github.io</code>的仓库。</p>
+<p>在github上创建一个<code>username.github.io</code>的仓库，然后输入下面命令</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>rake setup_github_pages</span></code></pre></td></tr></table></div></figure>
+
+
+<p>回车，之后出现下面内容</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Enter the read/write url for your repository
+</span><span class='line'>(For example, 'git@github.com:your_username/your_username.github.io.git)
+</span><span class='line'>           or 'https://github.com/your_username/your_username.github.io')
+</span><span class='line'>Repository url:</span></code></pre></td></tr></table></div></figure>
 
 
 <p>粘贴<code>username.github.io</code>仓库对应的url，例如我的就是<code>https://github.com/liuchungui/liuchungui.github.io.git</code></p>
 
 <h4>3、生成并编辑博客</h4>
 
-<p>首先，使用下面命令生成新文章，文章在<code>source/_post/</code>目录下，文件名构成为时间和标题的拼音。可以进入到<code>octopress/source/_posts</code>目录，找到对应的博文进行修改。博文采用的markdown语法，我推荐一款不错的编辑工具<strong>Mou</strong>，它可以实时编辑实时查看。</p>
+<p>首先，使用下面命令生成新文章，其中title就是博文名，你也可以输入<code>rake new_post</code>回车，然后在再输入博文名。文章在<code>source/_post/</code>目录下，<code>文件名构成为时间和标题的拼音</code>。可以进入到<code>octopress/source/_posts</code>目录，找到对应的博文进行修改。博文采用的markdown语法，我推荐一款不错的编辑工具<strong>Mou</strong>，它可以实时编辑实时查看。</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>rake new_post['title']</span></code></pre></td></tr></table></div></figure>
