@@ -126,26 +126,29 @@ cd &hellip;">
 
 <h4>3、生成并编辑博客</h4>
 
+<p>首先，使用下面命令生成新文章，文章在<code>source/_post/</code>目录下，文件名构成为时间和标题的拼音。可以进入到<code>octopress/source/_posts</code>目录，找到对应的博文进行修改。博文采用的markdown语法，我推荐一款不错的编辑工具<strong>Mou</strong>，它可以实时编辑实时查看。</p>
+
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>rake new_post['title']</span></code></pre></td></tr></table></div></figure>
 
 
-<p>生成新文章，文章在<code>source/_post/</code>目录下，文件名构成为时间和标题的拼音。</p>
+<p>然后，使用下面命令生成并在本地进行预览。<code>rake preview</code>开启一个web服务，此时就可以预览了，使用<code>localhost:4000</code>打开看查看效果。</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
+<span class='line-number'>3</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>rake generate
-</span><span class='line'>rake preview</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'>rake preview
+</span><span class='line'>rake deploy</span></code></pre></td></tr></table></div></figure>
 
 
-<p>此时可以预览了，使用<code>localhost:4000</code>打开看效果，如果没有问题，则上传到github上</p>
+<p>之后，查看效果没有问题，则使用下面命令上传到github。这条命令会将<code>octopress/public</code>下的文件上传到你的仓库master分支下。</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>rake deploy</span></code></pre></td></tr></table></div></figure>
 
 
-<p><code>rake deploy</code>会将<code>octopress/public</code>下的文件上传到你的仓库master分支下。
-上传之后，将源代码上传到github仓库的source分支下</p>
+<p>最后，将源代码上传到github仓库的source分支下，如下所示：</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -155,17 +158,15 @@ cd &hellip;">
 </span><span class='line'>git push origin source</span></code></pre></td></tr></table></div></figure>
 
 
-<p>进入到<code>octopress/source/_posts</code>目录，找到对应的博文进行修改。博文采用的markdown语法，我推荐一款不错的编辑工具<strong>Mou</strong>，它可以实时编辑实时查看。</p>
-
 <h4>4、配置：</h4>
 
 <ul>
-<li>修改文件octopress/_config.yml文件，设置title、subtitle、author，注意最好把里面的 twitter 相关的信息全部删掉，否则由于 GFW 的原因，将会造成页面 load 很慢。</li>
+<li>修改文件<code>octopress/_config.yml</code>文件，设置title、subtitle、author，注意最好把里面的 twitter 相关的信息全部删掉，否则由于 GFW 的原因，将会造成页面 load 很慢。</li>
 <li>修改定制文件 /source/_includes/custom/head.html 把 google 的自定义字体去掉，原因同上。</li>
 </ul>
 
 
-<h4>5、参考</h4>
+<h4>参考</h4>
 
 <p><a href="http://blog.devtang.com/blog/2012/02/10/setup-blog-based-on-github/">象写程序一样写博客：搭建基于github的博客</a></p>
 
