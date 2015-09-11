@@ -13,7 +13,6 @@
 2
 3
 4
-5
 git clone git://github.com/imathis/octopress.git octopress
 cd &hellip;">
   
@@ -101,12 +100,10 @@ cd &hellip;">
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
-<span class='line-number'>5</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>git clone git://github.com/imathis/octopress.git octopress
 </span><span class='line'>cd octopress
 </span><span class='line'>gem install bundler
-</span><span class='line'>bundle install
-</span><span class='line'>rake install</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'>bundle install</span></code></pre></td></tr></table></div></figure>
 
 
 <p>遇到的问题：</p>
@@ -115,6 +112,12 @@ cd &hellip;">
 <li><p><code>gem install bundler</code>失败了，需要更改一下<code>octopress/Gemfile</code>文件当中的源，将第一行<code>source "https://rubygems.org"</code> 更改成 <code>source "http://ruby.taobao.org/"</code>就行了。</p></li>
 <li><p>如果安装的时候报<code>“You don't have write permissions for the /Library/Ruby/Gems/2.0.0 directory”</code>这样的错误，请加上sudo权限。</p></li>
 </ul>
+
+
+<p>之后，输入下面命令：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>rake install</span></code></pre></td></tr></table></div></figure>
 
 
 <h4>2、将博客部署到github上</h4>
