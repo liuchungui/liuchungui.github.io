@@ -9,13 +9,8 @@
   <meta name="author" content="刘春桂">
 
   
-  <meta name="description" content="搭建octopress博客的文章很详细已经有很多了，文章末尾就有相关的参考，我这里只简单记录下mac电脑上搭建octopress博客的步骤。 1、搭建环境 1
-2
-3
-4
-git clone git://github.com/imathis/octopress.git octopress
-cd &hellip;">
-  
+  <meta name="description" content="mac电脑上搭建octopress博客">
+  <meta name="keywords" content="octopress, 搭建博客">
 
   <!-- http://t.co/dKP3o1e -->
   <meta name="HandheldFriendly" content="True">
@@ -89,7 +84,7 @@ cd &hellip;">
   </header>
 
 
-<div class="entry-content"><p><strong>搭建octopress博客的文章很详细已经有很多了，文章末尾就有相关的参考，我这里只简单记录下mac电脑上搭建octopress博客的步骤。</strong></p>
+<div class="entry-content"><p>搭建octopress博客的文章很详细已经有很多了，文章末尾就有相关的参考，我这里只简单记录下mac电脑上搭建octopress博客的步骤。</p>
 
 <h4>1、搭建环境</h4>
 
@@ -101,6 +96,9 @@ cd &hellip;">
 </span><span class='line'>cd octopress
 </span><span class='line'>gem install bundler
 </span><span class='line'>bundle install</span></code></pre></td></tr></table></div></figure>
+
+
+<!-- more -->
 
 
 <p>遇到的问题：</p>
@@ -151,10 +149,8 @@ cd &hellip;">
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-<span class='line-number'>3</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>rake generate
-</span><span class='line'>rake preview
-</span><span class='line'>rake deploy</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'>rake preview</span></code></pre></td></tr></table></div></figure>
 
 
 <p>之后，查看效果没有问题，则使用下面命令上传到github。这条命令会将<code>octopress/public</code>下的文件上传到你的仓库master分支下。</p>
@@ -206,6 +202,12 @@ cd &hellip;">
 <time class='entry-date' datetime='2015-09-11T22:51:44+08:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>11</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>10:51 pm</span></time>
       
 
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/octopress/'>octopress</a>
+  
+</span>
+
 
     </p>
     
@@ -237,7 +239,13 @@ cd &hellip;">
     
   </ul>
 </section>
+<section>
+ <h1>Categories</h1>
+ <ul id="categories">
+  <li class='category'><a href='/blog/categories/octopress/'>octopress (1)</a></li>
 
+ </ul>
+</section>
 
 
 
@@ -251,6 +259,16 @@ cd &hellip;">
   <footer role="contentinfo"><p>
   Copyright &copy; 2015 - 刘春桂 -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+
+  <script>
+  var _hmt = _hmt || [];
+  (function() {
+    var hm = document.createElement("script");
+    hm.src = "//hm.baidu.com/hm.js?dcbfd3eec3141b05725e438340286454";
+      var s = document.getElementsByTagName("script")[0]; 
+      s.parentNode.insertBefore(hm, s);
+      })();
+  </script>
 </p>
 
 </footer>

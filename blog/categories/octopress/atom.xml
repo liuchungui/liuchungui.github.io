@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[liuchungui's Blog]]></title>
-  <link href="http://liuchungui.github.io/atom.xml" rel="self"/>
+  <title><![CDATA[Category: Octopress | liuchungui's Blog]]></title>
+  <link href="http://liuchungui.github.io/blog/categories/octopress/atom.xml" rel="self"/>
   <link href="http://liuchungui.github.io/"/>
   <updated>2015-09-12T11:01:42+08:00</updated>
   <id>http://liuchungui.github.io/</id>
@@ -22,15 +22,11 @@
 
 <h4>1、搭建环境</h4>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>git clone git://github.com/imathis/octopress.git octopress
-</span><span class='line'>cd octopress
-</span><span class='line'>gem install bundler
-</span><span class='line'>bundle install</span></code></pre></td></tr></table></div></figure>
-
+<pre><code>git clone git://github.com/imathis/octopress.git octopress
+cd octopress
+gem install bundler
+bundle install
+</code></pre>
 
 <!-- more -->
 
@@ -45,29 +41,22 @@
 
 <p>之后，输入下面命令：</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>rake install</span></code></pre></td></tr></table></div></figure>
-
+<pre><code>rake install
+</code></pre>
 
 <h4>2、将博客部署到github上</h4>
 
-<p>在github上创建一个<code>username.github.io</code>的仓库，然后输入下面命令</p>
+<p>在github上创建一个<code>username.github.io</code>的仓库，然后输入下面命令
+<code>
+rake setup_github_pages
+</code>
+回车，之后出现下面内容</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>rake setup_github_pages</span></code></pre></td></tr></table></div></figure>
-
-
-<p>回车，之后出现下面内容</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>Enter the read/write url for your repository
-</span><span class='line'>(For example, 'git@github.com:your_username/your_username.github.io.git)
-</span><span class='line'>           or 'https://github.com/your_username/your_username.github.io')
-</span><span class='line'>Repository url:</span></code></pre></td></tr></table></div></figure>
-
+<pre><code>Enter the read/write url for your repository
+(For example, 'git@github.com:your_username/your_username.github.io.git)
+           or 'https://github.com/your_username/your_username.github.io')
+Repository url:
+</code></pre>
 
 <p>粘贴<code>username.github.io</code>仓库对应的url，例如我的就是<code>https://github.com/liuchungui/liuchungui.github.io.git</code></p>
 
@@ -75,33 +64,26 @@
 
 <p>首先，使用下面命令生成新文章，其中title就是博文名，你也可以输入<code>rake new_post</code>回车，然后在再输入博文名。文章在<code>source/_post/</code>目录下，<code>文件名构成为时间和标题的拼音</code>。可以进入到<code>octopress/source/_posts</code>目录，找到对应的博文进行修改。博文采用的markdown语法，我推荐一款不错的编辑工具<strong>Mou</strong>，它可以实时编辑实时查看。</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>rake new_post['title']</span></code></pre></td></tr></table></div></figure>
-
+<pre><code>rake new_post['title']
+</code></pre>
 
 <p>然后，使用下面命令生成并在本地进行预览。<code>rake preview</code>开启一个web服务，此时就可以预览了，使用<code>localhost:4000</code>打开看查看效果。</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>rake generate
-</span><span class='line'>rake preview</span></code></pre></td></tr></table></div></figure>
-
+<pre><code>rake generate
+rake preview
+</code></pre>
 
 <p>之后，查看效果没有问题，则使用下面命令上传到github。这条命令会将<code>octopress/public</code>下的文件上传到你的仓库master分支下。</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>rake deploy</span></code></pre></td></tr></table></div></figure>
-
+<pre><code>rake deploy
+</code></pre>
 
 <p>最后，将源代码上传到github仓库的source分支下，如下所示：</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>git add .
-</span><span class='line'>git commit -m 'add source file'
-</span><span class='line'>git push origin source</span></code></pre></td></tr></table></div></figure>
-
+<pre><code>git add .
+git commit -m 'add source file'
+git push origin source
+</code></pre>
 
 <h4>4、配置：</h4>
 
