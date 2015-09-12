@@ -34,6 +34,16 @@ cd &hellip;">
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
 <link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 <link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<script type="text/javascript">
+	function addBlankTargetForLinks () {
+		$('a[href^="http"]').each(function(){
+			$(this).attr('target', '_blank');
+		});
+	}
+	$(document).bind('DOMNodeInserted', function(event) {
+		addBlankTargetForLinks();
+	});
+</script>
 
   
 
@@ -154,16 +164,6 @@ cd &hellip;">
   <footer role="contentinfo"><p>
   Copyright &copy; 2015 - 刘春桂 -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
-
-  <script>
-  var _hmt = _hmt || [];
-  (function() {
-    var hm = document.createElement("script");
-    hm.src = "//hm.baidu.com/hm.js?dcbfd3eec3141b05725e438340286454";
-      var s = document.getElementsByTagName("script")[0]; 
-      s.parentNode.insertBefore(hm, s);
-      })();
-  </script>
 </p>
 
 </footer>
