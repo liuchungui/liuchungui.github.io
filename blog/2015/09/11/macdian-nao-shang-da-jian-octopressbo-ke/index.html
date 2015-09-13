@@ -177,17 +177,47 @@
 </span><span class='line'>git push origin source</span></code></pre></td></tr></table></div></figure>
 
 
-<h4>4、配置：</h4>
+<h4>4、删除twitter、google相关东西：</h4>
 
 <ul>
 <li>修改文件<code>octopress/_config.yml</code>文件，设置title、subtitle、author，注意最好把里面的 twitter 相关的信息全部删掉，否则由于 GFW 的原因，将会造成页面 load 很慢。</li>
-<li>修改定制文件 /source/_includes/custom/head.html 把 google 的自定义字体去掉，原因同上。</li>
+<li>修改头部模块 <strong>source/_includes/head.html</strong> 将<code>//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js</code>替换成<code>http://cdn.staticfile.org/jquery/1.9.1/jquery.min.js</code>，否则会很慢。</li>
+<li>修改定制文件 <strong>source/_includes/custom/head.html</strong> 把 google 的自定义字体去掉，原因同上。</li>
 </ul>
 
 
+<h4>5、自定义博客</h4>
+
+<p>新标签打开网站中第三方链接，将以下代码加入 <code>source/_includes/custom/head.html</code>文件中。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="o">&lt;</span><span class="nx">script</span> <span class="nx">type</span><span class="o">=</span><span class="s2">&quot;text/javascript&quot;</span><span class="o">&gt;</span>
+</span><span class='line'>  <span class="kd">function</span> <span class="nx">addBlankTargetForLinks</span> <span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;a[href^=&quot;http&quot;]&#39;</span><span class="p">).</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+</span><span class='line'>          <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="s1">&#39;target&#39;</span><span class="p">,</span> <span class="s1">&#39;_blank&#39;</span><span class="p">);</span>
+</span><span class='line'>      <span class="p">});</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  <span class="nx">$</span><span class="p">(</span><span class="nb">document</span><span class="p">).</span><span class="nx">bind</span><span class="p">(</span><span class="s1">&#39;DOMNodeInserted&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">addBlankTargetForLinks</span><span class="p">();</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'><span class="o">&lt;</span><span class="err">/script&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>其它，界面、侧边栏、底部栏、添加top回到顶部等，请参考<a href="http://foggry.com/blog/2014/04/28/custom-your-octopress-blog/">自定义你的Octopress博客</a></p>
+
 <h4>参考</h4>
 
-<p><a href="http://blog.devtang.com/blog/2012/02/10/setup-blog-based-on-github/">象写程序一样写博客：搭建基于github的博客</a></p>
+<p>添加评论和分享系统，请参考<a href="http://blog.devtang.com/blog/2012/02/10/setup-blog-based-on-github/">象写程序一样写博客：搭建基于github的博客</a></p>
 
 <p><a href="http://matrixzk.github.io/blog/20141020/octopress-setup-and-analysis/#section">使用 Octopress 2.0 搭建基于 Github Pages 个人博客的详细过程及原理分析</a></p>
 
