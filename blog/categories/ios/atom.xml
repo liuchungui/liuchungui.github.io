@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Ios | liuchungui's Blog]]></title>
   <link href="http://liuchungui.github.io/blog/categories/ios/atom.xml" rel="self"/>
   <link href="http://liuchungui.github.io/"/>
-  <updated>2015-09-21T00:49:50+08:00</updated>
+  <updated>2015-09-21T01:12:46+08:00</updated>
   <id>http://liuchungui.github.io/</id>
   <author>
     <name><![CDATA[刘春桂]]></name>
@@ -242,7 +242,7 @@ label.translatesAutoresizingMaskIntoConstraints = NO;
 
 <p> 使用Autolayout动画改变尺寸、位置的官方模板如下：</p>
 
-<pre><code class="objc">[containerView layoutIfNeeded]; // Ensures that all pending layout operations have been completed[UIView animateWithDuration:1.0 animations:^{     // Make all constraint changes here[containerView layoutIfNeeded]; // Forces the layout of the subtree animation block and then captures all of the frame changes}];
+<pre><code class="objc">[containerView layoutIfNeeded]; // Ensures that all pending layout operations have been completed[UIView animateWithDuration:1.0 animations:^{    // Make all constraint changes here[containerView layoutIfNeeded]; // Forces the layout of the subtree animation block and then captures all of the frame changes}];
 </code></pre>
 
 <p>那如果使用的是Masnory框架，怎么添加动画？</p>
@@ -286,7 +286,7 @@ label.translatesAutoresizingMaskIntoConstraints = NO;
     [self.view layoutIfNeeded];
     [UIView animateWithDuration:1.0 animations:^{
         [self.displayView mas_updateConstraints:^(MASConstraintMaker *make) {
-            make.size.mas_equalTo(CGSizeMake(300, 300    ));
+            make.size.mas_equalTo(CGSizeMake(300, 300));
             }];
         [self.view layoutIfNeeded];
     }];
