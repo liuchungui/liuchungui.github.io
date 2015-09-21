@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Ios | liuchungui's Blog]]></title>
   <link href="http://liuchungui.github.io/blog/categories/ios/atom.xml" rel="self"/>
   <link href="http://liuchungui.github.io/"/>
-  <updated>2015-09-21T01:12:46+08:00</updated>
+  <updated>2015-09-21T08:01:34+08:00</updated>
   <id>http://liuchungui.github.io/</id>
   <author>
     <name><![CDATA[刘春桂]]></name>
@@ -46,7 +46,7 @@
 
 <h5>1、语法</h5>
 
-<p>下面这是一些常用的VFL语法示例，如果想要知道更详细的语法规则，请查看<a href="https://developer.apple.com/library/prerelease/ios/documentation/UserExperience/Conceptual/AutolayoutPG/VisualFormatLanguage.html">Auto Layout Gride</a></p>
+<p>下面这是一些常用的VFL语法示例，如果想要知道更详细的语法规则，请查看<a href="https://developer.apple.com/library/prerelease/ios/documentation/UserExperience/Conceptual/AutolayoutPG/VisualFormatLanguage.html">Auto Layout Guide</a></p>
 
 <table style="text-align:center;" bgcolor="#FFFFFF"> 
    <tbody>
