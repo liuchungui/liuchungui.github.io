@@ -4,7 +4,7 @@
   <title><![CDATA[liuchungui's Blog]]></title>
   <link href="http://liuchungui.github.io/atom.xml" rel="self"/>
   <link href="http://liuchungui.github.io/"/>
-  <updated>2015-09-25T11:25:12+08:00</updated>
+  <updated>2015-09-25T11:31:07+08:00</updated>
   <id>http://liuchungui.github.io/</id>
   <author>
     <name><![CDATA[刘春桂]]></name>
@@ -25,6 +25,9 @@
 <p>2、这篇博客的内容主要是讲升级openssl、如何自己创建证书、配置证书到服务器和自建CA。其中对证书不太了解的，可以看<a href="http://kb.cnblogs.com/page/194742/">数字证书及CA的扫盲介绍</a>这篇文章。本篇博客其中第2步和第3步已经重复，只需要选择其中一步操作就可以搭建HTTPS服务器，当然搭建都是不受信任的，如果是架设网站还是需要到权威的CA机构申请证书。本来还有生成iOS客户端的证书和使用证书连接服务器相关的内容，由于篇幅的原因就把它放在下一篇吧。</p>
 
 <p>3、本人使用了Mac10.10.5和Ubuntu 14.04.1进行配置搭建，本篇博客主要以Unbuntu 14.04.1系统为主。而本人这个Ubuntu 14.04.1是阿里云一键安装的，而且没有更改里面的服务器设置，所以诸多的配置可能与一般Linux系统不太相同（与我电脑上的Linux mint就很大不同）。不过，我会在最后说明一下Mac和Linux配置一些不同的地方，其实都是一些相关路径的不同。当然，有可能你的Apache安装路径与我说的几种路径都不同，没关系，对照着修改也应该没什么问题。</p>
+
+<!-- more -->
+
 
 <h3>1、安装升级openssl</h3>
 
