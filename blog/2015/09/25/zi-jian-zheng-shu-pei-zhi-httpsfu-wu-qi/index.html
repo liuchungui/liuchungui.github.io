@@ -10,7 +10,7 @@
 
   
   <meta name="description" content="说明 1、写这篇博客的初衷是因为最近iOS9出来了，苹果官方默认要求使用HTTPS，所以自己想整一个HTTPS服务器，也想好好了解一下HTTPS通信，也知道了HTTPS其实就是在HTTP的基础上加上了SSL/TLS。具体想了解SSL/TLS原理的请浏览SSL/TLS协议运行机制的概述和SSL/ &hellip;">
-  
+  <meta name="keywords" content="HTTPS,openssl,自建证书,自建CA证书">
 
   <!-- http://t.co/dKP3o1e -->
   <meta name="HandheldFriendly" content="True">
@@ -188,13 +188,9 @@ make: *** [install_docs] Error 255
 <p>生成服务器的私钥，去除密钥口令   <br/>
 <code>openssl rsa -in private.key -out server.key</code></p>
 
-<p>使用私钥为证书请求签名，生成给服务器签署的证书，格式是x509的PEM格式</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>openssl x509 -req -in server.csr -out server.crt -outform pem -signkey server.key -days 3650</span></code></pre></td></tr></table></div></figure>
-
-
-<p>-outform pem指定证书生成的格式，默认是pem，所以这个命令也可以写作成<code>sudo openssl x509 -req -in server.csr -out server.crt -signkey server.key -days 3650</code>。其中这一步需要填写相关信息，填写Common</p>
+<p>使用私钥为证书请求签名，生成给服务器签署的证书，格式是x509的PEM格式  <br/>
+<code>openssl x509 -req -in server.csr -out server.crt -outform pem -signkey server.key -days 3650</code> <br/>
+-outform pem指定证书生成的格式，默认是pem，所以这个命令也可以写作成<code>sudo openssl x509 -req -in server.csr -out server.crt -signkey server.key -days 3650</code>。</p>
 
 <p>将证书copy到Apache配置路径下</p>
 
@@ -423,6 +419,12 @@ openssl是一套工具，它是一个开源库，可以对相关内容进行加�
 <time class='entry-date' datetime='2015-09-25T11:24:02+08:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>25</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>11:24 am</span></time>
       
 
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/web/'>web</a>
+  
+</span>
+
 
     </p>
     
@@ -493,6 +495,7 @@ var jiathis_config = {data_track_clickback:'true'};
  <ul id="categories">
   <li class='category'><a href='/blog/categories/ios/'>ios (1)</a></li>
 <li class='category'><a href='/blog/categories/octopress/'>octopress (1)</a></li>
+<li class='category'><a href='/blog/categories/web/'>web (1)</a></li>
 
  </ul>
 </section>

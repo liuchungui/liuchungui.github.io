@@ -4,7 +4,7 @@
   <title><![CDATA[liuchungui's Blog]]></title>
   <link href="http://liuchungui.github.io/atom.xml" rel="self"/>
   <link href="http://liuchungui.github.io/"/>
-  <updated>2015-09-25T11:31:07+08:00</updated>
+  <updated>2015-09-25T11:41:00+08:00</updated>
   <id>http://liuchungui.github.io/</id>
   <author>
     <name><![CDATA[刘春桂]]></name>
@@ -114,13 +114,9 @@ make: *** [install_docs] Error 255
 <p>生成服务器的私钥，去除密钥口令   <br/>
 <code>openssl rsa -in private.key -out server.key</code></p>
 
-<p>使用私钥为证书请求签名，生成给服务器签署的证书，格式是x509的PEM格式</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>openssl x509 -req -in server.csr -out server.crt -outform pem -signkey server.key -days 3650</span></code></pre></td></tr></table></div></figure>
-
-
-<p>-outform pem指定证书生成的格式，默认是pem，所以这个命令也可以写作成<code>sudo openssl x509 -req -in server.csr -out server.crt -signkey server.key -days 3650</code>。其中这一步需要填写相关信息，填写Common</p>
+<p>使用私钥为证书请求签名，生成给服务器签署的证书，格式是x509的PEM格式  <br/>
+<code>openssl x509 -req -in server.csr -out server.crt -outform pem -signkey server.key -days 3650</code> <br/>
+-outform pem指定证书生成的格式，默认是pem，所以这个命令也可以写作成<code>sudo openssl x509 -req -in server.csr -out server.crt -signkey server.key -days 3650</code>。</p>
 
 <p>将证书copy到Apache配置路径下</p>
 
