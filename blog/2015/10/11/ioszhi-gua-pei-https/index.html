@@ -5,12 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>liuchungui's Blog</title>
+  <title>iOS之适配HTTPS - liuchungui's Blog</title>
   <meta name="author" content="刘春桂">
 
   
   <meta name="description" content="最近的iOS9系统出来了，而网络方面的ATS(App Transport Security)特性可以说每个人都要经历。而我这篇博客，就是结合我最近几天的经历，来谈谈从服务器到iOS客户端的HTTPS适配。 一、简单谈谈ATS(App Transport Security) ATS(App &hellip;">
-  
+  <meta name="keywords" content="HTTPS,ATS, iOS, openssl,自建证书,自建CA证书">
 
   <!-- http://t.co/dKP3o1e -->
   <meta name="HandheldFriendly" content="True">
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://liuchungui.github.io/">
+  <link rel="canonical" href="http://liuchungui.github.io/blog/2015/10/11/ioszhi-gua-pei-https/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="liuchungui's Blog" type="application/atom+xml">
@@ -63,15 +63,12 @@
 </nav>
   <div id="main">
     <div id="content">
-      <div class="blog-index">
+      <div>
+<article class="hentry" role="article">
   
-  
-  
-    <article>
-      
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2015/10/11/ioszhi-gua-pei-https/">iOS之适配HTTPS</a></h1>
+      <h1 class="entry-title">iOS之适配HTTPS</h1>
     
     
       <p class="meta">
@@ -87,7 +84,7 @@
   </header>
 
 
-  <div class="entry-content"><p>最近的iOS9系统出来了，而网络方面的ATS(App Transport Security)特性可以说每个人都要经历。而我这篇博客，就是结合我最近几天的经历，来谈谈从服务器到iOS客户端的HTTPS适配。</p>
+<div class="entry-content"><p>最近的iOS9系统出来了，而网络方面的ATS(App Transport Security)特性可以说每个人都要经历。而我这篇博客，就是结合我最近几天的经历，来谈谈从服务器到iOS客户端的HTTPS适配。</p>
 
 <h3>一、简单谈谈ATS(App Transport Security)</h3>
 
@@ -541,140 +538,44 @@ _httpClient.securityPolicy = policy;
 <a href="http://www.cocoachina.com/ios/20150810/12947.html">打造安全的App！iOS安全系列之 HTTPS</a>   <br/>
 <a href="http://www.cocoachina.com/ios/20140916/9632.html">AFNetworking源码解析&lt;三></a></p>
 </div>
-  
-  
 
 
-    </article>
-  
-  
-    <article>
+  <footer>
+    <p class="meta">
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/09/25/zi-jian-zheng-shu-pei-zhi-httpsfu-wu-qi/">自建证书配置HTTPS服务器</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-09-25T11:24:02+08:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>25</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>11:24 am</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3>说明</h3>
-
-<p>1、写这篇博客的初衷是因为最近iOS9出来了，苹果官方默认要求使用HTTPS，所以自己想整一个HTTPS服务器，也想好好了解一下HTTPS通信，也知道了HTTPS其实就是在HTTP的基础上加上了SSL/TLS。具体想了解SSL/TLS原理的请浏览<a href="http://www.ruanyifeng.com/blog/2014/02/ssl_tls.html">SSL/TLS协议运行机制的概述</a>和<a href="http://segmentfault.com/a/1190000002554673">SSL/TLS原理详解</a>。中途看了很多博客，也花了不少时间，所以想记录一些东西。</p>
-
-<p>2、这篇博客的内容主要是讲升级openssl、如何自己创建证书、配置证书到服务器和自建CA。其中对证书不太了解的，可以看<a href="http://kb.cnblogs.com/page/194742/">数字证书及CA的扫盲介绍</a>这篇文章。本篇博客其中第2步和第3步已经重复，只需要选择其中一步操作就可以搭建HTTPS服务器，当然搭建都是不受信任的，如果是架设网站还是需要到权威的CA机构申请证书。本来还有生成iOS客户端的证书和使用证书连接服务器相关的内容，由于篇幅的原因就把它放在下一篇吧。</p>
-
-<p>3、本人使用了Mac10.10.5和Ubuntu 14.04.1进行配置搭建，本篇博客主要以Unbuntu 14.04.1系统为主。而本人这个Ubuntu 14.04.1是阿里云一键安装的，而且没有更改里面的服务器设置，所以诸多的配置可能与一般Linux系统不太相同（与我电脑上的Linux mint就很大不同）。不过，我会在最后说明一下Mac和Linux配置一些不同的地方，其实都是一些相关路径的不同。当然，有可能你的Apache安装路径与我说的几种路径都不同，没关系，对照着修改也应该没什么问题。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/09/25/zi-jian-zheng-shu-pei-zhi-httpsfu-wu-qi/">更多 &rarr;</a>
-    </footer>
   
 
+<span class="byline author vcard">Posted by <span class="fn">刘春桂</span></span>
 
-    </article>
-  
-  
-    <article>
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/09/20/autolayoutshi-yong-dai-ma-xie-yue-shu/">AutoLayout使用代码写约束</a></h1>
-    
-    
-      <p class="meta">
-        
 
 
 
 
-<time class='entry-date' datetime='2015-09-20T23:20:56+08:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>20</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>11:20 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3>一、约束是什么？</h3>
-
-<p>  约束是视图与视图之间一些属性关系。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/09/20/autolayoutshi-yong-dai-ma-xie-yue-shu/">更多 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
+<time class='entry-date' datetime='2015-10-11T13:15:11+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>11</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>1:15 pm</span></time>
       
-  <header>
+
+
+    </p>
     
-      <h1 class="entry-title"><a href="/blog/2015/09/11/macdian-nao-shang-da-jian-octopressbo-ke/">Mac电脑上搭建octopress博客</a></h1>
+      <div class="sharing">
+  
+  
+  
+</div>
+
     
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-09-11T22:51:44+08:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>11</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>10:51 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>搭建octopress博客的文章很详细已经有很多了，文章末尾就有相关的参考，我这里只简单记录下mac电脑上搭建octopress博客的步骤。</p>
-
-<h4>1、搭建环境</h4>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>git clone git://github.com/imathis/octopress.git octopress
-</span><span class='line'>cd octopress
-</span><span class='line'>gem install bundler
-</span><span class='line'>bundle install</span></code></pre></td></tr></table></div></figure>
-
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2015/09/25/zi-jian-zheng-shu-pei-zhi-httpsfu-wu-qi/" title="Previous Post: 自建证书配置HTTPS服务器">&laquo; 自建证书配置HTTPS服务器</a>
+      
+      
+    </p>
+  </footer>
+</article>
 
 </div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/09/11/macdian-nao-shang-da-jian-octopressbo-ke/">更多 &rarr;</a>
-    </footer>
-  
 
-
-    </article>
-  
-  <div class="pagination">
-    
-    <a href="/blog/archives">Blog Archives</a>
-    
-  </div>
-</div>
 <aside class="sidebar">
   
     <section>
@@ -712,6 +613,7 @@ _httpClient.securityPolicy = policy;
 
   
 </aside>
+
 
     </div>
   </div>
