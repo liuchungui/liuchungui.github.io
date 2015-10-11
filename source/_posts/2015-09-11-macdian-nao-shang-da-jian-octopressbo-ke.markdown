@@ -3,51 +3,108 @@ layout: post
 title: "mac电脑上搭建octopress博客"
 date: 2015-09-11 22:51:44 +0800
 comments: true
-categories: 
+categories: octopress
+tags: [octopress, 搭建博客]
+keywords: octopress, 搭建博客
+description: mac电脑上搭建octopress博客
+
 ---
-##mac电脑上搭建octopress博客
-搭建octopress博客的文章很全很详细已经有很多了，我这里只简单记录下mac电脑上搭建octopress博客的步骤。
-###1、搭建环境
+
+搭建octopress博客的文章很详细已经有很多了，文章末尾就有相关的参考，我这里只简单记录下mac电脑上搭建octopress博客的步骤。
+####1、搭建环境
 ```
 git clone git://github.com/imathis/octopress.git octopress
 cd octopress
 gem install bundler
 bundle install
-rake install
 ```
+<!-- more -->
 遇到的问题：
 
-1、`gem install bundler`失败了，需要更改一下`Gemfile`文件当中的源，将第一行`source "https://rubygems.org"` 更改成 `source "http://ruby.taobao.org/"`就行了。
+* `gem install bundler`失败了，需要更改一下`octopress/Gemfile`文件当中的源，将第一行`source "https://rubygems.org"` 更改成 `source "http://ruby.taobao.org/"`就行了。
 
-2、如果安装的时候报`“You don't have write permissions for the /Library/Ruby/Gems/2.0.0 directory”`这样的错误，请加上sudo权限。
+* 如果安装的时候报`“You don't have write permissions for the /Library/Ruby/Gems/2.0.0 directory”`这样的错误，请加上sudo权限。
 
-###2、将博客部署到github上
-在github上创建一个username.github.io的仓库。
+之后，输入下面命令：
+
+```
+rake install
+```
+
+####2、将博客部署到github上
+在github上创建一个`username.github.io`的仓库，然后输入下面命令
 ```
 rake setup_github_pages
 ```
+回车，之后出现下面内容
+
+```
+Enter the read/write url for your repository
+(For example, 'git@github.com:your_username/your_username.github.io.git)
+           or 'https://github.com/your_username/your_username.github.io')
+Repository url:
+```
+
 粘贴`username.github.io`仓库对应的url，例如我的就是`https://github.com/liuchungui/liuchungui.github.io.git`
 
-3、生成博文
+####3、生成并编辑博客
+首先，使用下面命令生成新文章，其中title就是博文名，你也可以输入`rake new_post`回车，然后在再输入博文名。文章在`source/_post/`目录下，`文件名构成为时间和标题的拼音`。可以进入到`octopress/source/_posts`目录，找到对应的博文进行修改。博文采用的markdown语法，我推荐一款不错的编辑工具**Mou**，它可以实时编辑实时查看。
+
 ```
 rake new_post['title']
 ```
-生成新文章，文章在source/_post/目录下，文件名构成为时间和标题的拼音。
+
+然后，使用下面命令生成并在本地进行预览。`rake preview`开启一个web服务，此时就可以预览了，使用```localhost:4000```打开看查看效果。
 
 ```
 rake generate
 rake preview
 ```
-此时可以预览了，使用localhost:4000打开看效果，如果没有问题，则上传到github上
+
+之后，查看效果没有问题，则使用下面命令上传到github。这条命令会将`octopress/public`下的文件上传到你的仓库master分支下。
 
 ```
 rake deploy
 ```
-rake deploy会将octopress/public下的文件上传到你的仓库master分支下。
-上传之后，将源代码上传到github仓库的source分支下
+
+最后，将源代码上传到github仓库的source分支下，如下所示：
 
 ```
 git add .
 git commit -m 'add source file'
 git push origin source
 ```
+
+
+####4、删除twitter、google相关东西：
+
+* 修改文件`octopress/_config.yml`文件，设置title、subtitle、author，注意最好把里面的 twitter 相关的信息全部删掉，否则由于 GFW 的原因，将会造成页面 load 很慢。
+* 修改头部模块 **source/_includes/head.html** 将`//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js`替换成`http://cdn.staticfile.org/jquery/1.9.1/jquery.min.js`，否则会很慢。
+* 修改定制文件 **source/_includes/custom/head.html** 把 google 的自定义字体去掉，原因同上。
+
+####5、自定义博客
+新标签打开网站中第三方链接默认是从当前界面打开，这导致网站浏览者跳转到第三方链接后很难回来。将以下代码加入 `source/_includes/custom/head.html`文件中，我们是新建一个界面打开，仍然保持当前网页。
+
+```javascript
+<script type="text/javascript">
+	function addBlankTargetForLinks () {
+		$('a[href^="http"]').each(function(){
+			$(this).attr('target', '_blank');
+		});
+	}
+	$(document).bind('DOMNodeInserted', function(event) {
+		addBlankTargetForLinks();
+	});
+</script>
+
+```
+
+其它，界面、侧边栏、底部栏、添加top回到顶部等，请参考[自定义你的Octopress博客](http://foggry.com/blog/2014/04/28/custom-your-octopress-blog/)
+
+####参考
+
+添加评论和分享系统，请参考[象写程序一样写博客：搭建基于github的博客](http://blog.devtang.com/blog/2012/02/10/setup-blog-based-on-github/)
+
+[使用 Octopress 2.0 搭建基于 Github Pages 个人博客的详细过程及原理分析](http://matrixzk.github.io/blog/20141020/octopress-setup-and-analysis/#section)
+
+[octopress博客搭建和个性化配置](http://www.jianshu.com/p/0ac2ac1a8e45)
