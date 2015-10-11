@@ -10,7 +10,7 @@
 
   
   <meta name="description" content="最近的iOS9系统出来了，而网络方面的ATS(App Transport Security)特性可以说每个人都要经历。而我这篇博客，就是结合我最近几天的经历，来谈谈从服务器到iOS客户端的HTTPS适配。 一、简单谈谈ATS(App Transport Security) ATS(App &hellip;">
-  <meta name="keywords" content="HTTPS,ATS, iOS, openssl,自建证书,自建CA证书">
+  <meta name="keywords" content="HTTPS,ATS, iOS, nscurl, openssl,自建证书,自建CA证书">
 
   <!-- http://t.co/dKP3o1e -->
   <meta name="HandheldFriendly" content="True">
@@ -536,6 +536,15 @@ _httpClient.securityPolicy = policy;
 2、如果是认证过的证书，那么可以通过<code>nscurl --ats-diagnostics --verbose https://casetree.cn</code>这样的命令来查看服务器支持的ATS Dictionary，然后进行对应的设置。</p>
 
 <p>适配的部分，也可以参照<a href="https://github.com/ChenYilong/iOS9AdaptationTips#1-demo1_ios9%E7%BD%91%E7%BB%9C%E9%80%82%E9%85%8D_ats%E6%94%B9%E7%94%A8%E6%9B%B4%E5%AE%89%E5%85%A8%E7%9A%84https">Demo1_iOS9网络适配_ATS：改用更安全的HTTPS</a></p>
+
+<h3>总结</h3>
+
+<p>回顾前面的内容，总结一下，主要讲了一下几点内容
+1、ATS需要满足的条件
+2、如何建立证书，搭建HTTPS服务器
+3、使用nscurl命令来检测HTTPS服务器是否满足ATS特性
+4、客户端的适配，讲述了NSURLSession和AFNetworking的使用
+5、讲述了如果建立的服务器不满足ATS的条件时，我们如何适配</p>
 
 <h3>参考</h3>
 
