@@ -515,7 +515,7 @@ validatesDomainName属性代表是否验证主机名，默认为YES</p>
 
 <p>说了验证流程，我们最后来看看AFNetworking怎么使用，代码如下：</p>
 
-<pre><code class="objc"> _httpClient = [[BGAFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:baseURL]];
+<pre><code> _httpClient = [[BGAFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:baseURL]];
  AFSecurityPolicy *policy = [AFSecurityPolicy policyWithPinningMode:AFSSLPinningModeCertificate];
  //是否允许CA不信任的证书通过
 policy.allowInvalidCertificates = YES;
