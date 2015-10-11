@@ -4,7 +4,7 @@
   <title><![CDATA[liuchungui's Blog]]></title>
   <link href="http://liuchungui.github.io/atom.xml" rel="self"/>
   <link href="http://liuchungui.github.io/"/>
-  <updated>2015-10-11T13:25:58+08:00</updated>
+  <updated>2015-10-11T13:29:05+08:00</updated>
   <id>http://liuchungui.github.io/</id>
   <author>
     <name><![CDATA[刘春桂]]></name>
@@ -155,7 +155,7 @@
 3、通过SecTrustEvaluate方法去验证trust object  <br/>
 下面是主要OC实现代码，Demo工程我也放在github上了，有OC和Swift两种语言，下载Demo请点击<a href="https://github.com/liuchungui/HTTPSConnectDemo">HTTPSConnectDemo</a>。</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -205,56 +205,57 @@
 <span class='line-number'>48</span>
 <span class='line-number'>49</span>
 <span class='line-number'>50</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>- (void)viewDidLoad {
-</span><span class='line'>    [super viewDidLoad];
-</span><span class='line'>    //导入客户端证书
-</span><span class='line'>    NSString *cerPath = [[NSBundle mainBundle] pathForResource:@"ca" ofType:@"cer"];
-</span><span class='line'>    NSData *data = [NSData dataWithContentsOfFile:cerPath];
-</span><span class='line'>    SecCertificateRef certificate = SecCertificateCreateWithData(NULL, (__bridge CFDataRef) data);
-</span><span class='line'>    self.trustedCerArr = @[(__bridge_transfer id)certificate];
-</span><span class='line'>    
-</span><span class='line'>    //发送请求
-</span><span class='line'>    NSURL *testURL = [NSURL URLWithString:@"https://casetree.cn/web/test/demo.php"];
-</span><span class='line'>    NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration] delegate:self delegateQueue:[NSOperationQueue mainQueue]];
-</span><span class='line'>    NSURLSessionDataTask *task = [session dataTaskWithRequest:[NSURLRequest requestWithURL:testURL]];
-</span><span class='line'>    [task resume];
-</span><span class='line'>    // Do any additional setup after loading the view, typically from a nib.
-</span><span class='line'>}
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">viewDidLoad</span> <span class="p">{</span>
+</span><span class='line'>    <span class="p">[</span><span class="nb">super</span> <span class="n">viewDidLoad</span><span class="p">];</span>
+</span><span class='line'>    <span class="c1">//导入客户端证书</span>
+</span><span class='line'>    <span class="bp">NSString</span> <span class="o">*</span><span class="n">cerPath</span> <span class="o">=</span> <span class="p">[[</span><span class="bp">NSBundle</span> <span class="n">mainBundle</span><span class="p">]</span> <span class="nl">pathForResource</span><span class="p">:</span><span class="s">@&quot;ca&quot;</span> <span class="nl">ofType</span><span class="p">:</span><span class="s">@&quot;cer&quot;</span><span class="p">];</span>
+</span><span class='line'>    <span class="bp">NSData</span> <span class="o">*</span><span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSData</span> <span class="nl">dataWithContentsOfFile</span><span class="p">:</span><span class="n">cerPath</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">SecCertificateRef</span> <span class="n">certificate</span> <span class="o">=</span> <span class="n">SecCertificateCreateWithData</span><span class="p">(</span><span class="nb">NULL</span><span class="p">,</span> <span class="p">(</span><span class="k">__bridge</span> <span class="n">CFDataRef</span><span class="p">)</span> <span class="n">data</span><span class="p">);</span>
+</span><span class='line'>    <span class="nb">self</span><span class="p">.</span><span class="n">trustedCerArr</span> <span class="o">=</span> <span class="l">@[</span><span class="p">(</span><span class="k">__bridge_transfer</span> <span class="kt">id</span><span class="p">)</span><span class="n">certificate</span><span class="l">]</span><span class="p">;</span>
 </span><span class='line'>
-</span><span class='line'>#pragma mark - NSURLSessionDelegate
-</span><span class='line'>- (void)URLSession:(NSURLSession *)session didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge
-</span><span class='line'> completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition, NSURLCredential * __nullable credential))completionHandler{
-</span><span class='line'>    
-</span><span class='line'>    OSStatus err;
-</span><span class='line'>    NSURLSessionAuthChallengeDisposition disposition = NSURLSessionAuthChallengePerformDefaultHandling;
-</span><span class='line'>    SecTrustResultType  trustResult = kSecTrustResultInvalid;
-</span><span class='line'>    NSURLCredential *credential = nil;
-</span><span class='line'>    
-</span><span class='line'>    //获取服务器的trust object
-</span><span class='line'>    SecTrustRef serverTrust = challenge.protectionSpace.serverTrust;
-</span><span class='line'>    
-</span><span class='line'>    //将读取的证书设置为serverTrust的根证书
-</span><span class='line'>    err = SecTrustSetAnchorCertificates(serverTrust, (__bridge CFArrayRef)self.trustedCerArr);
-</span><span class='line'>    
-</span><span class='line'>    if(err == noErr){
-</span><span class='line'>        //通过本地导入的证书来验证服务器的证书是否可信，如果将SecTrustSetAnchorCertificatesOnly设置为NO，则只要通过本地或者系统证书链任何一方认证就行
-</span><span class='line'>        err = SecTrustEvaluate(serverTrust, &trustResult);
-</span><span class='line'>    }
-</span><span class='line'>    
-</span><span class='line'>    if (err == errSecSuccess && (trustResult == kSecTrustResultProceed || trustResult == kSecTrustResultUnspecified)){
-</span><span class='line'>        //认证成功，则创建一个凭证返回给服务器
-</span><span class='line'>        disposition = NSURLSessionAuthChallengeUseCredential;
-</span><span class='line'>        credential = [NSURLCredential credentialForTrust:serverTrust];
-</span><span class='line'>    }
-</span><span class='line'>    else{
-</span><span class='line'>        disposition = NSURLSessionAuthChallengeCancelAuthenticationChallenge;
-</span><span class='line'>    }
-</span><span class='line'>    
-</span><span class='line'>    //回调凭证，传递给服务器
-</span><span class='line'>    if(completionHandler){
-</span><span class='line'>        completionHandler(disposition, credential);
-</span><span class='line'>    }
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'>    <span class="c1">//发送请求</span>
+</span><span class='line'>    <span class="bp">NSURL</span> <span class="o">*</span><span class="n">testURL</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSURL</span> <span class="nl">URLWithString</span><span class="p">:</span><span class="s">@&quot;https://casetree.cn/web/test/demo.php&quot;</span><span class="p">];</span>
+</span><span class='line'>    <span class="bp">NSURLSession</span> <span class="o">*</span><span class="n">session</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSURLSession</span> <span class="nl">sessionWithConfiguration</span><span class="p">:[</span><span class="bp">NSURLSessionConfiguration</span> <span class="n">defaultSessionConfiguration</span><span class="p">]</span> <span class="nl">delegate</span><span class="p">:</span><span class="nb">self</span> <span class="nl">delegateQueue</span><span class="p">:[</span><span class="bp">NSOperationQueue</span> <span class="n">mainQueue</span><span class="p">]];</span>
+</span><span class='line'>    <span class="bp">NSURLSessionDataTask</span> <span class="o">*</span><span class="n">task</span> <span class="o">=</span> <span class="p">[</span><span class="n">session</span> <span class="nl">dataTaskWithRequest</span><span class="p">:[</span><span class="bp">NSURLRequest</span> <span class="nl">requestWithURL</span><span class="p">:</span><span class="n">testURL</span><span class="p">]];</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">task</span> <span class="n">resume</span><span class="p">];</span>
+</span><span class='line'>    <span class="c1">// Do any additional setup after loading the view, typically from a nib.</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">#pragma mark - NSURLSessionDelegate</span>
+</span><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">URLSession:</span><span class="p">(</span><span class="bp">NSURLSession</span> <span class="o">*</span><span class="p">)</span><span class="nv">session</span> <span class="nf">didReceiveChallenge:</span><span class="p">(</span><span class="bp">NSURLAuthenticationChallenge</span> <span class="o">*</span><span class="p">)</span><span class="nv">challenge</span>
+</span><span class='line'> <span class="nf">completionHandler:</span><span class="p">(</span><span class="kt">void</span> <span class="p">(</span><span class="o">^</span><span class="p">)(</span><span class="n">NSURLSessionAuthChallengeDisposition</span> <span class="n">disposition</span><span class="p">,</span> <span class="bp">NSURLCredential</span> <span class="o">*</span> <span class="n">__nullable</span> <span class="n">credential</span><span class="p">))</span><span class="nv">completionHandler</span><span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">OSStatus</span> <span class="n">err</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">NSURLSessionAuthChallengeDisposition</span> <span class="n">disposition</span> <span class="o">=</span> <span class="n">NSURLSessionAuthChallengePerformDefaultHandling</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">SecTrustResultType</span>  <span class="n">trustResult</span> <span class="o">=</span> <span class="n">kSecTrustResultInvalid</span><span class="p">;</span>
+</span><span class='line'>    <span class="bp">NSURLCredential</span> <span class="o">*</span><span class="n">credential</span> <span class="o">=</span> <span class="nb">nil</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//获取服务器的trust object</span>
+</span><span class='line'>    <span class="n">SecTrustRef</span> <span class="n">serverTrust</span> <span class="o">=</span> <span class="n">challenge</span><span class="p">.</span><span class="n">protectionSpace</span><span class="p">.</span><span class="n">serverTrust</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//将读取的证书设置为serverTrust的根证书</span>
+</span><span class='line'>    <span class="n">err</span> <span class="o">=</span> <span class="n">SecTrustSetAnchorCertificates</span><span class="p">(</span><span class="n">serverTrust</span><span class="p">,</span> <span class="p">(</span><span class="k">__bridge</span> <span class="n">CFArrayRef</span><span class="p">)</span><span class="nb">self</span><span class="p">.</span><span class="n">trustedCerArr</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span><span class="p">(</span><span class="n">err</span> <span class="o">==</span> <span class="n">noErr</span><span class="p">){</span>
+</span><span class='line'>        <span class="c1">//通过本地导入的证书来验证服务器的证书是否可信，如果将SecTrustSetAnchorCertificatesOnly设置为NO，则只要通过本地或者系统证书链任何一方认证就行</span>
+</span><span class='line'>        <span class="n">err</span> <span class="o">=</span> <span class="n">SecTrustEvaluate</span><span class="p">(</span><span class="n">serverTrust</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">trustResult</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">err</span> <span class="o">==</span> <span class="n">errSecSuccess</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">trustResult</span> <span class="o">==</span> <span class="n">kSecTrustResultProceed</span> <span class="o">||</span> <span class="n">trustResult</span> <span class="o">==</span> <span class="n">kSecTrustResultUnspecified</span><span class="p">)){</span>
+</span><span class='line'>        <span class="c1">//认证成功，则创建一个凭证返回给服务器</span>
+</span><span class='line'>        <span class="n">disposition</span> <span class="o">=</span> <span class="n">NSURLSessionAuthChallengeUseCredential</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">credential</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSURLCredential</span> <span class="nl">credentialForTrust</span><span class="p">:</span><span class="n">serverTrust</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">else</span><span class="p">{</span>
+</span><span class='line'>        <span class="n">disposition</span> <span class="o">=</span> <span class="n">NSURLSessionAuthChallengeCancelAuthenticationChallenge</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//回调凭证，传递给服务器</span>
+</span><span class='line'>    <span class="k">if</span><span class="p">(</span><span class="n">completionHandler</span><span class="p">){</span>
+</span><span class='line'>        <span class="n">completionHandler</span><span class="p">(</span><span class="n">disposition</span><span class="p">,</span> <span class="n">credential</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>注意：   <br/>
@@ -266,12 +267,13 @@
 <p>AFNetworking的证书验证工作是由AFSecurityPolicy来完成的，所以这里我们主要来了解一下AFSecurityPolicy。<strong>注意：我这里使用的是AFNetworking2.6.0，它跟2.5.0是有区别的。</strong>  <br/>
 说到AFSecurityPolicy，我们必须要提到它三个重要的属性，如下：</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>@property (readonly, nonatomic, assign) AFSSLPinningMode SSLPinningMode;
-</span><span class='line'>@property (nonatomic, assign) BOOL allowInvalidCertificates;
-</span><span class='line'>@property (nonatomic, assign) BOOL validatesDomainName;</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="k">readonly</span><span class="p">,</span> <span class="k">nonatomic</span><span class="p">,</span> <span class="k">assign</span><span class="p">)</span> <span class="n">AFSSLPinningMode</span> <span class="n">SSLPinningMode</span><span class="p">;</span>
+</span><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="k">nonatomic</span><span class="p">,</span> <span class="k">assign</span><span class="p">)</span> <span class="kt">BOOL</span> <span class="n">allowInvalidCertificates</span><span class="p">;</span>
+</span><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="k">nonatomic</span><span class="p">,</span> <span class="k">assign</span><span class="p">)</span> <span class="kt">BOOL</span> <span class="n">validatesDomainName</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>SSLPingMode是最重要的属性，它标明了AFSecurityPolicy是以何种方式来验证。它是一个枚举类型，这个枚举类型有三个值，分别是AFSSLPinningModeNone、AFSSLPinningModePublicKey、AFSSLPinningModeCertificate。其中，AFSSLPinningModeNone代表了AFSecurityPolicy不做更严格的验证，只要是系统信任的证书就可以通过验证，不过，它受到allowInvalidCertificates和validatesDomainName的影响；AFSSLPinningModePublicKey是通过比较证书当中公钥(PublicKey)部分来进行验证，通过SecTrustCopyPublicKey方法获取本地证书和服务器证书，然后进行比较，如果有一个相同，则通过验证，此方式主要适用于自建证书搭建的HTTPS服务器和需要较高安全要求的验证；AFSSLPinningModeCertificate则是直接将本地的证书设置为信任的根证书，然后来进行判断，并且比较本地证书的内容和服务器证书内容是否相同，来进行二次判断，此方式适用于较高安全要求的验证。
@@ -280,7 +282,7 @@ validatesDomainName属性代表是否验证主机名，默认为YES</p>
 
 <p>接下来，我们说下验证流程。验证流程主要放在AFSecurityPolicy的- (BOOL)evaluateServerTrust:(SecTrustRef)serverTrust forDomain:(NSString *)domain方法当中。</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -361,87 +363,88 @@ validatesDomainName属性代表是否验证主机名，默认为YES</p>
 <span class='line-number'>79</span>
 <span class='line-number'>80</span>
 <span class='line-number'>81</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>- (BOOL)evaluateServerTrust:(SecTrustRef)serverTrust
-</span><span class='line'>                  forDomain:(NSString *)domain
-</span><span class='line'>{
-</span><span class='line'>    //当使用自建证书验证域名时，需要使用AFSSLPinningModePublicKey或者AFSSLPinningModeCertificate
-</span><span class='line'>    if (domain && self.allowInvalidCertificates && self.validatesDomainName && (self.SSLPinningMode == AFSSLPinningModeNone || [self.pinnedCertificates count] == 0)) {
-</span><span class='line'>        NSLog(@"In order to validate a domain name for self signed certificates, you MUST use pinning.");
-</span><span class='line'>        return NO;
-</span><span class='line'>    }
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">BOOL</span><span class="p">)</span><span class="nf">evaluateServerTrust:</span><span class="p">(</span><span class="n">SecTrustRef</span><span class="p">)</span><span class="nv">serverTrust</span>
+</span><span class='line'>                  <span class="nf">forDomain:</span><span class="p">(</span><span class="bp">NSString</span> <span class="o">*</span><span class="p">)</span><span class="nv">domain</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="c1">//当使用自建证书验证域名时，需要使用AFSSLPinningModePublicKey或者AFSSLPinningModeCertificate</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">domain</span> <span class="o">&amp;&amp;</span> <span class="nb">self</span><span class="p">.</span><span class="n">allowInvalidCertificates</span> <span class="o">&amp;&amp;</span> <span class="nb">self</span><span class="p">.</span><span class="n">validatesDomainName</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="nb">self</span><span class="p">.</span><span class="n">SSLPinningMode</span> <span class="o">==</span> <span class="n">AFSSLPinningModeNone</span> <span class="o">||</span> <span class="p">[</span><span class="nb">self</span><span class="p">.</span><span class="n">pinnedCertificates</span> <span class="n">count</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">))</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;In order to validate a domain name for self signed certificates, you MUST use pinning.&quot;</span><span class="p">);</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nb">NO</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
 </span><span class='line'>
-</span><span class='line'>    NSMutableArray *policies = [NSMutableArray array];
-</span><span class='line'>    //需要验证域名时，需要添加一个验证域名的策略
-</span><span class='line'>    if (self.validatesDomainName) {
-</span><span class='line'>        [policies addObject:(__bridge_transfer id)SecPolicyCreateSSL(true, (__bridge CFStringRef)domain)];
-</span><span class='line'>    } else {
-</span><span class='line'>        [policies addObject:(__bridge_transfer id)SecPolicyCreateBasicX509()];
-</span><span class='line'>    }
-</span><span class='line'>    
-</span><span class='line'>    //设置验证的策略，可以是多个
-</span><span class='line'>    SecTrustSetPolicies(serverTrust, (__bridge CFArrayRef)policies);
+</span><span class='line'>    <span class="bp">NSMutableArray</span> <span class="o">*</span><span class="n">policies</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSMutableArray</span> <span class="n">array</span><span class="p">];</span>
+</span><span class='line'>    <span class="c1">//需要验证域名时，需要添加一个验证域名的策略</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="nb">self</span><span class="p">.</span><span class="n">validatesDomainName</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="p">[</span><span class="n">policies</span> <span class="nl">addObject</span><span class="p">:(</span><span class="k">__bridge_transfer</span> <span class="kt">id</span><span class="p">)</span><span class="n">SecPolicyCreateSSL</span><span class="p">(</span><span class="nb">true</span><span class="p">,</span> <span class="p">(</span><span class="k">__bridge</span> <span class="n">CFStringRef</span><span class="p">)</span><span class="n">domain</span><span class="p">)];</span>
+</span><span class='line'>    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>        <span class="p">[</span><span class="n">policies</span> <span class="nl">addObject</span><span class="p">:(</span><span class="k">__bridge_transfer</span> <span class="kt">id</span><span class="p">)</span><span class="n">SecPolicyCreateBasicX509</span><span class="p">()];</span>
+</span><span class='line'>    <span class="p">}</span>
 </span><span class='line'>
-</span><span class='line'>    //SSLPinningMode为AFSSLPinningModeNone时，allowInvalidCertificates为YES，则代表服务器任何证书都能验证通过；如果它为NO，则需要判断此服务器证书是否是系统信任的证书
-</span><span class='line'>    if (self.SSLPinningMode == AFSSLPinningModeNone) {
-</span><span class='line'>        if (self.allowInvalidCertificates || AFServerTrustIsValid(serverTrust)){
-</span><span class='line'>            return YES;
-</span><span class='line'>        } else {
-</span><span class='line'>            return NO;
-</span><span class='line'>        }
-</span><span class='line'>    } else if (!AFServerTrustIsValid(serverTrust) && !self.allowInvalidCertificates) {
-</span><span class='line'>        return NO;
-</span><span class='line'>    }
-</span><span class='line'>    
-</span><span class='line'>    //获取服务器证书的内容
-</span><span class='line'>    NSArray *serverCertificates = AFCertificateTrustChainForServerTrust(serverTrust);
-</span><span class='line'>    switch (self.SSLPinningMode) {
-</span><span class='line'>        case AFSSLPinningModeNone:
-</span><span class='line'>        default:
-</span><span class='line'>            return NO;
-</span><span class='line'>        case AFSSLPinningModeCertificate: {
-</span><span class='line'>            //AFSSLPinningModeCertificate是直接将本地的证书设置为信任的根证书，然后来进行判断，并且比较本地证书的内容和服务器证书内容是否相同，如果有一个相同则返回YES
-</span><span class='line'>            
-</span><span class='line'>            NSMutableArray *pinnedCertificates = [NSMutableArray array];
-</span><span class='line'>            for (NSData *certificateData in self.pinnedCertificates) {
-</span><span class='line'>                [pinnedCertificates addObject:(__bridge_transfer id)SecCertificateCreateWithData(NULL, (__bridge CFDataRef)certificateData)];
-</span><span class='line'>            }
-</span><span class='line'>            //设置本地的证书为根证书
-</span><span class='line'>            SecTrustSetAnchorCertificates(serverTrust, (__bridge CFArrayRef)pinnedCertificates);
-</span><span class='line'>            
-</span><span class='line'>            //通过本地的证书来判断服务器证书是否可信，不可信，则验证不通过
-</span><span class='line'>            if (!AFServerTrustIsValid(serverTrust)) {
-</span><span class='line'>                return NO;
-</span><span class='line'>            }
-</span><span class='line'>            
-</span><span class='line'>            //判断本地证书和服务器证书的内容是否相同
-</span><span class='line'>            NSUInteger trustedCertificateCount = 0;
-</span><span class='line'>            for (NSData *trustChainCertificate in serverCertificates) {
-</span><span class='line'>                if ([self.pinnedCertificates containsObject:trustChainCertificate]) {
-</span><span class='line'>                    trustedCertificateCount++;
-</span><span class='line'>                }
-</span><span class='line'>            }
-</span><span class='line'>            return trustedCertificateCount &gt; 0;
-</span><span class='line'>        }
-</span><span class='line'>        case AFSSLPinningModePublicKey: {
-</span><span class='line'>            //AFSSLPinningModePublicKey是通过比较证书当中公钥(PublicKey)部分来进行验证，通过SecTrustCopyPublicKey方法获取本地证书和服务器证书，然后进行比较，如果有一个相同，则通过验证
-</span><span class='line'>            
-</span><span class='line'>            NSUInteger trustedPublicKeyCount = 0;
-</span><span class='line'>            NSArray *publicKeys = AFPublicKeyTrustChainForServerTrust(serverTrust);
-</span><span class='line'>            
-</span><span class='line'>            //判断服务器证书的公钥与本地的证书公钥是否相同，相同则客户端认证通过
-</span><span class='line'>            for (id trustChainPublicKey in publicKeys) {
-</span><span class='line'>                for (id pinnedPublicKey in self.pinnedPublicKeys) {
-</span><span class='line'>                    if (AFSecKeyIsEqualToKey((__bridge SecKeyRef)trustChainPublicKey, (__bridge SecKeyRef)pinnedPublicKey)) {
-</span><span class='line'>                        trustedPublicKeyCount += 1;
-</span><span class='line'>                    }
-</span><span class='line'>                }
-</span><span class='line'>            }
-</span><span class='line'>            return trustedPublicKeyCount &gt; 0;
-</span><span class='line'>        }
-</span><span class='line'>    }
-</span><span class='line'>    
-</span><span class='line'>    return NO;
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'>    <span class="c1">//设置验证的策略，可以是多个</span>
+</span><span class='line'>    <span class="n">SecTrustSetPolicies</span><span class="p">(</span><span class="n">serverTrust</span><span class="p">,</span> <span class="p">(</span><span class="k">__bridge</span> <span class="n">CFArrayRef</span><span class="p">)</span><span class="n">policies</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//SSLPinningMode为AFSSLPinningModeNone时，allowInvalidCertificates为YES，则代表服务器任何证书都能验证通过；如果它为NO，则需要判断此服务器证书是否是系统信任的证书</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="nb">self</span><span class="p">.</span><span class="n">SSLPinningMode</span> <span class="o">==</span> <span class="n">AFSSLPinningModeNone</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="nb">self</span><span class="p">.</span><span class="n">allowInvalidCertificates</span> <span class="o">||</span> <span class="n">AFServerTrustIsValid</span><span class="p">(</span><span class="n">serverTrust</span><span class="p">)){</span>
+</span><span class='line'>            <span class="k">return</span> <span class="nb">YES</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>            <span class="k">return</span> <span class="nb">NO</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">AFServerTrustIsValid</span><span class="p">(</span><span class="n">serverTrust</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nb">self</span><span class="p">.</span><span class="n">allowInvalidCertificates</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nb">NO</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//获取服务器证书的内容</span>
+</span><span class='line'>    <span class="bp">NSArray</span> <span class="o">*</span><span class="n">serverCertificates</span> <span class="o">=</span> <span class="n">AFCertificateTrustChainForServerTrust</span><span class="p">(</span><span class="n">serverTrust</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">switch</span> <span class="p">(</span><span class="nb">self</span><span class="p">.</span><span class="n">SSLPinningMode</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">case</span> <span class="nl">AFSSLPinningModeNone</span><span class="p">:</span>
+</span><span class='line'>        <span class="k">default</span><span class="o">:</span>
+</span><span class='line'>            <span class="k">return</span> <span class="nb">NO</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">case</span> <span class="nl">AFSSLPinningModeCertificate</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>            <span class="c1">//AFSSLPinningModeCertificate是直接将本地的证书设置为信任的根证书，然后来进行判断，并且比较本地证书的内容和服务器证书内容是否相同，如果有一个相同则返回YES</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="bp">NSMutableArray</span> <span class="o">*</span><span class="n">pinnedCertificates</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSMutableArray</span> <span class="n">array</span><span class="p">];</span>
+</span><span class='line'>            <span class="k">for</span> <span class="p">(</span><span class="bp">NSData</span> <span class="o">*</span><span class="n">certificateData</span> <span class="k">in</span> <span class="nb">self</span><span class="p">.</span><span class="n">pinnedCertificates</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                <span class="p">[</span><span class="n">pinnedCertificates</span> <span class="nl">addObject</span><span class="p">:(</span><span class="k">__bridge_transfer</span> <span class="kt">id</span><span class="p">)</span><span class="n">SecCertificateCreateWithData</span><span class="p">(</span><span class="nb">NULL</span><span class="p">,</span> <span class="p">(</span><span class="k">__bridge</span> <span class="n">CFDataRef</span><span class="p">)</span><span class="n">certificateData</span><span class="p">)];</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>            <span class="c1">//设置本地的证书为根证书</span>
+</span><span class='line'>            <span class="n">SecTrustSetAnchorCertificates</span><span class="p">(</span><span class="n">serverTrust</span><span class="p">,</span> <span class="p">(</span><span class="k">__bridge</span> <span class="n">CFArrayRef</span><span class="p">)</span><span class="n">pinnedCertificates</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1">//通过本地的证书来判断服务器证书是否可信，不可信，则验证不通过</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">AFServerTrustIsValid</span><span class="p">(</span><span class="n">serverTrust</span><span class="p">))</span> <span class="p">{</span>
+</span><span class='line'>                <span class="k">return</span> <span class="nb">NO</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1">//判断本地证书和服务器证书的内容是否相同</span>
+</span><span class='line'>            <span class="bp">NSUInteger</span> <span class="n">trustedCertificateCount</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">for</span> <span class="p">(</span><span class="bp">NSData</span> <span class="o">*</span><span class="n">trustChainCertificate</span> <span class="k">in</span> <span class="n">serverCertificates</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                <span class="k">if</span> <span class="p">([</span><span class="nb">self</span><span class="p">.</span><span class="n">pinnedCertificates</span> <span class="nl">containsObject</span><span class="p">:</span><span class="n">trustChainCertificate</span><span class="p">])</span> <span class="p">{</span>
+</span><span class='line'>                    <span class="n">trustedCertificateCount</span><span class="o">++</span><span class="p">;</span>
+</span><span class='line'>                <span class="p">}</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>            <span class="k">return</span> <span class="n">trustedCertificateCount</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="k">case</span> <span class="nl">AFSSLPinningModePublicKey</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>            <span class="c1">//AFSSLPinningModePublicKey是通过比较证书当中公钥(PublicKey)部分来进行验证，通过SecTrustCopyPublicKey方法获取本地证书和服务器证书，然后进行比较，如果有一个相同，则通过验证</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="bp">NSUInteger</span> <span class="n">trustedPublicKeyCount</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>            <span class="bp">NSArray</span> <span class="o">*</span><span class="n">publicKeys</span> <span class="o">=</span> <span class="n">AFPublicKeyTrustChainForServerTrust</span><span class="p">(</span><span class="n">serverTrust</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1">//判断服务器证书的公钥与本地的证书公钥是否相同，相同则客户端认证通过</span>
+</span><span class='line'>            <span class="k">for</span> <span class="p">(</span><span class="kt">id</span> <span class="n">trustChainPublicKey</span> <span class="k">in</span> <span class="n">publicKeys</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                <span class="k">for</span> <span class="p">(</span><span class="kt">id</span> <span class="n">pinnedPublicKey</span> <span class="k">in</span> <span class="nb">self</span><span class="p">.</span><span class="n">pinnedPublicKeys</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                    <span class="k">if</span> <span class="p">(</span><span class="n">AFSecKeyIsEqualToKey</span><span class="p">((</span><span class="k">__bridge</span> <span class="n">SecKeyRef</span><span class="p">)</span><span class="n">trustChainPublicKey</span><span class="p">,</span> <span class="p">(</span><span class="k">__bridge</span> <span class="n">SecKeyRef</span><span class="p">)</span><span class="n">pinnedPublicKey</span><span class="p">))</span> <span class="p">{</span>
+</span><span class='line'>                        <span class="n">trustedPublicKeyCount</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>                    <span class="p">}</span>
+</span><span class='line'>                <span class="p">}</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>            <span class="k">return</span> <span class="n">trustedPublicKeyCount</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="nb">NO</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>说了验证流程，我们最后来看看AFNetworking怎么使用，代码如下：</p>

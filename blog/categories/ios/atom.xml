@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Ios | liuchungui's Blog]]></title>
   <link href="http://liuchungui.github.io/blog/categories/ios/atom.xml" rel="self"/>
   <link href="http://liuchungui.github.io/"/>
-  <updated>2015-10-11T13:25:58+08:00</updated>
+  <updated>2015-10-11T13:29:05+08:00</updated>
   <id>http://liuchungui.github.io/</id>
   <author>
     <name><![CDATA[刘春桂]]></name>
@@ -126,7 +126,7 @@ SSLCACertificateFile "/alidata/server/httpd/conf/ssl/ca.crt"
 3、通过SecTrustEvaluate方法去验证trust object  <br/>
 下面是主要OC实现代码，Demo工程我也放在github上了，有OC和Swift两种语言，下载Demo请点击<a href="https://github.com/liuchungui/HTTPSConnectDemo">HTTPSConnectDemo</a>。</p>
 
-<pre><code>- (void)viewDidLoad {
+<pre><code class="objc">- (void)viewDidLoad {
     [super viewDidLoad];
     //导入客户端证书
     NSString *cerPath = [[NSBundle mainBundle] pathForResource:@"ca" ofType:@"cer"];
