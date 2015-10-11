@@ -27,7 +27,16 @@
   <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
   <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
-
+<script type="text/javascript">
+  function addBlankTargetForLinks () {
+      $('a[href^="http"]').each(function(){
+          $(this).attr('target', '_blank');
+      });
+  }
+  $(document).bind('DOMNodeInserted', function(event) {
+      addBlankTargetForLinks();
+  });
+</script>
   
 
 </head>
@@ -178,7 +187,7 @@
 
 <h4>5、自定义博客</h4>
 
-<p>新标签打开网站中第三方链接，将以下代码加入 <code>source/_includes/custom/head.html</code>文件中。</p>
+<p>新标签打开网站中第三方链接默认是从当前界面打开，这导致网站浏览者跳转到第三方链接后很难回来。将以下代码加入 <code>source/_includes/custom/head.html</code>文件中，我们是新建一个界面打开，仍然保持当前网页。</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>

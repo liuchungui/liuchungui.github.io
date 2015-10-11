@@ -4,7 +4,7 @@
   <title><![CDATA[liuchungui's Blog]]></title>
   <link href="http://liuchungui.github.io/atom.xml" rel="self"/>
   <link href="http://liuchungui.github.io/"/>
-  <updated>2015-10-11T22:00:45+08:00</updated>
+  <updated>2015-10-11T22:06:15+08:00</updated>
   <id>http://liuchungui.github.io/</id>
   <author>
     <name><![CDATA[刘春桂]]></name>
@@ -1323,7 +1323,7 @@ openssl是一套工具，它是一个开源库，可以对相关内容进行加�
 
 <h4>5、自定义博客</h4>
 
-<p>新标签打开网站中第三方链接，将以下代码加入 <code>source/_includes/custom/head.html</code>文件中。</p>
+<p>新标签打开网站中第三方链接默认是从当前界面打开，这导致网站浏览者跳转到第三方链接后很难回来。将以下代码加入 <code>source/_includes/custom/head.html</code>文件中，我们是新建一个界面打开，仍然保持当前网页。</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
