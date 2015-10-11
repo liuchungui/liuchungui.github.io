@@ -4,7 +4,7 @@
   <title><![CDATA[liuchungui's Blog]]></title>
   <link href="http://liuchungui.github.io/atom.xml" rel="self"/>
   <link href="http://liuchungui.github.io/"/>
-  <updated>2015-10-11T13:57:06+08:00</updated>
+  <updated>2015-10-11T13:57:43+08:00</updated>
   <id>http://liuchungui.github.io/</id>
   <author>
     <name><![CDATA[刘春桂]]></name>
@@ -466,7 +466,7 @@ _httpClient.securityPolicy = policy;
 不急，我们可以在工程中的Info.plist文件当中进行设置，主要参照下图：
 <img src="http://ww3.sinaimg.cn/large/91c6e389jw1ewvshzy5ilj21340m641y.jpg" alt="图片" />
 适配过程中的一些总结： <br/>
-1、如果是自建证书，没有经过权威机构认证的证书，那么需要将NSAllowsArbitraryLoads设置为YES才能通过。NSAllowsArbitraryLoads为YES，以前的HTTP请求也能通过。  <br/>
+1、如果是自建证书，没有经过权威机构认证的证书，那么需要将NSAllowsArbitraryLoads设置为YES才能通过。NSAllowsArbitraryLoads为YES，以前的HTTP请求也能通过。       <br/>
 2、如果是认证过的证书，那么可以通过<code>nscurl --ats-diagnostics --verbose https://casetree.cn</code>这样的命令来查看服务器支持的ATS Dictionary，然后进行对应的设置。</p>
 
 <p>适配的部分，也可以参照<a href="https://github.com/ChenYilong/iOS9AdaptationTips#1-demo1_ios9%E7%BD%91%E7%BB%9C%E9%80%82%E9%85%8D_ats%E6%94%B9%E7%94%A8%E6%9B%B4%E5%AE%89%E5%85%A8%E7%9A%84https">Demo1_iOS9网络适配_ATS：改用更安全的HTTPS</a></p>
