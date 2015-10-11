@@ -99,6 +99,9 @@
 
 <p>如果想了解哪几种先进的加密是被允许的，详情请见官方文档<a href="https://developer.apple.com/library/mac/technotes/App-Transport-Security-Technote/">App Transport Security Technote</a></p>
 
+<!-- more -->
+
+
 <h3>二、搭建HTTPS服务器</h3>
 
 <p>搭建HTTPS服务器有两种方式，一种是创建证书请求，然后到权威机构认证，随之配置到服务器；另外一种是自建证书，然后配置给服务器。第一种方式搭建的HTTPS服务器当然是最优的了，建立网站的话，直接就会被信任，而作为移动端app的服务器时，也不需要为ATS做过多的适配。虽然说权威的机构认证都是需要钱的，但是如今也不乏存在免费的第三方认证机构；第二种方式搭建的HTTPS服务器，对于网站来说完全不可行，用户打开时直接弹出一个警告提醒，说这是一个不受信任的网站，让用户是否继续，体验很差，而且让用户感觉网站不安全。对于移动端来说，在iOS9出现之前，这个没什么问题，但是在iOS9出来之后，第二种方式是通不过ATS特性，需要将NSAllowsArbitraryLoads设置为YES才行。所以，我推荐使用第一种方式搭建HTTPS服务器。   <br/>

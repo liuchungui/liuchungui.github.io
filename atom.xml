@@ -4,7 +4,7 @@
   <title><![CDATA[liuchungui's Blog]]></title>
   <link href="http://liuchungui.github.io/atom.xml" rel="self"/>
   <link href="http://liuchungui.github.io/"/>
-  <updated>2015-10-11T13:17:28+08:00</updated>
+  <updated>2015-10-11T13:20:49+08:00</updated>
   <id>http://liuchungui.github.io/</id>
   <author>
     <name><![CDATA[刘春桂]]></name>
@@ -32,6 +32,9 @@
 
 
 <p>如果想了解哪几种先进的加密是被允许的，详情请见官方文档<a href="https://developer.apple.com/library/mac/technotes/App-Transport-Security-Technote/">App Transport Security Technote</a></p>
+
+<!-- more -->
+
 
 <h3>二、搭建HTTPS服务器</h3>
 
