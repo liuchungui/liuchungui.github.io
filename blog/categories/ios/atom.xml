@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Ios | liuchungui's Blog]]></title>
   <link href="http://liuchungui.github.io/blog/categories/ios/atom.xml" rel="self"/>
   <link href="http://liuchungui.github.io/"/>
-  <updated>2015-10-11T13:55:47+08:00</updated>
+  <updated>2015-10-11T13:57:00+08:00</updated>
   <id>http://liuchungui.github.io/</id>
   <author>
     <name><![CDATA[刘春桂]]></name>
@@ -18,7 +18,7 @@
     <link href="http://liuchungui.github.io/blog/2015/10/11/ios9zhi-gua-pei-ats/"/>
     <updated>2015-10-11T13:15:11+08:00</updated>
     <id>http://liuchungui.github.io/blog/2015/10/11/ios9zhi-gua-pei-ats</id>
-    <content type="html"><![CDATA[<p>最近的iOS9系统出来了，而网络方面的ATS(App Transport Security)特性可以说每个人都要经历。而我这篇博客，就是结合我最近几天的经历，来谈谈从服务器到iOS客户端的HTTPS适配。</p>
+    <content type="html"><![CDATA[<p>最近的iOS9系统出来了，而网络方面的ATS(App Transport Security)特性可以说每个人都要经历。而我这篇博客，就是结合我最近几天的经历，来谈谈从服务器到iOS客户端对ATS的适配。</p>
 
 <h3>一、简单谈谈ATS(App Transport Security)</h3>
 
