@@ -4,7 +4,7 @@
   <title><![CDATA[liuchungui's Blog]]></title>
   <link href="http://liuchungui.github.io/atom.xml" rel="self"/>
   <link href="http://liuchungui.github.io/"/>
-  <updated>2015-10-11T13:38:59+08:00</updated>
+  <updated>2015-10-11T13:55:47+08:00</updated>
   <id>http://liuchungui.github.io/</id>
   <author>
     <name><![CDATA[刘春桂]]></name>
@@ -14,10 +14,10 @@
 
   
   <entry>
-    <title type="html"><![CDATA[iOS之适配HTTPS]]></title>
-    <link href="http://liuchungui.github.io/blog/2015/10/11/ioszhi-gua-pei-https/"/>
+    <title type="html"><![CDATA[iOS9之适配ATS]]></title>
+    <link href="http://liuchungui.github.io/blog/2015/10/11/ios9zhi-gua-pei-ats/"/>
     <updated>2015-10-11T13:15:11+08:00</updated>
-    <id>http://liuchungui.github.io/blog/2015/10/11/ioszhi-gua-pei-https</id>
+    <id>http://liuchungui.github.io/blog/2015/10/11/ios9zhi-gua-pei-ats</id>
     <content type="html"><![CDATA[<p>最近的iOS9系统出来了，而网络方面的ATS(App Transport Security)特性可以说每个人都要经历。而我这篇博客，就是结合我最近几天的经历，来谈谈从服务器到iOS客户端的HTTPS适配。</p>
 
 <h3>一、简单谈谈ATS(App Transport Security)</h3>
@@ -70,9 +70,9 @@
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>mkdir ssl
-</span><span class='line'>cp server.crt ssl/server.crt
-</span><span class='line'>cp server.key ssl/server.key
-</span><span class='line'>cp demoCA/cacert.pem ssl/ca.crt
+</span><span class='line'>cp server.crt /alidata/server/httpd/conf/ssl/server.crt
+</span><span class='line'>cp server.key /alidata/server/httpd/conf/ssl/server.key
+</span><span class='line'>cp demoCA/cacert.pem /alidata/server/httpd/conf/ssl/ca.crt
 </span><span class='line'>cp -r ssl /alidata/server/httpd/conf/</span></code></pre></td></tr></table></div></figure>
 
 
