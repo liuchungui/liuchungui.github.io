@@ -4,7 +4,7 @@
   <title><![CDATA[liuchungui's Blog]]></title>
   <link href="http://liuchungui.github.io/atom.xml" rel="self"/>
   <link href="http://liuchungui.github.io/"/>
-  <updated>2015-10-12T22:39:52+08:00</updated>
+  <updated>2015-10-12T22:56:30+08:00</updated>
   <id>http://liuchungui.github.io/</id>
   <author>
     <name><![CDATA[刘春桂]]></name>
@@ -770,7 +770,7 @@ CA.sh会使用<code>/usr/local/ssl/openssl.cnf</code>中的配置来创建私钥
 <p>1、首先安装openssl，因为本人还没有升级Mac系统上的openssl，所以暂时留着，以后升级了补上。  <br/>
 2、Mac上对应的Openssl的路径是<code>/System/Library/OpenSSL/</code>  <br/>
 3、Mac上对应的Apache的路径是<code>/etc/apache2/</code>  <br/>
-4、Mac上重启服务器使用<code>/usr/sbin/apachectl restart</code>，阿里云服务器使用<code>/etc/init.d/httpd restart</code>或者<code>service httpd restart</code>
+4、Mac上重启服务器使用<code>/usr/sbin/apachectl restart</code>，阿里云服务器使用<code>/etc/init.d/httpd restart</code>或者<code>service httpd restart</code>   <br/>
 5、Mac上vhost配置的路径是<code>/etc/apache2/extra/httpd-vhosts.conf</code></p>
 
 <h5>二、与寻常Linux系统的不同</h5>
