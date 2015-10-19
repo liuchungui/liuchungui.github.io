@@ -4,7 +4,7 @@
   <title><![CDATA[liuchungui's Blog]]></title>
   <link href="http://liuchungui.github.io/atom.xml" rel="self"/>
   <link href="http://liuchungui.github.io/"/>
-  <updated>2015-10-19T21:58:20+08:00</updated>
+  <updated>2015-10-19T23:01:36+08:00</updated>
   <id>http://liuchungui.github.io/</id>
   <author>
     <name><![CDATA[刘春桂]]></name>
@@ -258,11 +258,31 @@ end
 
 <h4>注意</h4>
 
-<p>1、若是需要提交给官方，请使用 <code>$ pod trunk push</code></p>
+<p>1、若是需要提交给官方，请使用</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>pod trunk regirster youremail
+</span><span class='line'>查看信息
+</span><span class='line'>pod trunk me
+</span><span class='line'>将对应的pod推送到服务器
+</span><span class='line'>pod turnk push</span></code></pre></td></tr></table></div></figure>
+
 
 <p>2、途中遇到了几次问题，就是pod repo push不上去，显示没有找到对应文件，后来发现是tag的原因。所以我们在维护一个框架时，修改好之后先打上tag，然后再修改podspec文件，最后push到对应的repo。</p>
 
 <p>3、若是在框架当中，有文件依赖内部的文件，而又不在同一个文件当中，使用dependency设置依赖，具体可以参考<a href="https://github.com/AFNetworking/AFNetworking/blob/master/AFNetworking.podspec">AFNetworking的podspec</a>文件。</p>
+
+<p>4、更新太慢，可以在install或update加一个参数</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ pod install --verbose --no-repo-update
+</span><span class='line'>$ pod update --verbose --no-repo-update</span></code></pre></td></tr></table></div></figure>
+
 
 <h4>参考</h4>
 
