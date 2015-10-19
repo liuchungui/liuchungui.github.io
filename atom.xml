@@ -4,7 +4,7 @@
   <title><![CDATA[liuchungui's Blog]]></title>
   <link href="http://liuchungui.github.io/atom.xml" rel="self"/>
   <link href="http://liuchungui.github.io/"/>
-  <updated>2015-10-19T21:57:05+08:00</updated>
+  <updated>2015-10-19T21:58:20+08:00</updated>
   <id>http://liuchungui.github.io/</id>
   <author>
     <name><![CDATA[刘春桂]]></name>
@@ -45,6 +45,9 @@ $ pod repo push REPO_NAME SPEC_NAME.podspec</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>source 'URL_TO_REPOSITORY'</span></code></pre></td></tr></table></div></figure>
+
+
+<!-- more -->
 
 
 <h4>例子：</h4>
