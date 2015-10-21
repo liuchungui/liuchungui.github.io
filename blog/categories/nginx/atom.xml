@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Nginx | liuchungui's Blog]]></title>
   <link href="http://liuchungui.github.io/blog/categories/nginx/atom.xml" rel="self"/>
   <link href="http://liuchungui.github.io/"/>
-  <updated>2015-10-21T23:05:37+08:00</updated>
+  <updated>2015-10-21T23:07:11+08:00</updated>
   <id>http://liuchungui.github.io/</id>
   <author>
     <name><![CDATA[刘春桂]]></name>
@@ -20,7 +20,7 @@
     <id>http://liuchungui.github.io/blog/2015/10/21/mhuan-jing-xia-nginxshi-xian-fan-xiang-dai-li</id>
     <content type="html"><![CDATA[<h2>1、安装</h2>
 
-<p>首先，我们需要搭建Nginx环境，我这里是通过homebrew一键式搭建，步骤如下：
+<p>首先，我们需要搭建Nginx环境，我这里是通过homebrew一键式搭建，步骤如下：  <br/>
 1、安装homebrew</p>
 
 <pre><code>$ ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
