@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Nginx | liuchungui's Blog]]></title>
   <link href="http://liuchungui.github.io/blog/categories/nginx/atom.xml" rel="self"/>
   <link href="http://liuchungui.github.io/"/>
-  <updated>2015-10-21T23:07:11+08:00</updated>
+  <updated>2015-10-21T23:14:46+08:00</updated>
   <id>http://liuchungui.github.io/</id>
   <author>
     <name><![CDATA[刘春桂]]></name>
@@ -152,7 +152,7 @@ alias后面还可以添加正则表达式，例如：</p>
 $ sudo nginx
 </code></pre>
 
-<p>使用localhost来访问，若是出现ngnix欢迎页，说明成功。</p>
+<p>使用localhost来访问，若是出现nginx欢迎页，说明成功。</p>
 
 <h2>3、使用Nginx做反向代理</h2>
 
