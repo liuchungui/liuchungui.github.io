@@ -4,7 +4,7 @@
   <title><![CDATA[liuchungui's Blog]]></title>
   <link href="http://liuchungui.github.io/atom.xml" rel="self"/>
   <link href="http://liuchungui.github.io/"/>
-  <updated>2015-10-19T23:01:36+08:00</updated>
+  <updated>2015-10-21T23:01:11+08:00</updated>
   <id>http://liuchungui.github.io/</id>
   <author>
     <name><![CDATA[刘春桂]]></name>
@@ -12,6 +12,297 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Mac环境下Nginx实现反向代理]]></title>
+    <link href="http://liuchungui.github.io/blog/2015/10/21/mhuan-jing-xia-nginxshi-xian-fan-xiang-dai-li/"/>
+    <updated>2015-10-21T10:16:01+08:00</updated>
+    <id>http://liuchungui.github.io/blog/2015/10/21/mhuan-jing-xia-nginxshi-xian-fan-xiang-dai-li</id>
+    <content type="html"><![CDATA[<h2>1、安装</h2>
+
+<p>首先，我们必须要安装Nginx环境
+<strong>安装homebrew</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"</span></code></pre></td></tr></table></div></figure>
+
+
+<p>以<a href="brew.sh">官网homebrew</a>为准</p>
+
+<p><strong>安装nginx</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ brew install nginx</span></code></pre></td></tr></table></div></figure>
+
+
+<p>查看Nginx安装的版本</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ nginx -v</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Nginx常用的命令有</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>#查看版本，以及配置文件地址
+</span><span class='line'>nginx -V
+</span><span class='line'>#查看版本 
+</span><span class='line'>nginx -v
+</span><span class='line'>#指定配置文件
+</span><span class='line'>nginx -c filename
+</span><span class='line'>#帮助
+</span><span class='line'>nginx -h
+</span><span class='line'>#重新加载配置|重启|停止|退出 nginx
+</span><span class='line'>nginx -s reload|reopen|stop|quit
+</span><span class='line'>#打开 nginx
+</span><span class='line'>sudo nginx
+</span><span class='line'>#测试配置是否有语法错误
+</span><span class='line'>sudo nginx -t</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>2、Nginx配置WEB服务器</h2>
+
+<p>使用Nginx做反向代理，我们需要了解一下Nginx中http模块的配置。</p>
+
+<h4>编辑Nginx配置文件</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ sudo vim /usr/local/etc/nginx/nginx.conf</span></code></pre></td></tr></table></div></figure>
+
+
+<p>找到http模块，修改http模块中的listen为80，如下：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>http {
+</span><span class='line'>    #导入类型配置文件
+</span><span class='line'>    include       mime.types;
+</span><span class='line'>    #设定默认类型为二进制流
+</span><span class='line'>    default_type  application/octet-stream;
+</span><span class='line'>    #启用sendfile()函数
+</span><span class='line'>    sendfile        on;
+</span><span class='line'>    #客户端与服务器连接的超时时间为65秒，超过65秒，服务器关闭连接
+</span><span class='line'>    keepalive_timeout  65;
+</span><span class='line'>    #是否开启gzip，默认关闭
+</span><span class='line'>    #gzip  on;
+</span><span class='line'>    #一个server块
+</span><span class='line'>    server {
+</span><span class='line'>        #服务器监听的端口为80
+</span><span class='line'>        listen       80;
+</span><span class='line'>        #服务器名称为localhost，我们可以通过localhost来访问这个server块的服务
+</span><span class='line'>        server_name  localhost;
+</span><span class='line'>        #location块，它存放在server块当中，location会尝试根据用户请求中的URI来匹配上面的/uri表达式，如果可以匹配，就选择location {}块中的配置来处理用户请求。
+</span><span class='line'>        location / {
+</span><span class='line'>            #以root方式设置资源路径，它与alias的不同请见下面的 http模块中文件路径定义
+</span><span class='line'>            root   html;
+</span><span class='line'>            #默认访问的页面，从左依次找到右，直到找到这个文件，然后返回结束请求
+</span><span class='line'>            index  index.html index.htm;
+</span><span class='line'>            #设置错误页面，对应的错误码是404，错误页面是/Users/user/Sites/404.html
+</span><span class='line'>            error_page 404  /404.html;
+</span><span class='line'>        }
+</span><span class='line'>    }
+</span><span class='line'>    include servers/*;
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>http模块中文件路径定义：</h4>
+
+<p>1、以<strong>root</strong>方式设置资源路径  <br/>
+语法: root path;  <br/>
+默认: root html;  <br/>
+配置块: http, server, location, if   <br/>
+例如，定义资源文件相对于HTTP请求的根目录。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>location /download/ {
+</span><span class='line'>  root /opt/web/html;
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在上面的配置中，如果有一个请求的URI是/download/index/test.html，那么Web服务器将会返回服务器上/opt/web/html/download/index/test.html文件的内容。</p>
+
+<p>2、以<strong>alias</strong>方式设置资源路径   <br/>
+语法：alias path;   <br/>
+配置块：location     <br/>
+alias也是用来设置文件资源路径的，它与root的不同点主要在于如何解读紧跟location后面的uri参数，这将会致使alias与root以不同的方式将用户请求映射到真正的磁盘文件上。  <br/>
+例如，如果有一个请求的URI是/conf/nginx.conf，而用户实际想访问的文件在/usr/local/nginx/conf/nginx.conf，那么想要使用alias来进行设置的话，可以采用如下方式：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>location /conf {
+</span><span class='line'>  alias /usr/local/nginx/conf/;
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果用root设置，那么语句如下所示：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>location /conf {
+</span><span class='line'>  alias /usr/local/nginx/;
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>使用alias时，在URI向实际文件路径的映射过程中，已经把location后配置的/conf这部分字符串丢弃掉，因此，/conf/nginx.conf请求将根据alias path映射为path/nginx.conf。root则不然，它会根据完整的URI请求来映射，因此/conf/nginx.conf请求会根据root path映射为path/conf/nginx.conf。这也是root可以放置到http、server、location或if块中，而alias只能放置到location块中的原因。  <br/>
+alias后面还可以添加正则表达式，例如：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>location ~ ^/test/(\w+)\.(\w+)$ {
+</span><span class='line'>  alias /usr/local/nginx/$2/$1.$2;
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样，请求在访问/test/nginx.conf时，Nginx会返回/usr/local/nginx/conf/nginx.conf文件中的内容。</p>
+
+<h4>开启Nginx的Web服务</h4>
+
+<p>开启Nginx服务之前，如果我们开启了Apache服务，那么我需要先关闭Apache服务</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>#开启Nginx
+</span><span class='line'>$ sudo nginx</span></code></pre></td></tr></table></div></figure>
+
+
+<p>使用localhost来访问，若是出现ngnix欢迎页，说明成功。</p>
+
+<h2>3、使用Nginx做反向代理</h2>
+
+<p>反向代理（reverse proxy）方式是指用代理服务器来接受Internet上的连接请求，然后将请求转发给内部网络中的上游服务器，并将从上游服务器上得到的结果返回给Internet上请求连接的客户端，此时代理服务器对外的表现就是一个Web服务器。   <br/>
+这里，我是在本机搭建，通过修改host来模拟多个域名访问本机的nginx。</p>
+
+<h4>1、修改hosts文件</h4>
+
+<p>$ vim /etc/hosts    <br/>
+在内部添加域名解析</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>127.0.0.1 pinger.com www.pinger.com
+</span><span class='line'>127.0.0.1 test.com www.test.com
+</span><span class='line'>127.0.0.1 chungui.com www.chungui.com</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>2、修改nginx配置文件</h4>
+
+<p>$ sudo vim /usr/local/etc/nginx/nginx.conf    <br/>
+在后面添加server模块，内部通过<code>proxy_pass</code>设置反向代理</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>server {
+</span><span class='line'>    listen  80;
+</span><span class='line'>    server_name  *.pinger.com pinger.com;
+</span><span class='line'>    location / {
+</span><span class='line'>        proxy_pass http://www.baidu.com;
+</span><span class='line'>    }
+</span><span class='line'>}
+</span><span class='line'>server {
+</span><span class='line'>    listen 80;
+</span><span class='line'>    server_name *.chungui.com chungui.com;
+</span><span class='line'>    location / {
+</span><span class='line'>        proxy_pass http://www.renren.com;
+</span><span class='line'>    }
+</span><span class='line'>}
+</span><span class='line'>server {
+</span><span class='line'>    listen 80;
+</span><span class='line'>    server_name test.com;
+</span><span class='line'>    location / {
+</span><span class='line'>        proxy_pass http://www.zhihu.com;
+</span><span class='line'>    }
+</span><span class='line'>} </span></code></pre></td></tr></table></div></figure>
+
+
+<p>其中，server_name可以指向多个域名值</p>
+
+<h4>3、重启nginx服务</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>#重启服务
+</span><span class='line'>$ sudo nginx -s reload</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这时，反向代理已经搭建成功。你可以在本地通过<code>chungui.com</code>访问到人人网，<code>test.com</code>访问到知乎。不过，设置<code>pinger.com</code>访问的<code>http://www.baidu.com</code>站点，而百度服务器内部会自动跳转到<code>https://www.baidu.com</code>站点，所以我们通过<code>pinger.com</code>会跳转到<code>https://www.baidu.com</code>，这个时候我们可以将百度的替换成https就行了，修改配置如下：</p>
+
+<pre><code>server {
+    listen       80;
+    server_name  *.pinger.com pinger.com;
+    location / {
+        proxy_pass https://www.baidu.com;
+    }
+}
+</code></pre>
+
+<p>这个时候，再使用<code>pinger.com</code>在浏览器里访问时就不会出现跳转的问题了。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[CocoaPods创建私有Pods]]></title>

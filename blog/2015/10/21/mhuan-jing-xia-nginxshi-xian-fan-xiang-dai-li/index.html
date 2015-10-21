@@ -5,14 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>liuchungui's Blog</title>
+  <title>Mac环境下Nginx实现反向代理 - liuchungui's Blog</title>
   <meta name="author" content="刘春桂">
 
   
-  <meta name="description" content="1、安装 首先，我们必须要安装Nginx环境
-安装homebrew 1
-$ ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" 以官网homebrew为准 安装nginx &hellip;">
-  
+  <meta name="description" content="Mac环境下Nginx实现反向代理">
+  <meta name="keywords" content="Mac环境下安装Nginx, Nginx, 反向代理, Nginx反向代理, Mac">
 
   <!-- http://t.co/dKP3o1e -->
   <meta name="HandheldFriendly" content="True">
@@ -20,7 +18,7 @@ $ ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/maste
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://liuchungui.github.io/">
+  <link rel="canonical" href="http://liuchungui.github.io/blog/2015/10/21/mhuan-jing-xia-nginxshi-xian-fan-xiang-dai-li/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="liuchungui's Blog" type="application/atom+xml">
@@ -72,15 +70,12 @@ $ ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/maste
 </nav>
   <div id="main">
     <div id="content">
-      <div class="blog-index">
+      <div>
+<article class="hentry" role="article">
   
-  
-  
-    <article>
-      
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2015/10/21/mhuan-jing-xia-nginxshi-xian-fan-xiang-dai-li/">Mac环境下Nginx实现反向代理</a></h1>
+      <h1 class="entry-title">Mac环境下Nginx实现反向代理</h1>
     
     
       <p class="meta">
@@ -96,7 +91,7 @@ $ ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/maste
   </header>
 
 
-  <div class="entry-content"><h2>1、安装</h2>
+<div class="entry-content"><h2>1、安装</h2>
 
 <p>首先，我们必须要安装Nginx环境
 <strong>安装homebrew</strong></p>
@@ -380,248 +375,74 @@ alias后面还可以添加正则表达式，例如：</p>
 
 <p>这个时候，再使用<code>pinger.com</code>在浏览器里访问时就不会出现跳转的问题了。</p>
 </div>
-  
-  
 
 
-    </article>
-  
-  
-    <article>
+  <footer>
+    <p class="meta">
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/10/19/cocoapodschuang-jian-si-you-pods/">CocoaPods创建私有Pods</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-10-19T21:54:54+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>19</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>9:54 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h4>创建Pod私有源有以下几个步骤：</h4>
-
-<p>1、创建一个git仓库(<a href="http://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000/00137583770360579bc4b458f044ce7afed3df579123eca000">搭建Git服务器</a>)，用来存放Podspec，你可以用github或者自己搭建的git服务器。</p>
-
-<p>2、添加私有的repo到CocoaPods</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ pod repo add REPO_NAME SOURCE_URL</span></code></pre></td></tr></table></div></figure>
-
-
-<p>注意：如果你打算创建pods在本地，你需要对SOURCE_URL有push权限。</p>
-
-<p>可以通过以下命令检查一下是否创建成功</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ cd ~/.cocoapods/repos/REPO_NAME
-</span><span class='line'>$ pod repo lint .</span></code></pre></td></tr></table></div></figure>
-
-
-<p>3、添加你的Podspec到你的repo
-$ pod repo push REPO_NAME SPEC_NAME.podspec</p>
-
-<p>4、使用Pod，你可以在Podfile当中指定你的Pod源</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>source 'URL_TO_REPOSITORY'</span></code></pre></td></tr></table></div></figure>
-
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/10/19/cocoapodschuang-jian-si-you-pods/">更多 &rarr;</a>
-    </footer>
   
 
+<span class="byline author vcard">Posted by <span class="fn">刘春桂</span></span>
 
-    </article>
-  
-  
-    <article>
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/10/11/ios9zhi-gua-pei-ats/">iOS9之适配ATS</a></h1>
-    
-    
-      <p class="meta">
-        
 
 
 
 
-<time class='entry-date' datetime='2015-10-11T13:15:11+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>11</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>1:15 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>最近的iOS9系统出来了，而网络方面的ATS(App Transport Security)特性可以说每个人都要经历。而我这篇博客，就是结合我最近几天的经历，来谈谈从服务器到iOS客户端对ATS的适配。</p>
-
-<h3>一、简单谈谈ATS(App Transport Security)</h3>
-
-<p>ATS(App Transport Security)是为了提高App与服务器之间安全传输数据一个特性，这个特性从iOS9和OSX10.11开始出现，它默认需要满足以下几个条件：</p>
-
-<ul>
-<li>服务器TLS版本至少是1.2版本</li>
-<li>连接加密只允许几种先进的加密</li>
-<li>证书必须使用SHA256或者更好的哈希算法进行签名，要么是2048位或者更长的RSA密钥，要么就是256位或更长的ECC密钥</li>
-</ul>
-
-
-<p>如果想了解哪几种先进的加密是被允许的，详情请见官方文档<a href="https://developer.apple.com/library/mac/technotes/App-Transport-Security-Technote/">App Transport Security Technote</a></p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/10/11/ios9zhi-gua-pei-ats/">更多 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
+<time class='entry-date' datetime='2015-10-21T10:16:01+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>21</span><span class='date-suffix'>st</span>, <span class='date-year'>2015</span></span> <span class='time'>10:16 am</span></time>
       
-  <header>
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/nginx/'>nginx</a>
+  
+</span>
+
+
+    </p>
     
-      <h1 class="entry-title"><a href="/blog/2015/09/25/zi-jian-zheng-shu-pei-zhi-httpsfu-wu-qi/">自建证书配置HTTPS服务器</a></h1>
-    
-    
-      <p class="meta">
-        
+      <div class="sharing">
+  
+  
+  
 
+  
+    <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+	<span class="jiathis_txt">分享到：</span>
+	<a class="jiathis_button_tools_1"></a>
+	<a class="jiathis_button_tools_2"></a>
+	<a class="jiathis_button_tools_3"></a>
+	<a class="jiathis_button_tools_4"></a>
+	<a href="http://www.jiathis.com/share?uid=2059456" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+	<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config = {data_track_clickback:'true'};
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=2059456" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2059456"></script>
+<!-- UY END -->
 
-
-
-<time class='entry-date' datetime='2015-09-25T11:24:02+08:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>25</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>11:24 am</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3>说明</h3>
-
-<p>1、写这篇博客的初衷是因为最近iOS9出来了，苹果官方默认要求使用HTTPS，所以自己想整一个HTTPS服务器，也想好好了解一下HTTPS通信，也知道了HTTPS其实就是在HTTP的基础上加上了SSL/TLS。具体想了解SSL/TLS原理的请浏览<a href="http://www.ruanyifeng.com/blog/2014/02/ssl_tls.html">SSL/TLS协议运行机制的概述</a>和<a href="http://segmentfault.com/a/1190000002554673">SSL/TLS原理详解</a>。中途看了很多博客，也花了不少时间，所以想记录一些东西。</p>
-
-<p>2、这篇博客的内容主要是讲升级openssl、如何自己创建证书、配置证书到服务器和自建CA。其中对证书不太了解的，可以看<a href="http://kb.cnblogs.com/page/194742/">数字证书及CA的扫盲介绍</a>这篇文章。本篇博客其中第2步和第3步已经重复，只需要选择其中一步操作就可以搭建HTTPS服务器，当然搭建都是不受信任的，如果是架设网站还是需要到权威的CA机构申请证书。本来还有生成iOS客户端的证书和使用证书连接服务器相关的内容，由于篇幅的原因就把它放在下一篇吧。</p>
-
-<p>3、本人使用了Mac10.10.5和Ubuntu 14.04.1进行配置搭建，本篇博客主要以Unbuntu 14.04.1系统为主。而本人这个Ubuntu 14.04.1是阿里云一键安装的，而且没有更改里面的服务器设置，所以诸多的配置可能与一般Linux系统不太相同（与我电脑上的Linux mint就很大不同）。不过，我会在最后说明一下Mac和Linux配置一些不同的地方，其实都是一些相关路径的不同。当然，有可能你的Apache安装路径与我说的几种路径都不同，没关系，对照着修改也应该没什么问题。</p>
+  
 
 </div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/09/25/zi-jian-zheng-shu-pei-zhi-httpsfu-wu-qi/">更多 &rarr;</a>
-    </footer>
-  
 
-
-    </article>
-  
-  
-    <article>
+    
+    <p class="meta">
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/09/20/autolayoutshi-yong-dai-ma-xie-yue-shu/">AutoLayout使用代码写约束</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-09-20T23:20:56+08:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>20</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>11:20 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3>一、约束是什么？</h3>
-
-<p>  约束是视图与视图之间一些属性关系。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/09/20/autolayoutshi-yong-dai-ma-xie-yue-shu/">更多 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
+        <a class="basic-alignment left" href="/blog/2015/10/19/cocoapodschuang-jian-si-you-pods/" title="Previous Post: CocoaPods创建私有Pods">&laquo; CocoaPods创建私有Pods</a>
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/09/11/macdian-nao-shang-da-jian-octopressbo-ke/">Mac电脑上搭建octopress博客</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-09-11T22:51:44+08:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>11</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>10:51 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>搭建octopress博客的文章很详细已经有很多了，文章末尾就有相关的参考，我这里只简单记录下mac电脑上搭建octopress博客的步骤。</p>
-
-<h4>1、搭建环境</h4>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>git clone git://github.com/imathis/octopress.git octopress
-</span><span class='line'>cd octopress
-</span><span class='line'>gem install bundler
-</span><span class='line'>bundle install</span></code></pre></td></tr></table></div></figure>
-
+      
+    </p>
+  </footer>
+</article>
 
 </div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/09/11/macdian-nao-shang-da-jian-octopressbo-ke/">更多 &rarr;</a>
-    </footer>
-  
 
-
-    </article>
-  
-  <div class="pagination">
-    
-    <a href="/blog/archives">Blog Archives</a>
-    
-  </div>
-</div>
 <aside class="sidebar">
   
     <section>
@@ -665,6 +486,7 @@ $ pod repo push REPO_NAME SPEC_NAME.podspec</p>
 
   
 </aside>
+
 
     </div>
   </div>
