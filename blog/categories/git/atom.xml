@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Git | liuchungui's Blog]]></title>
+  <link href="http://liuchungui.github.io/blog/categories/git/atom.xml" rel="self"/>
+  <link href="http://liuchungui.github.io/"/>
+  <updated>2015-10-23T15:08:21+08:00</updated>
+  <id>http://liuchungui.github.io/</id>
+  <author>
+    <name><![CDATA[刘春桂]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Git简单总结]]></title>
+    <link href="http://liuchungui.github.io/blog/2015/10/23/gitzong-jie/"/>
+    <updated>2015-10-23T14:45:46+08:00</updated>
+    <id>http://liuchungui.github.io/blog/2015/10/23/gitzong-jie</id>
+    <content type="html"><![CDATA[<p>这篇文章分为两部分，一是搭建git服务器，二是git命令，主要是记录了一下我搭建git服务器流程和用到的相关命令。</p>
+
+<h2>一、Mac环境下搭建Git服务器</h2>
+
+<p>这里简单说一下Mac环境下通过git+ssh搭建服务器的流程。</p>
+
+<h4>1、打开远程登陆</h4>
+
+<p>系统偏好设置 -> 共享 -> 远程登陆</p>
+
+<h4>2、添加git用户</h4>
+
+<p>这一步不加上也可以，但是为了更好的管理和安全着想，最好加上一个git用户   <br/>
+系统偏好设置 -> 用户与群组 -> 添加名为git的用户</p>
+
+<h4>3、初始化一个空仓库</h4>
+
+<p>在git用户目录下创建一个repos文件夹专门用来管理仓库</p>
+
+<pre><code>$ mkdir repos
+$ cd repos
+# 初始化一个空仓库
+$ git init --bare test.git
+</code></pre>
+
+<h4>4、添加密钥</h4>
+
+<p>在git服务端添加客户端的公钥后，以后git访问不需要密码了，下面是客户端与服务端的操作。    <br/>
+客户端：   <br/>
+使用<code>ssh-keygen</code>命令生成密钥，执行完后会生成<code>id_rsa</code>和<code>id_rsa.pub</code>两个文件，其中<code>id_rsa</code>是私钥，<code>id_rsa.pub</code>是公钥。客户端将<code>id_rsa.pub</code>文件交给git服务端就行了。       <br/>
+服务端：       <br/>
+将客户端的<code>id_rsa.pub</code>中的内容放到<code>/Users/git/.ssh/authorized_keys</code>文件中。主要，客户端每个公钥占用独立的一行，有时复制会出现问题，可以使用<code>cat id_rsa.pub &gt;&gt; /Users/git/.ssh/authorized_keys</code>命令。</p>
+
+<!-- more -->
+
+
+<h4>5、客户端使用</h4>
+
+<p>到这一步，我们的git服务环境其实已经搭建好了，下面来使用。     <br/>
+首先，我们需要知道服务端的用户和git项目的路径</p>
+
+<pre><code class="">$ whoami
+git
+$ pwd
+/Users/git/repos
+</code></pre>
+
+<p>这里用户是git，路径是<code>/Users/git/repos/test.git</code>     <br/>
+下面，我们就可以在客户端clone项目了。这里因为我是在本机测试，所以用的是localhost，一般都是用<code>服务器的ip或者域名</code>。</p>
+
+<pre><code>$ git clone user@localhost:/Users/user/repos/test.git
+Cloning into 'test'...
+warning: You appear to have cloned an empty repository.
+Checking connectivity... done.
+</code></pre>
+
+<p>这里就说明服务器已经搭建好了。</p>
+
+<p>遇到问题(这里是我在linux系统搭建时遇到的问题)：  <br/>
+<code>remote: error: insufficient permission for adding an object to repository database ./objects</code>   <br/>
+权限的问题，查看服务器对应的仓库的父文件夹是否属于git用户，git是否拥有可写权限</p>
+
+<p><strong>linux系统搭建git服务器，请参考</strong><a href="http://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000/00137583770360579bc4b458f044ce7afed3df579123eca000">搭建Git服务器</a></p>
+
+<h2>二、Git命令</h2>
+
+<p>1、下面是git操作的简单流程，里面的命令都是经常用到的</p>
+
+<pre><code>#克隆某个仓库的代码
+git clone https://github.com/chunguiLiu/TestLCGCocoapods.git
+#进入TestLCGCocoapods，添加文件
+cd TestLCGCocoapods
+echo "test" &gt; test.txt
+git add test.txt
+#提交文件，并添加日志为'add test.txt file'
+git commit -m 'add test.txt file'
+#推送到远程服务器
+git push origin master
+#修改文件，并推送到服务器
+echo 'add test' &gt;&gt; test.txt
+git add -update
+git commit -m 'update file'
+git push origin master
+#打上版本号，其中-m参数后面是日志，'0.1.0'是版本号
+git tag -m 'first tag' '0.1.0'
+#将版本号推送到服务器
+git push --tags
+</code></pre>
+
+<p>2、分支是git中一个很强大的功能，这里列出我曾经使用过的相关分支命令，也许你会用到，想了解更多分支的知识请进入<a href="http://www.open-open.com/lib/view/open1328069889514.html">Git详解之三 Git分支</a></p>
+
+<pre><code>#创建test分支
+git branch test
+#切换到test分支
+git checkout test
+#比较master和test两个分支
+git diff master test
+#查看当前分支
+git branch
+#删除分支
+git branch -d test
+#删除远程服务器的分支
+git push --delete origin testBranch
+</code></pre>
+
+<p>3、查看git某个版本的内容
+当我添加Cocoapods私有库的时候，想查看从pod某个版本下来的内容与我对应版本内容是否相同，这个时候，我怎么操作git？   <br/>
+其实，git克隆下来的内容拥有所有版本内容，我们如果想查看某个tag版本的内容，可以使用<code>git checkout tag-version</code>命令，将这个版本当做一个分支来查看，只是这个时候它只是一个快照，我们不能修改代码。</p>
+
+<pre><code>#跳转到0.0.1版本
+git checkout 0.0.1
+</code></pre>
+
+<p>如果我们想修改这个版本的内容时，那么我们可以通过创建一个新的分支，这个新的分支是以某个tag版本为准，可以在新的分支下修改代码</p>
+
+<pre><code>#以0.0.1版本创建一个分支newBranch
+git checkout -b newBranch 0.0.1
+</code></pre>
+
+<h2>参考：</h2>
+
+<p><a href="http://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000/00137583770360579bc4b458f044ce7afed3df579123eca000">搭建Git服务器</a>   <br/>
+<a href="http://blog.jobbole.com/54184/">开发者日常使用的 Git 命令</a>   <br/>
+<a href="http://www.cnblogs.com/lee0oo0/archive/2013/06/28/3161829.html">Git基本命令行操作</a>   <br/>
+<a href="http://www.cnblogs.com/winterIce/archive/2012/07/22/2603488.html">github常用命令</a>   <br/>
+<a href="http://www.open-open.com/lib/view/open1328069889514.html">Git详解之三 Git分支</a></p>
+]]></content>
+  </entry>
+  
+</feed>

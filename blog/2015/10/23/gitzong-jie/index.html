@@ -5,12 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Git总结 - liuchungui's Blog</title>
+  <title>Git简单总结 - liuchungui's Blog</title>
   <meta name="author" content="刘春桂">
 
   
-  <meta name="description" content="这篇文章分为两部分，一是搭建git服务器，二是git命令，主要是记录了一下我搭建git服务器流程和用到的相关命令。 一、Mac环境下搭建Git服务器 这里简单说一下Mac环境下通过git+ssh搭建服务器的流程。 1、打开远程登陆 系统偏好设置 -> 共享 -> 远程登陆 2、添加git用户 &hellip;">
-  
+  <meta name="description" content="Mac环境下搭建git服务器，git命令总结">
+  <meta name="keywords" content="git, git总结, git命令, 搭建git服务器, Mac环境下搭建Git服务器">
 
   <!-- http://t.co/dKP3o1e -->
   <meta name="HandheldFriendly" content="True">
@@ -75,7 +75,7 @@
   
   <header>
     
-      <h1 class="entry-title">Git总结</h1>
+      <h1 class="entry-title">Git简单总结</h1>
     
     
       <p class="meta">
@@ -127,6 +127,9 @@
 使用<code>ssh-keygen</code>命令生成密钥，执行完后会生成<code>id_rsa</code>和<code>id_rsa.pub</code>两个文件，其中<code>id_rsa</code>是私钥，<code>id_rsa.pub</code>是公钥。客户端将<code>id_rsa.pub</code>文件交给git服务端就行了。       <br/>
 服务端：       <br/>
 将客户端的<code>id_rsa.pub</code>中的内容放到<code>/Users/git/.ssh/authorized_keys</code>文件中。主要，客户端每个公钥占用独立的一行，有时复制会出现问题，可以使用<code>cat id_rsa.pub &gt;&gt; /Users/git/.ssh/authorized_keys</code>命令。</p>
+
+<!-- more -->
+
 
 <h4>5、客户端使用</h4>
 
@@ -279,6 +282,12 @@
 <time class='entry-date' datetime='2015-10-23T14:45:46+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>23</span><span class='date-suffix'>rd</span>, <span class='date-year'>2015</span></span> <span class='time'>2:45 pm</span></time>
       
 
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/git/'>git</a>
+  
+</span>
+
 
     </p>
     
@@ -331,7 +340,7 @@ var jiathis_config = {data_track_clickback:'true'};
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2015/10/23/gitzong-jie/">Git总结</a>
+        <a href="/blog/2015/10/23/gitzong-jie/">Git简单总结</a>
       </li>
     
       <li class="post">
@@ -355,7 +364,8 @@ var jiathis_config = {data_track_clickback:'true'};
 <section>
  <h1>Categories</h1>
  <ul id="categories">
-  <li class='category'><a href='/blog/categories/ios/'>ios (2)</a></li>
+  <li class='category'><a href='/blog/categories/git/'>git (1)</a></li>
+<li class='category'><a href='/blog/categories/ios/'>ios (2)</a></li>
 <li class='category'><a href='/blog/categories/mac/'>mac (1)</a></li>
 <li class='category'><a href='/blog/categories/nginx/'>nginx (1)</a></li>
 <li class='category'><a href='/blog/categories/octopress/'>octopress (1)</a></li>
