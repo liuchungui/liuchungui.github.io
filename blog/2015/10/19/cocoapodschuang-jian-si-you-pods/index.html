@@ -9,7 +9,7 @@
   <meta name="author" content="刘春桂">
 
   
-  <meta name="description" content="创建Pod私有源步骤： 1、创建一个git仓库，用来存放Podspec 2、添加私有的repo到CocoaPods 3、制作Podspec，并且推送到你创建的私有repo 4、使用Pod，在Podfile添加私有源来搭建项目 下面，跟着我一步一步来制作Pod私有源，并且使用私有源当中框架来搭建项目 &hellip;">
+  <meta name="description" content="创建Pod私有源步骤： 1、创建一个git仓库，用来存放Podspec 2、添加私有的repo到CocoaPods 3、创建项目组件仓库，制作Podspec，并且推送到你创建的私有repo 4、使用Pod，在Podfile添加私有源来搭建项目 下面，跟着我一步一步来制作Pod私有源， &hellip;">
   <meta name="keywords" content="cocoapods, private pods, cocoapods私有源">
 
   <!-- http://t.co/dKP3o1e -->
@@ -94,7 +94,7 @@
 <div class="entry-content"><p>创建Pod私有源步骤：  <br/>
 1、创建一个git仓库，用来存放Podspec  <br/>
 2、添加私有的repo到CocoaPods  <br/>
-3、制作Podspec，并且推送到你创建的私有repo   <br/>
+3、创建项目组件仓库，制作Podspec，并且推送到你创建的私有repo   <br/>
 4、使用Pod，在Podfile添加私有源来搭建项目</p>
 
 <!-- more -->
@@ -242,11 +242,13 @@ BGNetwork是一个基于AFNetworking的网络框架，它主要的源文件都�
 
 <h4>注意</h4>
 
-<p>1、途中遇到了几次问题，就是pod repo push不上去，显示没有找到对应文件，后来发现是版本的问题，没有打上版本号或者Podspec中版本错了。所以我们在维护一个框架时，修改框架之后，push到git服务器之后先打上tag，然后再修改podspec文件中的版本，最后push到对应的pod repo中。</p>
+<p>1、<a href="https://github.com/liuchungui/first">https://github.com/liuchungui/first.git</a>是用来专门存储Podspec文件，类似官方的<a href="https://github.com/CocoaPods/Specs">Cocoapods仓库</a>。而<a href="https://github.com/liuchungui/BGNetwork">BGNetwork</a>是我们的项目组件，所以我们这里有两个git仓库。一般，存储Podspec的first仓库一个就行了，而项目组件的话会有多个。</p>
 
-<p>2、若是在框架当中，存在不同的文件夹，请使用<code>subspec</code>。如果不同文件夹之间的文件有相互导入的情况，请将被导入的头文件设置为<code>public_header_files</code>，并且通过<code>dependency</code>设置依赖，具体可以参考<a href="https://github.com/AFNetworking/AFNetworking/blob/master/AFNetworking.podspec">AFNetworking的podspec</a>文件。</p>
+<p>2、途中遇到了几次问题，就是pod repo push不上去，显示没有找到对应文件，后来发现是版本的问题，没有打上版本号或者Podspec中版本错了。所以我们在维护一个框架时，修改框架之后，push到git服务器之后先打上tag，然后再修改podspec文件中的版本，最后push到对应的pod repo中。</p>
 
-<p>3、若是需要提交给官方，请使用</p>
+<p>3、若是在框架当中，存在不同的文件夹，请使用<code>subspec</code>。如果不同文件夹之间的文件有相互导入的情况，请将被导入的头文件设置为<code>public_header_files</code>，并且通过<code>dependency</code>设置依赖，具体可以参考<a href="https://github.com/AFNetworking/AFNetworking/blob/master/AFNetworking.podspec">AFNetworking的podspec</a>文件。</p>
+
+<p>4、若是需要提交给官方，请使用</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -260,7 +262,7 @@ BGNetwork是一个基于AFNetworking的网络框架，它主要的源文件都�
 </span><span class='line'>pod turnk push</span></code></pre></td></tr></table></div></figure>
 
 
-<p>4、使用<code>pod install</code>时，它首先会更新整个官方的源，而Cocoapods每天都有很多人提交，所以更新比较慢。所以，建议每过一段时间更新一下官方库，平常的时候，咱们可以在install或update加一个参数不用它更新。</p>
+<p>5、使用<code>pod install</code>时，它首先会更新整个官方的源，而Cocoapods每天都有很多人提交，所以更新比较慢。所以，建议每过一段时间更新一下官方库，平常的时候，咱们可以在install或update加一个参数不用它更新。</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
