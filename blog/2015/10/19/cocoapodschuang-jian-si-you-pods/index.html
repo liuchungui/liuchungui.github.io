@@ -97,6 +97,11 @@
 3、制作Podspec，并且推送到你创建的私有repo   <br/>
 4、使用Pod，在Podfile添加私有源来搭建项目</p>
 
+<!-- more -->
+
+
+<p></p>
+
 <p>下面，跟着我一步一步来制作Pod私有源，并且使用私有源当中框架来搭建项目。</p>
 
 <h3>1、创建一个git仓库，用来存放Podspec</h3>
@@ -106,7 +111,7 @@
 
 <h3>2、添加私有的repo到CocoaPods</h3>
 
-<p>主要命令是<code>pod repo add REPO_NAME SOURCE_URL</code>。其中，REPO_NAME是repo的名字，随便你取；SOURCE_URL是你git仓库的链接。</p>
+<p>主要命令是<code>pod repo add REPO_NAME SOURCE_URL</code>。其中，REPO_NAME是私有repo的名字，随便你取，以后公司内部的组件对应的podspec都可以推送到这个repo中；SOURCE_URL是你git仓库的链接。</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -116,11 +121,11 @@
 </span><span class='line'>liuchungui    master</span></code></pre></td></tr></table></div></figure>
 
 
-<p>这时，你会发现有两个文件夹liuchungui和master，master是Cocoapods官方的repo，而liuchungui就是我刚刚创建的。进入liuchungui文件夹查看，你会发现它是clone了一份<code>https://github.com/liuchungui/first.git</code>。</p>
+<p>这时，你会发现有两个文件夹<code>liuchungui</code>和<code>master</code>，master是Cocoapods官方的repo，而liuchungui就是我刚刚创建的。进入liuchungui文件夹查看，你会发现它是clone了一份<code>https://github.com/liuchungui/first.git</code>。</p>
 
 <h3>3、制作Podspec，并且推送到你创建的私有repo</h3>
 
-<p>CocoaPods本身就是用来管理公共库和解决它们之间依赖的一套解决方案，这里我就以我写的一个框架<a href="https://github.com/liuchungui/BGNetwork">BGNetwork</a>的Podspec制作为例。
+<p>CocoaPods本身就是用来管理公共库和解决它们之间依赖的一套解决方案，这里我就以我写的一个框架<a href="https://github.com/liuchungui/BGNetwork">BGNetwork</a>的Podspec制作为例。    <br/>
 1、在github上创建一个空的仓库，克隆到本地   <br/>
 <code>git clone https://github.com/liuchungui/BGNetwork</code>   <br/>
 2、在本地使用创建项目，然后写框架，框架写完了之后，提交到github，并打上版本号。</p>
@@ -193,14 +198,16 @@ BGNetwork是一个基于AFNetworking的网络框架，它主要的源文件都�
 <p>4、验证并推送到服务器    <br/>
 在推送前，我们先验证Podspec，验证的时候是验证BGNetwork.podspec文件，所以我们需要保证进入的目录和BGNetwork.podspec同级的    <br/>
 <code>$ pod lib lint</code>   <br/>
-如果没有错误和警告我们就可以推送到服务器了    <br/>
+注意：验证的时候，会获取BGNetwork.podspec文件中的spec.source来获取git服务器上面对应版本的代码，然后再找到spec.source_files中的源代码，通过xcode命令行工具建立工程并且进行编译。所以这一步的过程会比较久，如果没有编译没有错误，就验证通过。</p>
+
+<p>如果没有错误和警告我们就可以推送到服务器了，推送使用的命令是<code>pod repo push REPO_NAME SPEC_NAME.podspec</code>，它也会先验证，然后再推送。         <br/>
 <code>$ pod repo push liuchungui BGNetwork.podspec</code> <br/>
 如果没有错误，但是有警告，我们就将警告解决，也可以加<code>--allow-warnings</code>来提交   <br/>
 <code>$ pod repo push liuchungui BGNetwork.podspec --allow-warnings</code>   <br/>
 如果有错误，我们可以去查看错误信息对应下的Note信息。</p>
 
 <p>5、搜索我们的框架
-到这一步，我们就可以通过<code>pod search BGNetwork</code>来搜索了</p>
+到这一步，我们就可以通过<code>pod search BGNetwork</code>来搜索了，搜索到了说明我们私有源建立成功。</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -218,9 +225,28 @@ BGNetwork是一个基于AFNetworking的网络框架，它主要的源文件都�
 </span><span class='line'>   Versions: 0.1.1, 0.1.0 [liuchungui repo] - 0.1.2, 0.1.1 [master repo]</span></code></pre></td></tr></table></div></figure>
 
 
+<p>由上面的搜索知道，BGNetwork在liuchungui和master两个repo中都存在。</p>
+
+<h3>4、使用Pod，在Podfile添加私有源来搭建项目</h3>
+
+<p>使用时，在Podfile文件中添加<strong>本地私有源和官方源</strong>。如果没有添加本地私有源，它默认是用官方的repo，这样找不到本地的Pod；如果只是设置了本地私有源，就不会再去官方源中查找。
+ 下面是Podfile内容</p>
+
+<pre><code class="```">   #官方Cocoapods的源
+   source 'https://github.com/CocoaPods/Specs.git'
+   #本地私有源
+   source 'https://github.com/liuchungui/first.git'
+   platform :ios, '7.0'
+   pod 'BGNetwork', '~&gt; 0.1.1'
+</code></pre>
+
 <h4>注意</h4>
 
-<p>1、若是需要提交给官方，请使用</p>
+<p>1、途中遇到了几次问题，就是pod repo push不上去，显示没有找到对应文件，后来发现是版本的问题，没有打上版本号或者Podspec中版本错了。所以我们在维护一个框架时，修改框架之后，push到git服务器之后先打上tag，然后再修改podspec文件中的版本，最后push到对应的pod repo中。</p>
+
+<p>2、若是在框架当中，存在不同的文件夹，请使用<code>subspec</code>。如果不同文件夹之间的文件有相互导入的情况，请将被导入的头文件设置为<code>public_header_files</code>，并且通过<code>dependency</code>设置依赖，具体可以参考<a href="https://github.com/AFNetworking/AFNetworking/blob/master/AFNetworking.podspec">AFNetworking的podspec</a>文件。</p>
+
+<p>3、若是需要提交给官方，请使用</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -234,11 +260,7 @@ BGNetwork是一个基于AFNetworking的网络框架，它主要的源文件都�
 </span><span class='line'>pod turnk push</span></code></pre></td></tr></table></div></figure>
 
 
-<p>2、途中遇到了几次问题，就是pod repo push不上去，显示没有找到对应文件，后来发现是tag的原因。所以我们在维护一个框架时，修改好之后先打上tag，然后再修改podspec文件，最后push到对应的repo。</p>
-
-<p>3、若是在框架当中，有文件依赖内部的文件，而又不在同一个文件当中，使用dependency设置依赖，具体可以参考<a href="https://github.com/AFNetworking/AFNetworking/blob/master/AFNetworking.podspec">AFNetworking的podspec</a>文件。</p>
-
-<p>4、更新太慢，可以在install或update加一个参数</p>
+<p>4、使用<code>pod install</code>时，它首先会更新整个官方的源，而Cocoapods每天都有很多人提交，所以更新比较慢。所以，建议每过一段时间更新一下官方库，平常的时候，咱们可以在install或update加一个参数不用它更新。</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
