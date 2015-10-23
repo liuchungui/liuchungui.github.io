@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Mac | liuchungui's Blog]]></title>
   <link href="http://liuchungui.github.io/blog/categories/mac/atom.xml" rel="self"/>
   <link href="http://liuchungui.github.io/"/>
-  <updated>2015-10-23T15:08:21+08:00</updated>
+  <updated>2015-10-23T17:00:33+08:00</updated>
   <id>http://liuchungui.github.io/</id>
   <author>
     <name><![CDATA[刘春桂]]></name>
@@ -18,191 +18,99 @@
     <link href="http://liuchungui.github.io/blog/2015/10/19/cocoapodschuang-jian-si-you-pods/"/>
     <updated>2015-10-19T21:54:54+08:00</updated>
     <id>http://liuchungui.github.io/blog/2015/10/19/cocoapodschuang-jian-si-you-pods</id>
-    <content type="html"><![CDATA[<h4>创建Pod私有源有以下几个步骤：</h4>
+    <content type="html"><![CDATA[<p>创建Pod私有源步骤：  <br/>
+1、创建一个git仓库，用来存放Podspec  <br/>
+2、添加私有的repo到CocoaPods  <br/>
+3、制作Podspec，并且推送到你创建的私有repo   <br/>
+4、使用Pod，在Podfile添加私有源来搭建项目</p>
 
-<p>1、创建一个git仓库(<a href="http://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000/00137583770360579bc4b458f044ce7afed3df579123eca000">搭建Git服务器</a>)，用来存放Podspec，你可以用github或者自己搭建的git服务器。</p>
+<p>下面，跟着我一步一步来制作Pod私有源，并且使用私有源当中框架来搭建项目。</p>
 
-<p>2、添加私有的repo到CocoaPods</p>
+<h3>1、创建一个git仓库，用来存放Podspec</h3>
 
-<pre><code>$ pod repo add REPO_NAME SOURCE_URL
-</code></pre>
+<p>这里我直接是使用github仓库<a href="https://github.com/liuchungui/first.git">https://github.com/liuchungui/first.git</a>    <br/>
+当然如果是公司需要建立组件库，放在公司的git服务器上，这样就不会公开了。如果公司没有git服务器，不急，搭建git服务器很简单，可以参照我的<a href="http://www.liuchungui.com/blog/2015/10/23/gitzong-jie/">Git简单总结</a>来搭建。</p>
 
-<p>注意：如果你打算创建pods在本地，你需要对SOURCE_URL有push权限。</p>
+<h3>2、添加私有的repo到CocoaPods</h3>
 
-<p>可以通过以下命令检查一下是否创建成功</p>
-
-<pre><code>$ cd ~/.cocoapods/repos/REPO_NAME
-$ pod repo lint .
-</code></pre>
-
-<p>3、添加你的Podspec到你的repo
-$ pod repo push REPO_NAME SPEC_NAME.podspec</p>
-
-<p>4、使用Pod，你可以在Podfile当中指定你的Pod源</p>
-
-<pre><code>source 'URL_TO_REPOSITORY'
-</code></pre>
-
-<!-- more -->
-
-
-<h4>例子：</h4>
-
-<p>1、创建一个git仓库，这里我直接是使用github仓库，当然如果是公司需要建立组件库，放在公司的git服务器上，这样就不会公开了。</p>
-
-<p>2、添加私有的repo到Cocoapods</p>
+<p>主要命令是<code>pod repo add REPO_NAME SOURCE_URL</code>。其中，REPO_NAME是repo的名字，随便你取；SOURCE_URL是你git仓库的链接。</p>
 
 <pre><code>$ pod repo add liuchungui https://github.com/liuchungui/first.git
 $ ls ~/.cocoapods/repos  
+liuchungui  master
 </code></pre>
 
-<p>这时已经多了一个liuchungui的repo</p>
+<p>这时，你会发现有两个文件夹liuchungui和master，master是Cocoapods官方的repo，而liuchungui就是我刚刚创建的。进入liuchungui文件夹查看，你会发现它是clone了一份<code>https://github.com/liuchungui/first.git</code>。</p>
 
-<pre><code>$ cd ~/.cocoapods/repos/liuchungui
-$ ls
+<h3>3、制作Podspec，并且推送到你创建的私有repo</h3>
+
+<p>CocoaPods本身就是用来管理公共库和解决它们之间依赖的一套解决方案，这里我就以我写的一个框架<a href="https://github.com/liuchungui/BGNetwork">BGNetwork</a>的Podspec制作为例。
+1、在github上创建一个空的仓库，克隆到本地   <br/>
+<code>git clone https://github.com/liuchungui/BGNetwork</code>   <br/>
+2、在本地使用创建项目，然后写框架，框架写完了之后，提交到github，并打上版本号。</p>
+
+<pre><code>git add .
+git commit -m 'add file'
+git push origin master
+git tag -m 'add tag' '0.1.2'
+git push --tags
 </code></pre>
 
-<p>会发现它是clone了一份<a href="https://github.com/liuchungui/first.git">https://github.com/liuchungui/first.git</a></p>
-
-<pre><code>$ pod repo lint .
-</code></pre>
-
-<p>查看你当前通过的podspec个数</p>
-
-<pre><code>$ pod repo remove liuchungui
-</code></pre>
-
-<p>也可以使用上面的命令，删除liuchungui这个私有的repo</p>
-
-<p>3、创建Podspec，现在已经支持json文件了。  <br/>
-<code>$ vim TestCocoaPodsProject.podspec</code>  <br/>
-编辑格式如下：</p>
+<p>3、我们开始制作Podspec文件。  <br/>
+BGNetwork是一个基于AFNetworking的网络框架，它主要的源文件都在BGNetwork/BGNetwork路径下。我们将它放在CocoaPods给第三方使用，主要是将这个文件夹下的源文件加载到第三方的项目中以供使用，那么Podspec可以这样写。</p>
 
 <pre><code>Pod::Spec.new do |spec|
-  spec.name         = 'TestCocoaPodsProject'
+  #项目名称
+  spec.name         = 'BGNetwork'
+  #版本号
   spec.version      = '0.1.1'
+  #开源协议
   spec.license      = 'MIT'
-  spec.summary      = 'TestCocoaPodsProject is a test'
-  spec.homepage     = 'https://github.com/chunguiLiu/TestCocoaPodsProject'
-  spec.author       = {"chunguiLiu"=&gt;"chunguiLiu@126.com"}
-  spec.source       = { :git =&gt; 'https://github.com/chunguiLiu/TestCocoaPodsProject.git', :tag =&gt; '0.1.1' }
+  #对开源项目的描述
+  spec.summary      = 'BGNetwork is a request util based on AFNetworking'
+  #开源项目的首页，这个如果没有，可以随便写
+  spec.homepage     = 'https://github.com/chunguiLiu/BGNetwork'
+  #作者信息
+  spec.author       = {'chunguiLiu' =&gt; 'chunguiLiu@126.com'}
+  #项目的源和版本号，这个不能乱写
+  spec.source       = { :git =&gt; 'https://github.com/chunguiLiu/BGNetwork.git', :tag =&gt; '0.1.1' }
+  #源文件，这个就是供第三方使用的源文件
+  spec.source_files = "BGNetwork/*"
+  #适用于ios7及以上版本
   spec.platform     = :ios, '7.0'
-  spec.source_files = 'Classes/**/*.{h,m}'
+  #使用的是ARC
   spec.requires_arc = true
+  #依赖AFNetworking2.0
+  spec.dependency 'AFNetworking', '~&gt; 2.0'
 end
 </code></pre>
 
-<p>也可以使用json格式
-<code>$ vim TestCocoaPodsProject.podspec.json</code></p>
+<p>4、验证并推送到服务器    <br/>
+在推送前，我们先验证Podspec，验证的时候是验证BGNetwork.podspec文件，所以我们需要保证进入的目录和BGNetwork.podspec同级的    <br/>
+<code>$ pod lib lint</code>   <br/>
+如果没有错误和警告我们就可以推送到服务器了    <br/>
+<code>$ pod repo push liuchungui BGNetwork.podspec</code> <br/>
+如果没有错误，但是有警告，我们就将警告解决，也可以加<code>--allow-warnings</code>来提交   <br/>
+<code>$ pod repo push liuchungui BGNetwork.podspec --allow-warnings</code>   <br/>
+如果有错误，我们可以去查看错误信息对应下的Note信息。</p>
 
-<pre><code>{
-    "name": "TestCocoaPodsProject",
-    "version": "0.1.1",
-    "license": "MIT",
-    "summary": "TestCocoaPodsProject is a test",
-    "homepage": "https://github.com/chunguiLiu/TestCocoaPodsProject",
-    "authors": {
-        "chunguiLiu": "chunguiLiu@126.com"
-    },
-    "source": {
-        "git": "https://github.com/chunguiLiu/TestCocoaPodsProject.git",
-        "tag": "0.1.1"
-    },
-    "source_files": "Classes/*",
-    "platforms": {
-        "ios": "7.0"
-    },
-    "requires_arc": true,
-}
+<p>5、搜索我们的框架
+到这一步，我们就可以通过<code>pod search BGNetwork</code>来搜索了</p>
+
+<pre><code>$ pod search BGNetwork
+-&gt; BGNetwork (0.1.2)
+   BGNetwork is a request util based on AFNetworking
+   pod 'BGNetwork', '~&gt; 0.1.2'
+   Homepage: https://github.com/chunguiLiu/BGNetwork
+   Source:   https://github.com/chunguiLiu/BGNetwork.git
+   Versions: 0.1.1, 0.1.0 [liuchungui repo] - 0.1.2, 0.1.1 [master repo]
 </code></pre>
-
-<p>保存文件，验证是否有错误</p>
-
-<pre><code>$pod lib lint
-</code></pre>
-
-<p>如果没有任何错误，则将它添加到repo</p>
-
-<pre><code>$ pod repo push liuchungui TestCocoaPodsProject.podspec.json
-</code></pre>
-
-<p>这样创建的repo如下面结构</p>
-
-<pre><code>├── Specs
-    └── TestCocoaPodsProject
-        └── 0.1.0
-            └── TestCocoaPodsProject.podspec
-        └── 0.1.1
-            └── TestCocoaPodsProject.podspec.json
-</code></pre>
-
-<p>此时，可以使用进行搜索了</p>
-
-<pre><code>$ pod search TestCocoaPodsProject
-</code></pre>
-
-<p>搜索结果：</p>
-
-<pre><code>-&gt; TestCocoaPodsProject (0.1.1)
-   TestCocoaPodsProject is a test
-   pod 'TestCocoaPodsProject', '~&gt; 0.1.1'
-   - Homepage: https://github.com/chunguiLiu/TestCocoaPodsProject
-   - Source:   https://github.com/chunguiLiu/TestCocoaPodsProject.git
-   - Versions: 0.1.1, 0.1.0 [liuchungui repo]
-</code></pre>
-
-<p>   4、使用时，在Podfile文件中指定对应的source。如果没有添加source，它默认是用官方的repo，这样找不到本地的Pod，我在这一步的时候浪费了两个晚上，一度认为是CocoaPods的bug，后来翻看CocoaPods官方文档才知道有设置source一说。</p>
-
-<p>   下面是Podfile内容</p>
-
-<pre><code class="```">   source 'https://github.com/liuchungui/first.git'
-   platform :ios, '7.0'
-   pod 'TestCocoaPodsProject', '~&gt; 0.1.1'
-</code></pre>
-
-<p>   5、后期维护。当后面的一个版本的时候，我们的框架增加了文件，并且划分了模块，即Classes下面有Addtional、Macro两个文件夹，并在git打上了版本号0.1.3。</p>
-
-<p>   目录格式。</p>
-
-<pre><code class="```">   ├── Classes
-    └── Additional
-        └── UILabel+Additional.h
-        └── UILabel+Additional.m
-    └── Macro
-        └── PathMacro.h
-        └── PathMacro.m       
-</code></pre>
-
-<p>  那么我们这个版本的podsec文件如下：</p>
-
-<pre><code class="``">  Pod::Spec.new do |spec|
-  spec.name         = 'TestCocoaPodsProject'
-  spec.version      = '0.1.3'
-  spec.license      = 'MIT'
-  spec.summary      = 'TestCocoaPodsProject is a test'
-  spec.homepage     = 'https://github.com/chunguiLiu/TestCocoaPodsProject'
-  spec.author       = {"chunguiLiu"=&gt;"chunguiLiu@126.com"}
-  spec.source       = { :git =&gt; 'https://github.com/chunguiLiu/TestCocoaPodsProject.git', :tag =&gt; '0.1.3' }
-  spec.platform     = :ios, '7.0'
-  spec.requires_arc = true
-
-  spec.subspec 'Additional' do |addtional|
-    addtional.source_files = 'Classes/Additional/**/*.{h,m}'
-  end
-
-  spec.subspec 'Macro' do |macro|
-    macro.source_files = 'Classes/Macro/**/*.{h,m}'
-  end
-end
-</code></pre>
-
-<p> 注意：spec.subspec定义这个的意思是，相当于在TestCocoaPodsProject添加了一个子目录，具体参考<a href="https://guides.cocoapods.org/making/specs-and-specs-repo.html">Specs and the Specs Repo</a></p>
 
 <h4>注意</h4>
 
 <p>1、若是需要提交给官方，请使用</p>
 
-<pre><code>pod trunk regirster youremail
+<pre><code>pod trunk register youremail
 查看信息
 pod trunk me
 将对应的pod推送到服务器

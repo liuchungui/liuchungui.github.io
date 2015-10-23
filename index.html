@@ -250,41 +250,168 @@
   </header>
 
 
-  <div class="entry-content"><h4>创建Pod私有源有以下几个步骤：</h4>
+  <div class="entry-content"><p>创建Pod私有源步骤：  <br/>
+1、创建一个git仓库，用来存放Podspec  <br/>
+2、添加私有的repo到CocoaPods  <br/>
+3、制作Podspec，并且推送到你创建的私有repo   <br/>
+4、使用Pod，在Podfile添加私有源来搭建项目</p>
 
-<p>1、创建一个git仓库(<a href="http://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000/00137583770360579bc4b458f044ce7afed3df579123eca000">搭建Git服务器</a>)，用来存放Podspec，你可以用github或者自己搭建的git服务器。</p>
+<p>下面，跟着我一步一步来制作Pod私有源，并且使用私有源当中框架来搭建项目。</p>
 
-<p>2、添加私有的repo到CocoaPods</p>
+<h3>1、创建一个git仓库，用来存放Podspec</h3>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ pod repo add REPO_NAME SOURCE_URL</span></code></pre></td></tr></table></div></figure>
+<p>这里我直接是使用github仓库<a href="https://github.com/liuchungui/first.git">https://github.com/liuchungui/first.git</a>    <br/>
+当然如果是公司需要建立组件库，放在公司的git服务器上，这样就不会公开了。如果公司没有git服务器，不急，搭建git服务器很简单，可以参照我的<a href="http://www.liuchungui.com/blog/2015/10/23/gitzong-jie/">Git简单总结</a>来搭建。</p>
 
+<h3>2、添加私有的repo到CocoaPods</h3>
 
-<p>注意：如果你打算创建pods在本地，你需要对SOURCE_URL有push权限。</p>
-
-<p>可以通过以下命令检查一下是否创建成功</p>
+<p>主要命令是<code>pod repo add REPO_NAME SOURCE_URL</code>。其中，REPO_NAME是repo的名字，随便你取；SOURCE_URL是你git仓库的链接。</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ cd ~/.cocoapods/repos/REPO_NAME
-</span><span class='line'>$ pod repo lint .</span></code></pre></td></tr></table></div></figure>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ pod repo add liuchungui https://github.com/liuchungui/first.git
+</span><span class='line'>$ ls ~/.cocoapods/repos  
+</span><span class='line'>liuchungui    master</span></code></pre></td></tr></table></div></figure>
 
 
-<p>3、添加你的Podspec到你的repo
-$ pod repo push REPO_NAME SPEC_NAME.podspec</p>
+<p>这时，你会发现有两个文件夹liuchungui和master，master是Cocoapods官方的repo，而liuchungui就是我刚刚创建的。进入liuchungui文件夹查看，你会发现它是clone了一份<code>https://github.com/liuchungui/first.git</code>。</p>
 
-<p>4、使用Pod，你可以在Podfile当中指定你的Pod源</p>
+<h3>3、制作Podspec，并且推送到你创建的私有repo</h3>
+
+<p>CocoaPods本身就是用来管理公共库和解决它们之间依赖的一套解决方案，这里我就以我写的一个框架<a href="https://github.com/liuchungui/BGNetwork">BGNetwork</a>的Podspec制作为例。
+1、在github上创建一个空的仓库，克隆到本地   <br/>
+<code>git clone https://github.com/liuchungui/BGNetwork</code>   <br/>
+2、在本地使用创建项目，然后写框架，框架写完了之后，提交到github，并打上版本号。</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>source 'URL_TO_REPOSITORY'</span></code></pre></td></tr></table></div></figure>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>git add .
+</span><span class='line'>git commit -m 'add file'
+</span><span class='line'>git push origin master
+</span><span class='line'>git tag -m 'add tag' '0.1.2'
+</span><span class='line'>git push --tags</span></code></pre></td></tr></table></div></figure>
 
 
+<p>3、我们开始制作Podspec文件。  <br/>
+BGNetwork是一个基于AFNetworking的网络框架，它主要的源文件都在BGNetwork/BGNetwork路径下。我们将它放在CocoaPods给第三方使用，主要是将这个文件夹下的源文件加载到第三方的项目中以供使用，那么Podspec可以这样写。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Pod::Spec.new do |spec|
+</span><span class='line'>  #项目名称
+</span><span class='line'>  spec.name         = 'BGNetwork'
+</span><span class='line'>  #版本号
+</span><span class='line'>  spec.version      = '0.1.1'
+</span><span class='line'>  #开源协议
+</span><span class='line'>  spec.license      = 'MIT'
+</span><span class='line'>  #对开源项目的描述
+</span><span class='line'>  spec.summary      = 'BGNetwork is a request util based on AFNetworking'
+</span><span class='line'>  #开源项目的首页，这个如果没有，可以随便写
+</span><span class='line'>  spec.homepage     = 'https://github.com/chunguiLiu/BGNetwork'
+</span><span class='line'>  #作者信息
+</span><span class='line'>  spec.author       = {'chunguiLiu' =&gt; 'chunguiLiu@126.com'}
+</span><span class='line'>  #项目的源和版本号，这个不能乱写
+</span><span class='line'>  spec.source       = { :git =&gt; 'https://github.com/chunguiLiu/BGNetwork.git', :tag =&gt; '0.1.1' }
+</span><span class='line'>  #源文件，这个就是供第三方使用的源文件
+</span><span class='line'>  spec.source_files = "BGNetwork/*"
+</span><span class='line'>  #适用于ios7及以上版本
+</span><span class='line'>  spec.platform     = :ios, '7.0'
+</span><span class='line'>  #使用的是ARC
+</span><span class='line'>  spec.requires_arc = true
+</span><span class='line'>  #依赖AFNetworking2.0
+</span><span class='line'>  spec.dependency 'AFNetworking', '~&gt; 2.0'
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>4、验证并推送到服务器    <br/>
+在推送前，我们先验证Podspec，验证的时候是验证BGNetwork.podspec文件，所以我们需要保证进入的目录和BGNetwork.podspec同级的    <br/>
+<code>$ pod lib lint</code>   <br/>
+如果没有错误和警告我们就可以推送到服务器了    <br/>
+<code>$ pod repo push liuchungui BGNetwork.podspec</code> <br/>
+如果没有错误，但是有警告，我们就将警告解决，也可以加<code>--allow-warnings</code>来提交   <br/>
+<code>$ pod repo push liuchungui BGNetwork.podspec --allow-warnings</code>   <br/>
+如果有错误，我们可以去查看错误信息对应下的Note信息。</p>
+
+<p>5、搜索我们的框架
+到这一步，我们就可以通过<code>pod search BGNetwork</code>来搜索了</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ pod search BGNetwork
+</span><span class='line'>-&gt; BGNetwork (0.1.2)
+</span><span class='line'>   BGNetwork is a request util based on AFNetworking
+</span><span class='line'>   pod 'BGNetwork', '~&gt; 0.1.2'
+</span><span class='line'>   Homepage: https://github.com/chunguiLiu/BGNetwork
+</span><span class='line'>   Source:   https://github.com/chunguiLiu/BGNetwork.git
+</span><span class='line'>   Versions: 0.1.1, 0.1.0 [liuchungui repo] - 0.1.2, 0.1.1 [master repo]</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>注意</h4>
+
+<p>1、若是需要提交给官方，请使用</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>pod trunk register youremail
+</span><span class='line'>查看信息
+</span><span class='line'>pod trunk me
+</span><span class='line'>将对应的pod推送到服务器
+</span><span class='line'>pod turnk push</span></code></pre></td></tr></table></div></figure>
+
+
+<p>2、途中遇到了几次问题，就是pod repo push不上去，显示没有找到对应文件，后来发现是tag的原因。所以我们在维护一个框架时，修改好之后先打上tag，然后再修改podspec文件，最后push到对应的repo。</p>
+
+<p>3、若是在框架当中，有文件依赖内部的文件，而又不在同一个文件当中，使用dependency设置依赖，具体可以参考<a href="https://github.com/AFNetworking/AFNetworking/blob/master/AFNetworking.podspec">AFNetworking的podspec</a>文件。</p>
+
+<p>4、更新太慢，可以在install或update加一个参数</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ pod install --verbose --no-repo-update
+</span><span class='line'>$ pod update --verbose --no-repo-update</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>参考</h4>
+
+<p><a href="https://guides.cocoapods.org/making/private-cocoapods.html">Private Pods</a>   <br/>
+<a href="http://blog.wtlucky.com/blog/2015/02/26/create-private-podspec/">使用Cocoapods创建私有podspec</a>   <br/>
+<a href="http://blog.csdn.net/wzzvictory/article/details/18737437?utm_source=tuicool">CocoaPods详解之&mdash;-使用篇</a></p>
 </div>
   
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/10/19/cocoapodschuang-jian-si-you-pods/">更多 &rarr;</a>
-    </footer>
   
 
 
