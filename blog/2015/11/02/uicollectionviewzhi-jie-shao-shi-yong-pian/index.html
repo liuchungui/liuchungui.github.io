@@ -1,0 +1,434 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>UICollectionView之介绍使用篇 - liuchungui's Blog</title>
+  <meta name="author" content="刘春桂">
+
+  
+  <meta name="description" content="UICollectionView是一种类似于UITableView但又比UITableView功能更强大、更灵活的视图，这是源于它将UICollectionView对cell的布局交给了UICollectionViewLayout，而且允许用户自定义layout来进行布局。 &hellip;">
+  <meta name="keywords" content="UICollectionView, UICollectionViewLayout">
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://liuchungui.github.io/blog/2015/11/02/uicollectionviewzhi-jie-shao-shi-yong-pian/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="liuchungui's Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="http://cdn.staticfile.org/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<script type="text/javascript">
+  function addBlankTargetForLinks () {
+      $('a[href^="http"]').each(function(){
+          $(this).attr('target', '_blank');
+      });
+  }
+  $(document).bind('DOMNodeInserted', function(event) {
+      addBlankTargetForLinks();
+  });
+</script>
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">liuchungui's Blog</a></h1>
+  
+    <h2>代码嗨起来</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="liuchungui.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">UICollectionView之介绍使用篇</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-11-02T00:29:12+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>2</span><span class='date-suffix'>nd</span>, <span class='date-year'>2015</span></span> <span class='time'>12:29 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>UICollectionView是一种类似于UITableView但又比UITableView功能更强大、更灵活的视图，这是源于它将UICollectionView对cell的布局交给了UICollectionViewLayout，而且允许用户自定义layout来进行布局。</p>
+
+<p>下面是UICollectionView合并内容和布局并生成最终界面的一个流程：</p>
+
+<p><img src="http://ww3.sinaimg.cn/large/7746cd07jw1exjnjqrju5j20x00qk76h.jpg" alt="" /></p>
+
+<p>当UICollectionView显示内容时，先从Data source(数据源)获取cell，然后交给UICollectionView。再从UICollectionViewLayout获取对应的layout attributes(布局属性)。最后，根据每个cell对应的layout attributes(布局属性)来对cell进行布局，生成了最终的界面。而用户交互的时候，都是通过Delegate来进行交互。当然，上面只是布局cell，但是UICollectionView内部还有Supplementary View和Decoration View，也可以对其进行布局。</p>
+
+<p>上面，我们了解了UICollectionView的工作流程，我们将UICollectionView分成视图、数据源和代理方法、UICollectionViewLayout三块来介绍。</p>
+
+<!-- more -->
+
+
+<h2>一、视图</h2>
+
+<p>UICollectionView上面显示内容的视图有三种Cell视图、Supplementary View和Decoration View。</p>
+
+<h4>Cell视图</h4>
+
+<p>CollectionView中主要的内容都是由它展示的，它是从数据源对象获取的。</p>
+
+<h4>Supplementary View</h4>
+
+<p>它展示了每一组当中的信息，与cell类似，它是从数据源方法当中获取的，但是与cell不同的是，它并不是强制需要的。例如flow layout当中的headers和footers就是可选的Supplementary View。</p>
+
+<h4>Decoration View</h4>
+
+<p>这个视图是一个装饰视图，它没有什么功能性，它不跟数据源有任何关系，它完全属于layout对象。</p>
+
+<h2>二、数据源和代理方法</h2>
+
+<h4>1、注册cell或者Supplementary View使其重用</h4>
+
+<p>在使用数据源返回cell或者Supplementary View给collectionView之前，我们必须先要注册，用来进行重用。</p>
+
+<ul>
+<li>registerClass: forCellWithReuseIdentifier:</li>
+<li>registerNib: forCellWithReuseIdentifier:</li>
+<li>registerClass: forSupplementaryViewOfKind: withReuseIdentifier:</li>
+<li>registerNib: forSupplementaryViewOfKind: withReuseIdentifier:</li>
+</ul>
+
+
+<p> 显而易见，前面两个方法是注册cell，后两个方法注册Supplementary View。其中，注册的方式有两种，第一种是直接注册class，它重用的时候会调用[[UICollectionView alloc] init]这样的初始化方法创建cell；另外一种是注册nib，它会自动加载nib文件。</p>
+
+<p> 注册的之后，我们如何重用？       <br/>
+ 在数据源方法当中返回<code>cell</code>或者<code>Supplementary view</code>的方法当中通过<code>dequeueReusableCellWithReuseIdentifier:forIndexPath:</code> 或者 <code>dequeueReusableSupplementaryViewOfKind:withReuseIdentifier:forIndexPath:</code>方法获取cell或者Supplementary View。</p>
+
+<p>示例代码：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="p">-</span> <span class="p">(</span><span class="bp">UICollectionViewCell</span> <span class="o">*</span><span class="p">)</span><span class="nf">collectionView:</span><span class="p">(</span><span class="bp">UICollectionView</span> <span class="o">*</span><span class="p">)</span><span class="nv">collectionView</span> <span class="nf">cellForItemAtIndexPath:</span><span class="p">(</span><span class="bp">NSIndexPath</span> <span class="o">*</span><span class="p">)</span><span class="nv">indexPath</span><span class="p">{</span>
+</span><span class='line'>    <span class="n">CollectionViewCell</span> <span class="o">*</span><span class="n">cell</span> <span class="o">=</span> <span class="p">(</span><span class="n">CollectionViewCell</span> <span class="o">*</span><span class="p">)[</span><span class="n">collectionView</span> <span class="nl">dequeueReusableCellWithReuseIdentifier</span><span class="p">:</span><span class="n">CellReuseIdentify</span> <span class="nl">forIndexPath</span><span class="p">:</span><span class="n">indexPath</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">cell</span><span class="p">.</span><span class="n">backgroundColor</span> <span class="o">=</span> <span class="p">[</span><span class="bp">UIColor</span> <span class="n">lightGrayColor</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">cell</span><span class="p">.</span><span class="n">textLabel</span><span class="p">.</span><span class="n">text</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSString</span> <span class="nl">stringWithFormat</span><span class="p">:</span><span class="s">@&quot;(%zd,%zd)&quot;</span><span class="p">,</span> <span class="n">indexPath</span><span class="p">.</span><span class="n">section</span><span class="p">,</span> <span class="n">indexPath</span><span class="p">.</span><span class="n">row</span><span class="p">];</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">cell</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>2、数据源方法</h4>
+
+<p> 数据源方法与UITableView类似，主要有：</p>
+
+<ul>
+<li>numberOfSectionsInCollectionView:</li>
+<li>collectionView: numberOfItemsInSection:</li>
+<li>collectionView: cellForItemAtIndexPath:</li>
+<li>collectionView: viewForSupplementaryElementOfKind: atIndexPath:</li>
+</ul>
+
+
+<p>与UITableView不同的是多加了返回Supplementary view数据源方法。</p>
+
+<h4>3、代理方法</h4>
+
+<p>数据源为UICollectionView提供数据相关的内容，而代理则主要负责用户交互、与数据无关的视图外形。主要分成两部分：</p>
+
+<p>1、通过调用代理方法，管理视图的选中、高亮</p>
+
+<ul>
+<li>collectionView:shouldDeselectItemAtIndexPath:</li>
+<li>collectionView:didSelectItemAtIndexPath:</li>
+<li>collectionView:didDeselectItemAtIndexPath:</li>
+<li>collectionView:shouldHighlightItemAtIndexPath:</li>
+<li>collectionView:didHighlightItemAtIndexPath:</li>
+<li>collectionView:didUnhighlightItemAtIndexPath:</li>
+</ul>
+
+
+<p> 2、长按cell，显示编辑菜单
+ 当用户长按cell时，collection view视图会显示一个编辑菜单。这个编辑菜单可以用来剪切、复制和粘贴cell。不过，要显示这个编辑菜单需要满足很多条件：</p>
+
+<ul>
+<li>代理对象必须实现下面三个方法：     <br/>
+<code>collectionView:shouldShowMenuForItemAtIndexPath:</code>   <code>collectionView:canPerformAction:forItemAtIndexPath:withSender:</code>   <code>collectionView:performAction:forItemAtIndexPath:withSender:</code></li>
+<li>对于指定要编辑的cell，<code>collectionView:shouldShowMenuForItemAtIndexPath:</code>方法需要返回<code>YES</code></li>
+<li><p><code>collectionView:canPerformAction:forItemAtIndexPath:withSender:</code> 方法中，对于剪切、复制、粘贴三种action至少有一个返回YES。其实，编辑菜单是有很多种action的，但是对于UICollectionView来说，它仅仅支持的剪切、复制、粘贴三个，所以说这个代理方法至少支持这三种的一种。  <br/>
+剪切、复制、粘贴的方法名是：   <br/>
+<code>cut:</code>   <br/>
+<code>copy:</code>   <br/>
+<code>paste:</code></p>
+
+<p>当上面的条件都满足了，用户就可以长按cell显示出编辑菜单，然后选择对应的action，从而就会回调delegate的collectionView:performAction:forItemAtIndexPath:withSender: 方法去做对应的事情。</p></li>
+</ul>
+
+
+<p>当我们想控制编辑菜单仅仅显示复制和粘贴时，我们就可以在<code>collectionView:canPerformAction:forItemAtIndexPath:withSender:</code>方法中进行操作，具体请见下面代码：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">BOOL</span><span class="p">)</span><span class="nf">collectionView:</span><span class="p">(</span><span class="bp">UICollectionView</span> <span class="o">*</span><span class="p">)</span><span class="nv">collectionView</span> <span class="nf">canPerformAction:</span><span class="p">(</span><span class="kt">SEL</span><span class="p">)</span><span class="nv">action</span> <span class="nf">forItemAtIndexPath:</span><span class="p">(</span><span class="bp">NSIndexPath</span> <span class="o">*</span><span class="p">)</span><span class="nv">indexPath</span> <span class="nf">withSender:</span><span class="p">(</span><span class="kt">id</span><span class="p">)</span><span class="nv">sender</span><span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">([</span><span class="n">NSStringFromSelector</span><span class="p">(</span><span class="n">action</span><span class="p">)</span> <span class="nl">isEqualToString</span><span class="p">:</span><span class="s">@&quot;copy:&quot;</span><span class="p">]</span>
+</span><span class='line'>        <span class="o">||</span> <span class="p">[</span><span class="n">NSStringFromSelector</span><span class="p">(</span><span class="n">action</span><span class="p">)</span> <span class="nl">isEqualToString</span><span class="p">:</span><span class="s">@&quot;paste:&quot;</span><span class="p">])</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nb">YES</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nb">NO</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>三、UICollectionViewLayout</h2>
+
+<p><code>UICollectionViewLayout</code>是UICollectionView比UITableView更强大原因，它是UICollectionView的精髓，它通过<code>UICollectionViewLayoutAttributes</code>类来管理<code>cell</code>、<code>Supplementary View</code>和<code>Decoration View</code>的<code>位置</code>、<code>transform</code>、<code>alpha</code>、<code>hidden</code>等等。   <br/>
+UICollectionViewLayout这个类只是一个基类，我们给UICollectionView使用的都是它的<code>子类</code>。系统为我们提供了一个最常用的layout为<code>UICollectionViewFlowLayout</code>，我们可以使用它制作<code>grid view</code>。当UICollectionViewLayout满足不了我们的需求时，我们可以<code>子类化UICollectionViewLayout</code>或者<code>自定义layout</code>，这个内容放到我下一篇当中。</p>
+
+<p>下面，我们来看看怎么使用UICollectionViewFlowLayout。
+使用UICollectionViewFlowLayout之前，我们来了解它内部常用的属性：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="c1">//同一组当中，行与行之间的最小行间距，但是不同组之间的不同行cell不受这个值影响。</span>
+</span><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="k">nonatomic</span><span class="p">)</span> <span class="n">CGFloat</span> <span class="n">minimumLineSpacing</span><span class="p">;</span>
+</span><span class='line'><span class="c1">//同一行的cell中互相之间的最小间隔，设置这个值之后，那么cell与cell之间至少为这个值</span>
+</span><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="k">nonatomic</span><span class="p">)</span> <span class="n">CGFloat</span> <span class="n">minimumInteritemSpacing</span><span class="p">;</span>
+</span><span class='line'><span class="c1">//每个cell统一尺寸</span>
+</span><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="k">nonatomic</span><span class="p">)</span> <span class="bp">CGSize</span> <span class="n">itemSize</span><span class="p">;</span>
+</span><span class='line'><span class="c1">//滑动反向，默认滑动方向是垂直方向滑动</span>
+</span><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="k">nonatomic</span><span class="p">)</span> <span class="n">UICollectionViewScrollDirection</span> <span class="n">scrollDirection</span><span class="p">;</span>
+</span><span class='line'><span class="c1">//每一组头视图的尺寸。如果是垂直方向滑动，则只有高起作用；如果是水平方向滑动，则只有宽起作用。</span>
+</span><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="k">nonatomic</span><span class="p">)</span> <span class="bp">CGSize</span> <span class="n">headerReferenceSize</span><span class="p">;</span>
+</span><span class='line'><span class="c1">//每一组尾部视图的尺寸。如果是垂直方向滑动，则只有高起作用；如果是水平方向滑动，则只有宽起作用。</span>
+</span><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="k">nonatomic</span><span class="p">)</span> <span class="bp">CGSize</span> <span class="n">footerReferenceSize</span><span class="p">;</span>
+</span><span class='line'><span class="c1">//每一组的内容缩进</span>
+</span><span class='line'><span class="k">@property</span> <span class="p">(</span><span class="k">nonatomic</span><span class="p">)</span> <span class="bp">UIEdgeInsets</span> <span class="n">sectionInset</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上面是UICollectionViewFlowLayout内部的属性，这些属性都是统一设置，若是统一设置无法满足需求，可以实现<code>UICollectionViewDelegateFlowLayout</code>方法，进行对应的设置。</p>
+
+<p>了解了UICollectionViewFlowLayout主要属性，我们再来看看使用步骤：   <br/>
+1、生成一个UICollectionViewFlowLayout对象给collection view   <br/>
+2、通过itemSize来配置cell的宽和高   <br/>
+3、如果有需要通过设置minimumInteritemSpacing来设置每个cell之间的间距，通过minimumLineSpacing来设置同一组当中不同行之间cell的行距。   <br/>
+4、如果想要组头视图或者组尾视图，指定它们的大小   <br/>
+5、设置layout的滑动方向   <br/>
+6、如果统一设置无法满足需求，实现UICollectionViewDelegateFlowLayout方法来进行设置。</p>
+
+<p>相关实现代码:<a href="https://github.com/liuchungui/UICollectionViewDemo">UICollectionViewDemo</a></p>
+
+<h2>参考</h2>
+
+<p><a href="https://developer.apple.com/library/prerelease/ios/documentation/WindowsViews/Conceptual/CollectionViewPGforIOS/Introduction/Introduction.html">Collection View Programming Guide for iOS</a>   <br/>
+<a href="http://www.onevcat.com/2012/06/introducing-collection-views/">WWDC 2012 Session笔记——205 Introducing Collection Views</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">刘春桂</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2015-11-02T00:29:12+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>2</span><span class='date-suffix'>nd</span>, <span class='date-year'>2015</span></span> <span class='time'>12:29 am</span></time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+
+  
+    <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+	<span class="jiathis_txt">分享到：</span>
+	<a class="jiathis_button_tools_1"></a>
+	<a class="jiathis_button_tools_2"></a>
+	<a class="jiathis_button_tools_3"></a>
+	<a class="jiathis_button_tools_4"></a>
+	<a href="http://www.jiathis.com/share?uid=2059456" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+	<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config = {data_track_clickback:'true'};
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=2059456" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2059456"></script>
+<!-- UY END -->
+
+  
+
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2015/10/23/gitzong-jie/" title="Previous Post: Git简单总结">&laquo; Git简单总结</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/11/02/uicollectionviewzhi-jie-shao-shi-yong-pian/">UICollectionView之介绍使用篇</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/10/23/gitzong-jie/">Git简单总结</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/10/21/mhuan-jing-xia-nginxshi-xian-fan-xiang-dai-li/">Mac环境下Nginx实现反向代理</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/10/19/cocoapodschuang-jian-si-you-pods/">CocoaPods创建私有Pods</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/10/11/ios9zhi-gua-pei-ats/">iOS9之适配ATS</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+ <h1>Categories</h1>
+ <ul id="categories">
+  <li class='category'><a href='/blog/categories/git/'>git (1)</a></li>
+<li class='category'><a href='/blog/categories/ios/'>ios (2)</a></li>
+<li class='category'><a href='/blog/categories/mac/'>mac (1)</a></li>
+<li class='category'><a href='/blog/categories/nginx/'>nginx (1)</a></li>
+<li class='category'><a href='/blog/categories/octopress/'>octopress (1)</a></li>
+<li class='category'><a href='/blog/categories/web/'>web (1)</a></li>
+
+ </ul>
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?40391c9d11f57c2384e5811d517bef62";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+<script>
+
+(function(){
+
+    var bp = document.createElement('script');
+
+    bp.src = '//push.zhanzhang.baidu.com/push.js';
+
+    var s = document.getElementsByTagName("script")[0];
+
+    s.parentNode.insertBefore(bp, s);
+
+})();
+
+</script>
+
+<p>
+  &copy; 2015 - 刘春桂 -
+  <span class="credit">基于 <a href="http://octopress.org" target="_blank">Octopress</a></span>
+  <span class="credit">, 感谢 <a href="http://gitcafe.com/signup?invited_by=tangqiaoboy" target="_blank">GitCafe</a> 为本站提供存储空间</span>
+</p>
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

@@ -9,7 +9,7 @@
   <meta name="author" content="刘春桂">
 
   
-  <meta name="description" content="这篇文章分为两部分，一是搭建git服务器，二是git命令，主要是记录了一下我搭建git服务器流程和用到的相关命令。 一、Mac环境下搭建Git服务器 这里简单说一下Mac环境下通过git+ssh搭建服务器的流程。 1、打开远程登陆 系统偏好设置 -> 共享 -> 远程登陆 2、添加git用户 &hellip;">
+  <meta name="description" content="UICollectionView是一种类似于UITableView但又比UITableView功能更强大、更灵活的视图，这是源于它将UICollectionView对cell的布局交给了UICollectionViewLayout，而且允许用户自定义layout来进行布局。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -72,6 +72,48 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/11/02/uicollectionviewzhi-jie-shao-shi-yong-pian/">UICollectionView之介绍使用篇</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-11-02T00:29:12+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>2</span><span class='date-suffix'>nd</span>, <span class='date-year'>2015</span></span> <span class='time'>12:29 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>UICollectionView是一种类似于UITableView但又比UITableView功能更强大、更灵活的视图，这是源于它将UICollectionView对cell的布局交给了UICollectionViewLayout，而且允许用户自定义layout来进行布局。</p>
+
+<p>下面是UICollectionView合并内容和布局并生成最终界面的一个流程：</p>
+
+<p><img src="http://ww3.sinaimg.cn/large/7746cd07jw1exjnjqrju5j20x00qk76h.jpg" alt="" /></p>
+
+<p>当UICollectionView显示内容时，先从Data source(数据源)获取cell，然后交给UICollectionView。再从UICollectionViewLayout获取对应的layout attributes(布局属性)。最后，根据每个cell对应的layout attributes(布局属性)来对cell进行布局，生成了最终的界面。而用户交互的时候，都是通过Delegate来进行交互。当然，上面只是布局cell，但是UICollectionView内部还有Supplementary View和Decoration View，也可以对其进行布局。</p>
+
+<p>上面，我们了解了UICollectionView的工作流程，我们将UICollectionView分成视图、数据源和代理方法、UICollectionViewLayout三块来介绍。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2015/11/02/uicollectionviewzhi-jie-shao-shi-yong-pian/">更多 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -449,6 +491,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/11/02/uicollectionviewzhi-jie-shao-shi-yong-pian/">UICollectionView之介绍使用篇</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/10/23/gitzong-jie/">Git简单总结</a>
       </li>
     
@@ -462,10 +508,6 @@
     
       <li class="post">
         <a href="/blog/2015/10/11/ios9zhi-gua-pei-ats/">iOS9之适配ATS</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/09/25/zi-jian-zheng-shu-pei-zhi-httpsfu-wu-qi/">自建证书配置HTTPS服务器</a>
       </li>
     
   </ul>
