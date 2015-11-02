@@ -9,7 +9,7 @@
   <meta name="author" content="刘春桂">
 
   
-  <meta name="description" content="UICollectionView是一种类似于UITableView但又比UITableView功能更强大、更灵活的视图，这是源于它将UICollectionView对cell的布局交给了UICollectionViewLayout，而且允许用户自定义layout来进行布局。 &hellip;">
+  <meta name="description" content="实现垂直方向的单列表来说，使用UITableView足以；若是需要构建横向滑动列表、gridView等直线型布局，则使用UICollectionView+UICollectionViewFlowLayout搭建最合适；更复杂的布局，则可以使用UICollectionView+ &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -94,13 +94,15 @@
   </header>
 
 
-  <div class="entry-content"><p>UICollectionView是一种类似于UITableView但又比UITableView功能更强大、更灵活的视图，这是源于它将UICollectionView对cell的布局交给了UICollectionViewLayout，而且允许用户自定义layout来进行布局。</p>
+  <div class="entry-content"><p>实现垂直方向的单列表来说，使用UITableView足以；若是需要构建横向滑动列表、gridView等直线型布局，则使用UICollectionView+UICollectionViewFlowLayout搭建最合适；更复杂的布局，则可以使用UICollectionView+自定义Layout来实现。</p>
 
-<p>下面是UICollectionView合并内容和布局并生成最终界面的一个流程：</p>
+<p>而这篇博客就来介绍一下UICollectionView。</p>
+
+<p>首先，来了解一下UICollectionView工作流程：</p>
 
 <p><img src="http://ww3.sinaimg.cn/large/7746cd07jw1exjnjqrju5j20x00qk76h.jpg" alt="" /></p>
 
-<p>当UICollectionView显示内容时，先从Data source(数据源)获取cell，然后交给UICollectionView。再从UICollectionViewLayout获取对应的layout attributes(布局属性)。最后，根据每个cell对应的layout attributes(布局属性)来对cell进行布局，生成了最终的界面。而用户交互的时候，都是通过Delegate来进行交互。当然，上面只是布局cell，但是UICollectionView内部还有Supplementary View和Decoration View，也可以对其进行布局。</p>
+<p>当UICollectionView显示内容时，先从数据源获取cell，然后交给UICollectionView。再从UICollectionViewLayout获取对应的layout attributes(布局属性)。最后，根据每个cell对应的layout attributes(布局属性)来对cell进行布局，生成了最终的界面。而用户交互的时候，都是通过Delegate来进行交互。当然，上面只是布局cell，但是UICollectionView内部还有Supplementary View和Decoration View，也可以对其进行布局。</p>
 
 <p>上面，我们了解了UICollectionView的工作流程，我们将UICollectionView分成视图、数据源和代理方法、UICollectionViewLayout三块来介绍。</p>
 

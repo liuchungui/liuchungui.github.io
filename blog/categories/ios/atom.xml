@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Ios | liuchungui's Blog]]></title>
   <link href="http://liuchungui.github.io/blog/categories/ios/atom.xml" rel="self"/>
   <link href="http://liuchungui.github.io/"/>
-  <updated>2015-11-02T01:16:47+08:00</updated>
+  <updated>2015-11-02T17:37:39+08:00</updated>
   <id>http://liuchungui.github.io/</id>
   <author>
     <name><![CDATA[刘春桂]]></name>
@@ -18,13 +18,15 @@
     <link href="http://liuchungui.github.io/blog/2015/11/02/uicollectionviewzhi-jie-shao-shi-yong-pian/"/>
     <updated>2015-11-02T00:29:12+08:00</updated>
     <id>http://liuchungui.github.io/blog/2015/11/02/uicollectionviewzhi-jie-shao-shi-yong-pian</id>
-    <content type="html"><![CDATA[<p>UICollectionView是一种类似于UITableView但又比UITableView功能更强大、更灵活的视图，这是源于它将UICollectionView对cell的布局交给了UICollectionViewLayout，而且允许用户自定义layout来进行布局。</p>
+    <content type="html"><![CDATA[<p>实现垂直方向的单列表来说，使用UITableView足以；若是需要构建横向滑动列表、gridView等直线型布局，则使用UICollectionView+UICollectionViewFlowLayout搭建最合适；更复杂的布局，则可以使用UICollectionView+自定义Layout来实现。</p>
 
-<p>下面是UICollectionView合并内容和布局并生成最终界面的一个流程：</p>
+<p>而这篇博客就来介绍一下UICollectionView。</p>
+
+<p>首先，来了解一下UICollectionView工作流程：</p>
 
 <p><img src="http://ww3.sinaimg.cn/large/7746cd07jw1exjnjqrju5j20x00qk76h.jpg" alt="" /></p>
 
-<p>当UICollectionView显示内容时，先从Data source(数据源)获取cell，然后交给UICollectionView。再从UICollectionViewLayout获取对应的layout attributes(布局属性)。最后，根据每个cell对应的layout attributes(布局属性)来对cell进行布局，生成了最终的界面。而用户交互的时候，都是通过Delegate来进行交互。当然，上面只是布局cell，但是UICollectionView内部还有Supplementary View和Decoration View，也可以对其进行布局。</p>
+<p>当UICollectionView显示内容时，先从数据源获取cell，然后交给UICollectionView。再从UICollectionViewLayout获取对应的layout attributes(布局属性)。最后，根据每个cell对应的layout attributes(布局属性)来对cell进行布局，生成了最终的界面。而用户交互的时候，都是通过Delegate来进行交互。当然，上面只是布局cell，但是UICollectionView内部还有Supplementary View和Decoration View，也可以对其进行布局。</p>
 
 <p>上面，我们了解了UICollectionView的工作流程，我们将UICollectionView分成视图、数据源和代理方法、UICollectionViewLayout三块来介绍。</p>
 
@@ -107,7 +109,7 @@
 
 
 <p> 2、长按cell，显示编辑菜单
- 当用户长按cell时，collection view视图会显示一个编辑菜单。这个编辑菜单可以用来剪切、复制和粘贴cell。不过，要显示这个编辑菜单需要满足很多条件：</p>
+ 与UITableView不同，用户长按cell时，UICollectionView可以显示编辑菜单。这个编辑菜单可以用来剪切、复制和粘贴cell。不过，要显示这个编辑菜单需要满足下面几个条件：</p>
 
 <ul>
 <li>代理对象必须实现下面三个方法：     <br/>
@@ -132,15 +134,16 @@
 
 <h2>三、UICollectionViewLayout</h2>
 
-<p><code>UICollectionViewLayout</code>是UICollectionView比UITableView更强大原因，它是UICollectionView的精髓，它通过<code>UICollectionViewLayoutAttributes</code>类来管理<code>cell</code>、<code>Supplementary View</code>和<code>Decoration View</code>的<code>位置</code>、<code>transform</code>、<code>alpha</code>、<code>hidden</code>等等。   <br/>
+<p><code>UICollectionViewLayout</code>是通过<code>UICollectionViewLayoutAttributes</code>类来管理<code>cell</code>、<code>Supplementary View</code>和<code>Decoration View</code>的<code>位置</code>、<code>transform</code>、<code>alpha</code>、<code>hidden</code>等等。   <br/>
 UICollectionViewLayout这个类只是一个基类，我们给UICollectionView使用的都是它的<code>子类</code>。系统为我们提供了一个最常用的layout为<code>UICollectionViewFlowLayout</code>，我们可以使用它制作<code>grid view</code>。当UICollectionViewLayout满足不了我们的需求时，我们可以<code>子类化UICollectionViewLayout</code>或者<code>自定义layout</code>，这个内容放到我下一篇当中。</p>
 
-<p>下面，我们来看看怎么使用UICollectionViewFlowLayout。
-使用UICollectionViewFlowLayout之前，我们来了解它内部常用的属性：</p>
+<h4>UICollectionViewFlowLayout</h4>
 
-<pre><code>//同一组当中，行与行之间的最小行间距，但是不同组之间的不同行cell不受这个值影响。
+<p>使用UICollectionViewFlowLayout之前，我们来了解它内部常用的属性：</p>
+
+<pre><code>//同一组当中，垂直方向：行与行之间的间距；水平方向：列与列之间的间距
 @property (nonatomic) CGFloat minimumLineSpacing; 
-//同一行的cell中互相之间的最小间隔，设置这个值之后，那么cell与cell之间至少为这个值
+//垂直方向：同一行中的cell之间的间距；水平方向：同一列中，cell与cell之间的间距
 @property (nonatomic) CGFloat minimumInteritemSpacing;
 //每个cell统一尺寸
 @property (nonatomic) CGSize itemSize;
@@ -154,17 +157,46 @@ UICollectionViewLayout这个类只是一个基类，我们给UICollectionView使
 @property (nonatomic) UIEdgeInsets sectionInset;
 </code></pre>
 
-<p>上面是UICollectionViewFlowLayout内部的属性，这些属性都是统一设置，若是统一设置无法满足需求，可以实现<code>UICollectionViewDelegateFlowLayout</code>方法，进行对应的设置。</p>
+<p>注意：UICollectionViewFlowLayout内部的属性都是用来统一设置，若是统一设置无法满足需求，可以实现<code>UICollectionViewDelegateFlowLayout</code>代理方法，进行对应的设置。而后面内容我都以UICollectionViewFlowLayout的属性来叙述，请自行参照修改。</p>
 
-<p>了解了UICollectionViewFlowLayout主要属性，我们再来看看使用步骤：   <br/>
-1、生成一个UICollectionViewFlowLayout对象给collection view   <br/>
-2、通过itemSize来配置cell的宽和高   <br/>
-3、如果有需要通过设置minimumInteritemSpacing来设置每个cell之间的间距，通过minimumLineSpacing来设置同一组当中不同行之间cell的行距。   <br/>
-4、如果想要组头视图或者组尾视图，指定它们的大小   <br/>
-5、设置layout的滑动方向   <br/>
-6、如果统一设置无法满足需求，实现UICollectionViewDelegateFlowLayout方法来进行设置。</p>
+<p>UICollectionViewFlowLayout在纵向滑动与横向滑动时，布局是不太一样的。</p>
 
-<p>相关实现代码:<a href="https://github.com/liuchungui/UICollectionViewDemo">UICollectionViewDemo</a></p>
+<p align="center" >
+  <img src="http://ww1.sinaimg.cn/large/7746cd07jw1exmpk8hs66j20ea0fcabe.jpg" width=257 height = 274>
+  <img src="http://ww3.sinaimg.cn/large/7746cd07jw1exmq7ebjo2j20es0cujsp.jpg" width=266 height = 231>
+</p>
+
+
+<p>由上图就可以看出来，UICollectionViewFlowLayout在布局时，会根据scrollDirection的值不同而产生不同的布局。</p>
+
+<ul>
+<li><p>垂直方向滑动：</p>
+
+<ul>
+<li>Cell布局：UICollectionView的内容宽度与本身视图的宽度相等，并且是固定的。会根据<code>sectionInset左右缩进</code>、<code>itemSize的宽度</code>、<code>minimumInteritemSpacing</code>三个值来计算每一行cell数量。   <br/>
+具体计算公式是:   <br/>
+<code>  
+cellCount = (CollectionViewContentWidth-sectionInset.left-sectionInset.right+minimumInteritemSpacing)/(itemSize.width+minimumInteritemSpacing)      
+</code>
+<code>CollectionViewContentWidth</code>是UICollectionView的内容宽度，计算出来的<code>cellCount</code>进行四舍五入成一个整数就是<code>每一行cell的数量</code>。  <br/>
+而每个cell之间实际的间隔值则是:  <br/>
+<code>realInteritemSpacing = (CollectionViewContentWidth-sectionInset.left-sectionInset.right-cellCount*itemSize.width)/(cellCount-1)</code>  <br/>
+当每个cell大小确定、每一行cell的个数确定、每个cell之间的间距确定之后，UICollectionViewFlowLayout就可以计算出每一行cell的frame了。  <br/>
+而如果同一组cell的个数，在水平方向的一行放不下去，则就会放入第二行，而这第二行的cell在垂直方向与第一行的cell相隔<code>minimumLineSpacing</code>。这样又确定了行与行之间的间距，那么这一组cell的布局就可以确定了。</li>
+<li>头视图与尾部视图：根据headerReferenceSize和footerReferenceSize中的高来确定头部和尾部视图的高，它其实就是两个不同类型的Supplementary View。</li>
+</ul>
+</li>
+<li><p>水平方向滑动：</p>
+
+<ul>
+<li>Cell布局：水平方向的滑动内容的高与本身视图的高是相等的，并且是固定的。它的cell是从<code>上到下进行布局</code>的。会根据<code>sectionInset上下缩进</code>、<code>itemSize的高度</code>、<code>minimumInteritemSpacing</code>三个值来计算每一列放多少个cell，具体计算公式可以参照垂直方向滑动的公式。之后的逻辑和垂直方向滑动时一样，只是minimumLineSpacing现在是代表列与列之间的间距。</li>
+<li>头视图与尾部视图：根据headerReferenceSize和footerReferenceSize中的宽来确定头部和尾部视图的宽。</li>
+</ul>
+</li>
+</ul>
+
+
+<p>相关使用UICollectionViewFlowLayout代码:<a href="https://github.com/liuchungui/UICollectionViewDemo">UICollectionViewDemo</a></p>
 
 <h2>参考</h2>
 
