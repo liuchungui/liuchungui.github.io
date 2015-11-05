@@ -9,7 +9,7 @@
   <meta name="author" content="刘春桂">
 
   
-  <meta name="description" content="实现垂直方向的单列表来说，使用UITableView足以；若是需要构建横向滑动列表、gridView等直线型布局，则使用UICollectionView+UICollectionViewFlowLayout搭建最合适；更复杂的布局，则可以使用UICollectionView+ &hellip;">
+  <meta name="description" content="当我们使用系统自带的UICollectionViewFlowLayout无法实现我们的布局时，我们就可以考虑自定义layout。 所以，了解并学习一下自定义Layout是很有必要。 其实可以分三个步骤： 覆写prepareLayout方法，并在里面事先就计算好必要的布局信息并存储起来。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -72,6 +72,49 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/11/06/uicollectionviewzhi-zi-ding-yi-layout/">UICollectionView之自定义Layout</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-11-06T00:21:08+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>6</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>12:21 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>当我们使用系统自带的UICollectionViewFlowLayout无法实现我们的布局时，我们就可以考虑自定义layout。     <br/>
+所以，了解并学习一下自定义Layout是很有必要。    <br/>
+其实可以分三个步骤：</p>
+
+<ol>
+<li>覆写prepareLayout方法，并在里面事先就计算好必要的布局信息并存储起来。</li>
+<li>基于prepareLayout方法中的布局信息，使用collectionViewContentSize方法返回UICollectionView的内容尺寸。</li>
+<li>使用layoutAttributesForElementsInRect:方法返回指定区域cell、Supplementary View和Decoration View的布局属性。</li>
+</ol>
+
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2015/11/06/uicollectionviewzhi-zi-ding-yi-layout/">更多 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -493,6 +536,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/11/06/uicollectionviewzhi-zi-ding-yi-layout/">UICollectionView之自定义Layout</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/11/02/uicollectionviewzhi-jie-shao-shi-yong-pian/">UICollectionView之介绍使用篇</a>
       </li>
     
@@ -506,10 +553,6 @@
     
       <li class="post">
         <a href="/blog/2015/10/19/cocoapodschuang-jian-si-you-pods/">CocoaPods创建私有Pods</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/10/11/ios9zhi-gua-pei-ats/">iOS9之适配ATS</a>
       </li>
     
   </ul>

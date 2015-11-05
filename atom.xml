@@ -4,7 +4,7 @@
   <title><![CDATA[liuchungui's Blog]]></title>
   <link href="http://liuchungui.github.io/atom.xml" rel="self"/>
   <link href="http://liuchungui.github.io/"/>
-  <updated>2015-11-02T17:39:58+08:00</updated>
+  <updated>2015-11-06T00:36:40+08:00</updated>
   <id>http://liuchungui.github.io/</id>
   <author>
     <name><![CDATA[刘春桂]]></name>
@@ -12,6 +12,170 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[UICollectionView之自定义Layout]]></title>
+    <link href="http://liuchungui.github.io/blog/2015/11/06/uicollectionviewzhi-zi-ding-yi-layout/"/>
+    <updated>2015-11-06T00:21:08+08:00</updated>
+    <id>http://liuchungui.github.io/blog/2015/11/06/uicollectionviewzhi-zi-ding-yi-layout</id>
+    <content type="html"><![CDATA[<p>当我们使用系统自带的UICollectionViewFlowLayout无法实现我们的布局时，我们就可以考虑自定义layout。     <br/>
+所以，了解并学习一下自定义Layout是很有必要。    <br/>
+其实可以分三个步骤：</p>
+
+<ol>
+<li>覆写prepareLayout方法，并在里面事先就计算好必要的布局信息并存储起来。</li>
+<li>基于prepareLayout方法中的布局信息，使用collectionViewContentSize方法返回UICollectionView的内容尺寸。</li>
+<li>使用layoutAttributesForElementsInRect:方法返回指定区域cell、Supplementary View和Decoration View的布局属性。</li>
+</ol>
+
+
+<!-- more -->
+
+
+<p>了解了自定义布局的三个主要步骤，我们来通过自定义布局的方式用UICollectionView实现grideView。当然，grideView使用<code>UICollectionViewFlowLayout</code>就可以轻易实现，这里我们只是学习了解一下自定义布局的过程，所以拿grideView这个经常用的来作为例子。</p>
+
+<p>我们创建一个新的工程<a href="https://github.com/liuchungui/BGCustomLayoutCollectionViewDemo">BGCustomLayoutCollectionViewDemo</a>。然后创建一个UICollectionViewLayout的子类对象<code>BGGrideLayout</code>，它就是我们自定义layout对象。</p>
+
+<h3>在BGGrideLayout里面，我们首先覆写prepareLayout方法。</h3>
+
+<p>prepareLayout是专门用来准备布局的，在<code>prepareLayout</code>方法里面我们可以事先就计算后面要用到的布局信息并存储起来，防止后面方法多次计算，提高性能。例如，我们可以在此方法就计算好每个cell的属性、整个CollectionView的内容尺寸等等。此方法在布局之前会调用一次，之后只有在调用<code>invalidateLayout</code>、<code>shouldInvalidateLayoutForBoundsChange:</code>返回<code>YES</code>和<code>UICollectionView刷新</code>的时候才会调用。</p>
+
+<p>而在BGGrideLayout的prepareLayout方法中，我们有两个目的：    <br/>
+一是获取对应indexPath的<code>UICollectionViewLayoutAttributes</code>对象，并存储到二维数组<code>layoutInfoArr</code>当中；   <br/>
+二是计算出内容尺寸并保存到全局变量<code>contentSize</code>当中。     <br/>
+代码如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">prepareLayout</span><span class="p">{</span>
+</span><span class='line'>    <span class="p">[</span><span class="nb">super</span> <span class="n">prepareLayout</span><span class="p">];</span>
+</span><span class='line'>    <span class="bp">NSMutableArray</span> <span class="o">*</span><span class="n">layoutInfoArr</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSMutableArray</span> <span class="n">array</span><span class="p">];</span>
+</span><span class='line'>    <span class="bp">NSInteger</span> <span class="n">maxNumberOfItems</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>    <span class="c1">//获取布局信息</span>
+</span><span class='line'>    <span class="bp">NSInteger</span> <span class="n">numberOfSections</span> <span class="o">=</span> <span class="p">[</span><span class="nb">self</span><span class="p">.</span><span class="n">collectionView</span> <span class="n">numberOfSections</span><span class="p">];</span>
+</span><span class='line'>    <span class="k">for</span> <span class="p">(</span><span class="bp">NSInteger</span> <span class="n">section</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">section</span> <span class="o">&lt;</span> <span class="n">numberOfSections</span><span class="p">;</span> <span class="n">section</span><span class="o">++</span><span class="p">){</span>
+</span><span class='line'>        <span class="bp">NSInteger</span> <span class="n">numberOfItems</span> <span class="o">=</span> <span class="p">[</span><span class="nb">self</span><span class="p">.</span><span class="n">collectionView</span> <span class="nl">numberOfItemsInSection</span><span class="p">:</span><span class="n">section</span><span class="p">];</span>
+</span><span class='line'>        <span class="bp">NSMutableArray</span> <span class="o">*</span><span class="n">subArr</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSMutableArray</span> <span class="nl">arrayWithCapacity</span><span class="p">:</span><span class="n">numberOfItems</span><span class="p">];</span>
+</span><span class='line'>        <span class="k">for</span> <span class="p">(</span><span class="bp">NSInteger</span> <span class="n">item</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">item</span> <span class="o">&lt;</span> <span class="n">numberOfItems</span><span class="p">;</span> <span class="n">item</span><span class="o">++</span><span class="p">){</span>
+</span><span class='line'>            <span class="bp">NSIndexPath</span> <span class="o">*</span><span class="n">indexPath</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSIndexPath</span> <span class="nl">indexPathForItem</span><span class="p">:</span><span class="n">item</span> <span class="nl">inSection</span><span class="p">:</span><span class="n">section</span><span class="p">];</span>
+</span><span class='line'>            <span class="bp">UICollectionViewLayoutAttributes</span> <span class="o">*</span><span class="n">attributes</span> <span class="o">=</span> <span class="p">[</span><span class="nb">self</span> <span class="nl">layoutAttributesForItemAtIndexPath</span><span class="p">:</span><span class="n">indexPath</span><span class="p">];</span>
+</span><span class='line'>            <span class="p">[</span><span class="n">subArr</span> <span class="nl">addObject</span><span class="p">:</span><span class="n">attributes</span><span class="p">];</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="k">if</span><span class="p">(</span><span class="n">maxNumberOfItems</span> <span class="o">&lt;</span> <span class="n">numberOfItems</span><span class="p">){</span>
+</span><span class='line'>            <span class="n">maxNumberOfItems</span> <span class="o">=</span> <span class="n">numberOfItems</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="c1">//添加到二维数组</span>
+</span><span class='line'>        <span class="p">[</span><span class="n">layoutInfoArr</span> <span class="nl">addObject</span><span class="p">:[</span><span class="n">subArr</span> <span class="k">copy</span><span class="p">]];</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="c1">//存储布局信息</span>
+</span><span class='line'>    <span class="nb">self</span><span class="p">.</span><span class="n">layoutInfoArr</span> <span class="o">=</span> <span class="p">[</span><span class="n">layoutInfoArr</span> <span class="k">copy</span><span class="p">];</span>
+</span><span class='line'>    <span class="c1">//保存内容尺寸</span>
+</span><span class='line'>    <span class="nb">self</span><span class="p">.</span><span class="n">contentSize</span> <span class="o">=</span> <span class="n">CGSizeMake</span><span class="p">(</span><span class="n">maxNumberOfItems</span><span class="o">*</span><span class="p">(</span><span class="nb">self</span><span class="p">.</span><span class="n">itemSize</span><span class="p">.</span><span class="n">width</span><span class="o">+</span><span class="nb">self</span><span class="p">.</span><span class="n">interitemSpacing</span><span class="p">)</span><span class="o">+</span><span class="nb">self</span><span class="p">.</span><span class="n">interitemSpacing</span><span class="p">,</span> <span class="n">numberOfSections</span><span class="o">*</span><span class="p">(</span><span class="nb">self</span><span class="p">.</span><span class="n">itemSize</span><span class="p">.</span><span class="n">height</span><span class="o">+</span><span class="nb">self</span><span class="p">.</span><span class="n">lineSpacing</span><span class="p">)</span><span class="o">+</span><span class="nb">self</span><span class="p">.</span><span class="n">lineSpacing</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在上面的代码中，我们看到了<code>UICollectionViewLayoutAttributes</code>这个类，这个类其实专门用来存储视图的内容，例如frame、size、apha、hiden等等，layout最后会拿着这些frame设置给对应的视图。
+而上面代码中，获取<code>UICollectionViewLayoutAttributes</code>是通过<code>layoutAttributesForItemAtIndexPath:</code>方法</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="p">-</span> <span class="p">(</span><span class="bp">UICollectionViewLayoutAttributes</span> <span class="o">*</span><span class="p">)</span><span class="nf">layoutAttributesForItemAtIndexPath:</span><span class="p">(</span><span class="bp">NSIndexPath</span> <span class="o">*</span><span class="p">)</span><span class="nv">indexPath</span><span class="p">{</span>
+</span><span class='line'>    <span class="bp">UICollectionViewLayoutAttributes</span> <span class="o">*</span><span class="n">attributes</span> <span class="o">=</span> <span class="p">[</span><span class="bp">UICollectionViewLayoutAttributes</span> <span class="nl">layoutAttributesForCellWithIndexPath</span><span class="p">:</span><span class="n">indexPath</span><span class="p">];</span>
+</span><span class='line'>    <span class="c1">//每一组cell为一行</span>
+</span><span class='line'>    <span class="n">attributes</span><span class="p">.</span><span class="n">frame</span> <span class="o">=</span> <span class="n">CGRectMake</span><span class="p">((</span><span class="nb">self</span><span class="p">.</span><span class="n">itemSize</span><span class="p">.</span><span class="n">width</span><span class="o">+</span><span class="nb">self</span><span class="p">.</span><span class="n">interitemSpacing</span><span class="p">)</span><span class="o">*</span><span class="n">indexPath</span><span class="p">.</span><span class="n">row</span><span class="o">+</span><span class="nb">self</span><span class="p">.</span><span class="n">interitemSpacing</span><span class="p">,</span> <span class="p">(</span><span class="nb">self</span><span class="p">.</span><span class="n">itemSize</span><span class="p">.</span><span class="n">height</span><span class="o">+</span><span class="nb">self</span><span class="p">.</span><span class="n">lineSpacing</span><span class="p">)</span><span class="o">*</span><span class="n">indexPath</span><span class="p">.</span><span class="n">section</span><span class="o">+</span><span class="nb">self</span><span class="p">.</span><span class="n">lineSpacing</span><span class="p">,</span> <span class="nb">self</span><span class="p">.</span><span class="n">itemSize</span><span class="p">.</span><span class="n">width</span><span class="p">,</span> <span class="nb">self</span><span class="p">.</span><span class="n">itemSize</span><span class="p">.</span><span class="n">height</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">attributes</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在这个方法中，<code>itemSize</code>是cell的大小，<code>interitemSpacing</code>是cell与cell之间的间距，<code>lineSpacing</code>是行距。</p>
+
+<h3>随后，覆写collectionViewContentSize</h3>
+
+<p>collectionViewContentSize返回内容尺寸给UICollectionView。注意这个方法返回的尺寸是给UICollectionView这个继承于<code>UIScrollView</code>的视图作为<code>contentSize</code>，不是UICollectionView的视图尺寸。正是因为这一点，我们自定义layout如果想让它只能横向滑动，只需要将这个<code>size.height</code>设置成<code>collectionView.height</code>就行了。
+这个方法会多次调用，所以最好是在prepareLayout里就计算好。
+在BGGrideLayout类中，我们只需要返回前面计算好的内容尺寸就行了。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="p">-</span> <span class="p">(</span><span class="bp">CGSize</span><span class="p">)</span><span class="nf">collectionViewContentSize</span><span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nb">self</span><span class="p">.</span><span class="n">contentSize</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>最后，覆写layoutAttributesForElementsInRect:方法</h3>
+
+<p>此方法需要返回一组UICollectionViewLayoutAttributes类型对象。它代表着在这个指定的区域中，我们需要显示<code>cell</code>、<code>Supplementary View</code>和<code>Decoration View</code>中哪些视图，而这些视图的属性则保存UICollectionViewLayoutAttributes中。
+此方法会多次调用，为了更好的性能，在这个方法当中，我们使用的UICollectionViewLayoutAttributes最好是在prepareLayout已经布局好的信息。</p>
+
+<p>在BGGrideLayout中，我们遍历二维数组，找出了与指定区域有交接的UICollectionViewLayoutAttributes对象放到一个数组中，然后返回。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="p">-</span> <span class="p">(</span><span class="bp">NSArray</span> <span class="o">*</span><span class="p">)</span><span class="nf">layoutAttributesForElementsInRect:</span><span class="p">(</span><span class="bp">CGRect</span><span class="p">)</span><span class="nv">rect</span><span class="p">{</span>
+</span><span class='line'>    <span class="bp">NSMutableArray</span> <span class="o">*</span><span class="n">layoutAttributesArr</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSMutableArray</span> <span class="n">array</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">[</span><span class="nb">self</span><span class="p">.</span><span class="n">layoutInfoArr</span> <span class="nl">enumerateObjectsUsingBlock</span><span class="p">:</span><span class="o">^</span><span class="p">(</span><span class="bp">NSArray</span> <span class="o">*</span><span class="n">array</span><span class="p">,</span> <span class="bp">NSUInteger</span> <span class="n">i</span><span class="p">,</span> <span class="kt">BOOL</span> <span class="o">*</span> <span class="n">_Nonnull</span> <span class="n">stop</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="p">[</span><span class="n">array</span> <span class="nl">enumerateObjectsUsingBlock</span><span class="p">:</span><span class="o">^</span><span class="p">(</span><span class="bp">UICollectionViewLayoutAttributes</span> <span class="o">*</span><span class="n">obj</span><span class="p">,</span> <span class="bp">NSUInteger</span> <span class="n">idx</span><span class="p">,</span> <span class="kt">BOOL</span> <span class="o">*</span> <span class="n">_Nonnull</span> <span class="n">stop</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="k">if</span><span class="p">(</span><span class="n">CGRectIntersectsRect</span><span class="p">(</span><span class="n">obj</span><span class="p">.</span><span class="n">frame</span><span class="p">,</span> <span class="n">rect</span><span class="p">))</span> <span class="p">{</span>
+</span><span class='line'>                <span class="p">[</span><span class="n">layoutAttributesArr</span> <span class="nl">addObject</span><span class="p">:</span><span class="n">obj</span><span class="p">];</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>        <span class="p">}];</span>
+</span><span class='line'>    <span class="p">}];</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">layoutAttributesArr</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>到这里，我们的BGGrideLayout已经写好了，使用部分的代码，请直接查看<a href="https://github.com/liuchungui/BGCustomLayoutCollectionViewDemo">BGCustomLayoutCollectionViewDemo</a>中ViewController里面的代码就行了。</p>
+
+<p>效果：</p>
+
+<p><img src="http://ww4.sinaimg.cn/large/7746cd07jw1exqk0a7ofyg208j0fr7wh.gif" alt="Demo" /></p>
+
+<h2>参考</h2>
+
+<p><a href="https://developer.apple.com/library/prerelease/ios/documentation/WindowsViews/Conceptual/CollectionViewPGforIOS/Introduction/Introduction.html">Collection View Programming Guide for iOS</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[UICollectionView之介绍使用篇]]></title>
