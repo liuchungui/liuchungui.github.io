@@ -4,7 +4,7 @@
   <title><![CDATA[liuchungui's Blog]]></title>
   <link href="http://liuchungui.github.io/atom.xml" rel="self"/>
   <link href="http://liuchungui.github.io/"/>
-  <updated>2015-11-06T00:36:40+08:00</updated>
+  <updated>2015-11-14T18:06:30+08:00</updated>
   <id>http://liuchungui.github.io/</id>
   <author>
     <name><![CDATA[刘春桂]]></name>
@@ -1096,7 +1096,7 @@ alias后面还可以添加正则表达式，例如：</p>
 
 <h4>注意</h4>
 
-<p>1、途中遇到了几次问题，就是<code>pod repo push</code>不上去，显示没有找到对应文件，后来发现是版本的问题，没有打上版本号或者<code>Podspec</code>中版本错了。所以我们在维护一个框架时，修改框架之后，push到git服务器之后先打上tag，然后再修改podspec文件中的版本，最后push到对应的pod repo中。</p>
+<p>1、途中遇到了几次问题，就是<code>pod repo push</code>不上去，显示没有找到对应文件，后来发现是版本的问题，没有打上版本号或者<code>Podspec</code>中版本错了。所以我们在维护一个框架时，修改框架之后，先将podspec文件中的版本修改成下一个版本号，push到git服务器之后先打上tag，最后push到对应的pod repo中。</p>
 
 <p>2、若是在框架当中，存在不同的文件夹，请使用<code>subspec</code>。如果不同文件夹之间的文件有相互导入的情况，请将被导入的头文件设置为<code>public_header_files</code>，并且通过<code>dependency</code>设置依赖，具体可以参考<a href="https://github.com/AFNetworking/AFNetworking/blob/master/AFNetworking.podspec">AFNetworking的podspec</a>文件。</p>
 
@@ -1108,7 +1108,7 @@ alias后面还可以添加正则表达式，例如：</p>
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>pod trunk register youremail
-</span><span class='line'>查看信息
+</span><span class='line'>查看自己的信息
 </span><span class='line'>pod trunk me
 </span><span class='line'>将对应的pod推送到服务器
 </span><span class='line'>pod turnk push</span></code></pre></td></tr></table></div></figure>
