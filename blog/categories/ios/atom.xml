@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Ios | liuchungui's Blog]]></title>
   <link href="http://liuchungui.github.io/blog/categories/ios/atom.xml" rel="self"/>
   <link href="http://liuchungui.github.io/"/>
-  <updated>2015-11-14T18:06:30+08:00</updated>
+  <updated>2015-11-14T21:12:11+08:00</updated>
   <id>http://liuchungui.github.io/</id>
   <author>
     <name><![CDATA[刘春桂]]></name>
@@ -281,7 +281,7 @@ SSLCACertificateFile "/alidata/server/httpd/conf/ssl/ca.crt"
 &lt;/VirtualHost&gt;
 </code></pre>
 
-<p>最后，重启Apache服务器，在浏览器输入网址查看是否配置成功。我这里是个人使用，申请的是免费的证书，我申请证书的网站是<a href="https://buy.wosign.com">沃通</a>。  <br/>
+<p>最后，重启Apache服务器，在浏览器输入网址查看是否配置成功。我这里是个人使用，申请的是免费的证书，我申请证书的网站是<a href="http://www.wosign.com/DVSSL/DV_KuaiSSL_Free.htm">沃通</a>。  <br/>
 搭建的成果：<a href="https://www.casetree.cn">https://www.casetree.cn</a></p>
 
 <h5>第二种、自建证书配置HTTPS服务器</h5>
