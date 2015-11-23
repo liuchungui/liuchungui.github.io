@@ -1,0 +1,509 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>UICollectionView动画 - liuchungui's Blog</title>
+  <meta name="author" content="刘春桂">
+
+  
+  <meta name="description" content="一、简单使用 UICollectionView更新事件有四种分别是插入、删除、刷新、移动，
+api使用起来和UITableView类似，具体可以自己在代码中找，如果需要执行多个更新事件，可以放到performBatchUpdates中的updates闭包中作为一组动画， &hellip;">
+  <meta name="keywords" content="UICollectionView, UICollectionViewLayout, CustomLayout，CollectionView, CollectionView动画, 动画">
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://liuchungui.github.io/blog/2015/11/24/uicollectionviewdong-hua/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="liuchungui's Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="http://cdn.staticfile.org/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<script type="text/javascript">
+  function addBlankTargetForLinks () {
+      $('a[href^="http"]').each(function(){
+          $(this).attr('target', '_blank');
+      });
+  }
+  $(document).bind('DOMNodeInserted', function(event) {
+      addBlankTargetForLinks();
+  });
+</script>
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">liuchungui's Blog</a></h1>
+  
+    <h2>代码嗨起来</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="liuchungui.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">UICollectionView动画</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-11-24T00:00:26+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>24</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>12:00 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h2>一、简单使用</h2>
+
+<p>UICollectionView更新事件有四种分别是<code>插入</code>、<code>删除</code>、<code>刷新</code>、<code>移动</code>，
+api使用起来和UITableView类似，具体可以自己在代码中找，如果需要执行多个更新事件，可以放到performBatchUpdates中的updates闭包中作为一组动画，然后全部执行完之后通过completion调回。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='swift'><span class='line'><span class="n">collectionView</span><span class="p">.</span><span class="n">performBatchUpdates</span><span class="p">({</span> <span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Void</span> <span class="k">in</span>
+</span><span class='line'>            <span class="n">collectionView</span><span class="p">.</span><span class="n">insertItemsAtIndexPaths</span><span class="p">(</span><span class="n">insertIndexPaths</span><span class="p">)</span>
+</span><span class='line'>            <span class="n">collectionView</span><span class="p">.</span><span class="n">moveItemAtIndexPath</span><span class="p">(</span><span class="n">currentIndexPath</span><span class="p">,</span> <span class="nl">toIndexPath</span><span class="p">:</span> <span class="n">toIndexPath</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">},</span> <span class="nl">completion</span><span class="p">:</span> <span class="p">{</span> <span class="p">(</span><span class="n">isFinish</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Void</span> <span class="k">in</span>
+</span><span class='line'>        <span class="p">})</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>二、UICollectionView动画</h2>
+
+<p>四种不同的更新事件，系统默认会带有动画，不过是比较简单的。我们可以自定义layout或者继承flowLayout，在内部实现我们自己想要的动画。下面，我们来说说动画的流程，以及系统默认的四种动画内部是如何的，并且通过代码来修改达到自己想要的动画。</p>
+
+<!-- more -->
+
+
+<h4>CollectionView动画流程</h4>
+
+<p>当我们在外部调用CollectionView相关的api去<code>插入</code>、<code>删除</code>、<code>刷新</code>、<code>移动</code>cell时，首先会通过layout中的<code>layoutAttributesForElementsInRect</code>方法获取更新以后的布局信息，然后通过<code>prepareForCollectionViewUpdates</code>方法来通知layout哪些内容将会发生改变。之后，通过调用layout中的<code>initialLayoutAttributesForAppearingItemAtIndexPath</code>、<code>finalLayoutAttributesForDisappearingItemAtIndexPath</code>方法获取对应indexPath的<code>刚出现时最初布局属性</code>和<code>消失时最终布局属性</code>。而后形成两个动画过程分别是<code>刚出现时最初布局-&gt;更新后布局的出现动画</code>和<code>更新前布局-&gt;消失时最终布局的消失动画</code>，而collectionView中'插入'、'删除'、'刷新'和'移动'动画都是基于这两个动画组合形成的。最后，等这一系列动画执行完之后，最后会调用layout中<code>finalizeCollectionViewUpdates</code>方法，这个方法仍然放在动画块中，我们可以在这个方法当中添加额外的动画。</p>
+
+<p>从上面流程可以看出，在更新的时候，由于<code>更新前布局</code>和<code>更新后布局</code>都是在更新动画前已经设置好了，我们不能去胡乱更改布局，所以我们只能通过<code>initialLayoutAttributesForAppearingItemAtIndexPath</code>和<code>finalLayoutAttributesForDisappearingItemAtIndexPath</code>两个方法来更改<code>刚出现时最初布局属性</code>和<code>消失时最终布局属性</code>，即我们只能更改<code>出现动画的起点</code>和<code>消失动画的终点</code>。</p>
+
+<p>为了更方面的下面说明，引申出两个名词：</p>
+
+<ul>
+<li>出现动画：initialLayoutAttributesForAppearingItemAtIndexPath获取对应indexPath的<code>刚出现时最初布局</code>->更新后布局变化过程</li>
+<li>消失动画：更新之前的布局->finalLayoutAttributesForDisappearingItemAtIndexPath方法获取对应indexPath的<code>消失时最终布局</code>的变化过程</li>
+</ul>
+
+
+<p>注意，出现动画和消失动画针对的是一个cell单元。</p>
+
+<p>下面我们通过代码示例来实现插入、删除、刷新、移动动画。
+代码示例工程：<a href="https://github.com/liuchungui/UICollectionViewAnimationDemo">UICollectionViewAnimationDemo</a></p>
+
+<p>在这个Demo工程中有一个<code>BGSelectImageLayout</code>，它是CollectionView的layout，它的布局方式是水平横向滑动，并且只有一组，每一个普通的cell大小都是<code>itemSize</code>，而选中的cell则宽度是<code>itemSize*2</code>。</p>
+
+<h4>插入动画：</h4>
+
+<p>在当前的布局下，每插入一个cell时，都会影响它后面所有cell布局变化。      <br/>
+例如CollectionView有一行三个cell，为了更好的说明将indexPath是(0,0),(0,1),(0,2)标记为0，1，2。当在第1个位置插入一个cell时，如下图</p>
+
+<p><img src="http://ww2.sinaimg.cn/large/7746cd07jw1eyba1ih4nvj20re0fs75l.jpg" alt="" /></p>
+
+<p>而在这个插入过程中，视觉上会有三个动画过程。new插入到位置1为<code>过程1</code>，1移动一个单位到2为<code>过程2</code>，2移动一个单位到一个新的位置3为<code>过程3</code>，如下图：</p>
+
+<p><img src="http://ww3.sinaimg.cn/large/7746cd07jw1eyba58t45gj20yc0g6760.jpg" alt="" /></p>
+
+<p>虽然视觉上只有三个动画过程，但其实有五个动画。其中，过程1是1位置的<code>出现动画</code>；过程2是1位置的<code>消失动画</code>和2位置的<code>出现动画</code>重合而成；过程3是2位置的<code>消失动画</code>和3位置的<code>出现动画</code>。</p>
+
+<p>其中值得注意的三点，一是除了最后一个，前面的cell消失动画与它后面cell出现动画重合，这样看起来就是当前位置的cell向后平移了一个位置；二是最后一个cell只有出现动画，没有消失动画，整个过程<code>出现动画会多一个</code>；三是插入的cell的出现动画是默认是alpha从0到1的淡入效果。</p>
+
+<p>在代码中，想获得一个插入的cell从小变大的出现效果和其它cell整体向后移动一个位置的动画效果，可以如下实现：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='swift'><span class='line'><span class="kr">override</span> <span class="k">func</span> <span class="nf">initialLayoutAttributesForAppearingItemAtIndexPath</span><span class="p">(</span><span class="nl">itemIndexPath</span><span class="p">:</span> <span class="bp">NSIndexPath</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="bp">UICollectionViewLayoutAttributes</span><span class="o">?</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">let</span> <span class="n">attributes</span> <span class="o">=</span> <span class="nb">super</span><span class="p">.</span><span class="n">initialLayoutAttributesForAppearingItemAtIndexPath</span><span class="p">(</span><span class="n">itemIndexPath</span><span class="p">)</span><span class="o">?</span><span class="p">.</span><span class="k">copy</span><span class="p">()</span> <span class="kt">as</span><span class="o">?</span> <span class="bp">UICollectionViewLayoutAttributes</span>
+</span><span class='line'>    <span class="k">if</span> <span class="nb">self</span><span class="p">.</span><span class="n">insertIndexPathArr</span><span class="p">.</span><span class="n">contains</span><span class="p">(</span><span class="n">itemIndexPath</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">attributes</span><span class="o">?</span><span class="p">.</span><span class="n">transform</span> <span class="o">=</span> <span class="n">CGAffineTransformMakeScale</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">attributes</span><span class="o">?</span><span class="p">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>        <span class="c1">//设置为前一个item的frame</span>
+</span><span class='line'>        <span class="n">attributes</span><span class="o">?</span><span class="p">.</span><span class="n">frame</span> <span class="o">=</span> <span class="nb">self</span><span class="p">.</span><span class="n">currentFrameWithIndexPath</span><span class="p">(</span><span class="bp">NSIndexPath</span><span class="p">(</span><span class="nl">forRow</span><span class="p">:</span> <span class="n">itemIndexPath</span><span class="p">.</span><span class="n">row</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="nl">inSection</span><span class="p">:</span> <span class="n">itemIndexPath</span><span class="p">.</span><span class="n">section</span><span class="p">))</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">attributes</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="kr">override</span> <span class="k">func</span> <span class="n">finalLayoutAttributesForDisappearingItemAtIndexPath</span><span class="p">(</span><span class="nl">itemIndexPath</span><span class="p">:</span> <span class="bp">NSIndexPath</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="bp">UICollectionViewLayoutAttributes</span><span class="o">?</span> <span class="p">{</span>
+</span><span class='line'>   <span class="k">let</span> <span class="n">attributes</span> <span class="o">=</span> <span class="nb">super</span><span class="p">.</span><span class="n">finalLayoutAttributesForDisappearingItemAtIndexPath</span><span class="p">(</span><span class="n">itemIndexPath</span><span class="p">)</span><span class="o">?</span><span class="p">.</span><span class="k">copy</span><span class="p">()</span> <span class="kt">as</span><span class="o">?</span> <span class="bp">UICollectionViewLayoutAttributes</span>
+</span><span class='line'>     <span class="n">attributes</span><span class="o">?</span><span class="p">.</span><span class="n">frame</span> <span class="o">=</span> <span class="nb">self</span><span class="p">.</span><span class="n">currentFrameWithIndexPath</span><span class="p">(</span><span class="bp">NSIndexPath</span><span class="p">(</span><span class="nl">forRow</span><span class="p">:</span> <span class="n">itemIndexPath</span><span class="p">.</span><span class="n">row</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="nl">inSection</span><span class="p">:</span> <span class="n">itemIndexPath</span><span class="p">.</span><span class="n">section</span><span class="p">))</span>
+</span><span class='line'>     <span class="k">return</span> <span class="n">attributes</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这里为了看到效果，我在模拟器的Debug模式下勾选了Slow Animations调慢了动画:
+<img src="http://ww3.sinaimg.cn/large/7746cd07jw1eyaa2ommv4g208j0frab5.gif" alt="" /></p>
+
+<h4>删除动画：</h4>
+
+<p>在上面的位置1插入一个cell后，cell的数量变成了4个，分别是0、1、2、3，它们对应的indexPath为(0,0)、(0,1)、(0,2)、(0,3)。当要删除位置1的cell时，与插入类似，系统默认也会有三个动画过程，如下图：</p>
+
+<p><img src="http://ww3.sinaimg.cn/large/7746cd07jw1eybbqnkm4cj20xo0dita5.jpg" alt="" /></p>
+
+<p>其中，动画过程1是在位置1执行一个消失动画；过程2是位置1的出现动画和位置2的消失动画重合而成；过程3是位置2的出现动画和位置3的消失动画重合而成。</p>
+
+<p><strong>需要注意的是</strong>，一是与插入不同，重合后的效果是cell向前平移了一个位置；二是最后一个位置只有消失动画没有出现动画，整个过程消失动画数会多一个；三是删除的cell的出现动画默认是从1到0的淡出效果。</p>
+
+<p>在代码中，实现一个与插入相对应的动画，即删除的cell从大到小的淡出效果和其它cell整体向前移动一个位置的效果，可以如下实现：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='swift'><span class='line'><span class="kr">override</span> <span class="k">func</span> <span class="nf">initialLayoutAttributesForAppearingItemAtIndexPath</span><span class="p">(</span><span class="nl">itemIndexPath</span><span class="p">:</span> <span class="bp">NSIndexPath</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="bp">UICollectionViewLayoutAttributes</span><span class="o">?</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">let</span> <span class="n">attributes</span> <span class="o">=</span> <span class="nb">super</span><span class="p">.</span><span class="n">initialLayoutAttributesForAppearingItemAtIndexPath</span><span class="p">(</span><span class="n">itemIndexPath</span><span class="p">)</span><span class="o">?</span><span class="p">.</span><span class="k">copy</span><span class="p">()</span> <span class="kt">as</span><span class="o">?</span> <span class="bp">UICollectionViewLayoutAttributes</span>
+</span><span class='line'>    <span class="n">attributes</span><span class="o">?</span><span class="p">.</span><span class="n">frame</span> <span class="o">=</span> <span class="nb">self</span><span class="p">.</span><span class="n">currentFrameWithIndexPath</span><span class="p">(</span><span class="bp">NSIndexPath</span><span class="p">(</span><span class="nl">forRow</span><span class="p">:</span> <span class="n">itemIndexPath</span><span class="p">.</span><span class="n">row</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="nl">inSection</span><span class="p">:</span> <span class="n">itemIndexPath</span><span class="p">.</span><span class="n">section</span><span class="p">))</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">attributes</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="kr">override</span> <span class="k">func</span> <span class="n">finalLayoutAttributesForDisappearingItemAtIndexPath</span><span class="p">(</span><span class="nl">itemIndexPath</span><span class="p">:</span> <span class="bp">NSIndexPath</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="bp">UICollectionViewLayoutAttributes</span><span class="o">?</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">let</span> <span class="n">attributes</span> <span class="o">=</span> <span class="nb">super</span><span class="p">.</span><span class="n">finalLayoutAttributesForDisappearingItemAtIndexPath</span><span class="p">(</span><span class="n">itemIndexPath</span><span class="p">)</span><span class="o">?</span><span class="p">.</span><span class="k">copy</span><span class="p">()</span> <span class="kt">as</span><span class="o">?</span> <span class="bp">UICollectionViewLayoutAttributes</span>
+</span><span class='line'>    <span class="k">if</span> <span class="nb">self</span><span class="p">.</span><span class="n">deleteIndexPathArr</span><span class="p">.</span><span class="n">contains</span><span class="p">(</span><span class="n">itemIndexPath</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="c1">//这里写成缩放成(0，0)直接就不见了</span>
+</span><span class='line'>        <span class="n">attributes</span><span class="o">?</span><span class="p">.</span><span class="n">transform</span> <span class="o">=</span> <span class="n">CGAffineTransformMakeScale</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">attributes</span><span class="o">?</span><span class="p">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.0</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">attributes</span><span class="o">?</span><span class="p">.</span><span class="n">frame</span> <span class="o">=</span> <span class="nb">self</span><span class="p">.</span><span class="n">currentFrameWithIndexPath</span><span class="p">(</span><span class="bp">NSIndexPath</span><span class="p">(</span><span class="nl">forRow</span><span class="p">:</span> <span class="n">itemIndexPath</span><span class="p">.</span><span class="n">row</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="nl">inSection</span><span class="p">:</span> <span class="n">itemIndexPath</span><span class="p">.</span><span class="n">section</span><span class="p">))</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">attributes</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>效果如下：</p>
+
+<p><img src="http://ww2.sinaimg.cn/large/7746cd07jw1eyaqorep4rg208j0g9wgw.gif" alt="" /></p>
+
+<h4>刷新动画：</h4>
+
+<p>在官方的解释中，刷新是先删除然后插入。其实它就是先执行所有cell的消失动画；在此之后，它又会执行所有cell的出现动画。
+在系统当中，需要注意的是默认出现动画是一个alpha从0到1的淡入效果，而消失动画则是alpha从1到0的淡入效果；与插入动画和删除动画不同的是，刷新动画会成对存在，即消失动画与出现动画数量相等。</p>
+
+<p>在这里，实现一个点击某个cell时，当前选中的cell变大的效果，而它旁边的cell被推开的动画效果。在这里我不需要淡入和淡出效果，所以修改了消失时alpha为1.0，代码如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='swift'><span class='line'><span class="kr">override</span> <span class="k">func</span> <span class="n">initialLayoutAttributesForAppearingItemAtIndexPath</span><span class="p">(</span><span class="nl">itemIndexPath</span><span class="p">:</span> <span class="bp">NSIndexPath</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="bp">UICollectionViewLayoutAttributes</span><span class="o">?</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">let</span> <span class="n">attributes</span> <span class="o">=</span> <span class="nb">super</span><span class="p">.</span><span class="n">initialLayoutAttributesForAppearingItemAtIndexPath</span><span class="p">(</span><span class="n">itemIndexPath</span><span class="p">)</span><span class="o">?</span><span class="p">.</span><span class="k">copy</span><span class="p">()</span> <span class="kt">as</span><span class="o">?</span> <span class="bp">UICollectionViewLayoutAttributes</span>
+</span><span class='line'>    <span class="n">attributes</span><span class="o">?</span><span class="p">.</span><span class="n">frame</span> <span class="o">=</span> <span class="nb">self</span><span class="p">.</span><span class="n">lastFrameWithIndexPath</span><span class="p">(</span><span class="n">itemIndexPath</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">attributes</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="kr">override</span> <span class="k">func</span> <span class="n">finalLayoutAttributesForDisappearingItemAtIndexPath</span><span class="p">(</span><span class="nl">itemIndexPath</span><span class="p">:</span> <span class="bp">NSIndexPath</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="bp">UICollectionViewLayoutAttributes</span><span class="o">?</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">let</span> <span class="n">attributes</span> <span class="o">=</span> <span class="nb">super</span><span class="p">.</span><span class="n">finalLayoutAttributesForDisappearingItemAtIndexPath</span><span class="p">(</span><span class="n">itemIndexPath</span><span class="p">)</span><span class="o">?</span><span class="p">.</span><span class="k">copy</span><span class="p">()</span> <span class="kt">as</span><span class="o">?</span> <span class="bp">UICollectionViewLayoutAttributes</span>
+</span><span class='line'>    <span class="c1">//注意，这里alpha设置为不透明，系统默认返回是0，即一个淡出的效果</span>
+</span><span class='line'>    <span class="n">attributes</span><span class="o">?</span><span class="p">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="mf">1.0</span>
+</span><span class='line'>    <span class="n">attributes</span><span class="o">?</span><span class="p">.</span><span class="n">frame</span> <span class="o">=</span> <span class="nb">self</span><span class="p">.</span><span class="n">currentFrameWithIndexPath</span><span class="p">(</span><span class="n">itemIndexPath</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">attributes</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>效果如下：</p>
+
+<p><img src="http://ww2.sinaimg.cn/large/7746cd07jw1eyb04xye32g208j0g9755.gif" alt="" /></p>
+
+<h4>移动动画：</h4>
+
+<p>移动一个cell到另一个位置时，会引起当前cell到目标位置之间所有cell布局发生变化，从而形成一系列的动画。在这个动画过程中，每个indexPath都会有一个出现动画和一个消失动画。</p>
+
+<p>例如，在系统默认情况下，0位置cell移动到2位置cell的时候，我们会看到三个动画过程，如下图：</p>
+
+<p><img src="http://ww1.sinaimg.cn/large/7746cd07jw1eyazemzgkzj20qa0bqt9u.jpg" alt="" /></p>
+
+<p>但是，其实它内部执行了六个动画，只是其中两两之间动画重合了而已。其中动画过程1是1位置的消失动画和0位置出现动画重合；动画过程2是0位置的消失动画和2位置的出现动画重合；动画过程3是2位置的消失动画和1位置的出现动画重合。</p>
+
+<p><strong>其中值得注意的有两点：</strong>   <br/>
+1、消失动画和出现动画数量相等    <br/>
+2、动画的重合与刷新动画不同，与插入和删除动画类似，它们不同位置之间的消失动画与出现动画重合。</p>
+
+<p>在这里，实现一个移动cell时旋转180°到目标位置效果，实现如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='swift'><span class='line'> <span class="kr">override</span> <span class="k">func</span> <span class="n">initialLayoutAttributesForAppearingItemAtIndexPath</span><span class="p">(</span><span class="nl">itemIndexPath</span><span class="p">:</span> <span class="bp">NSIndexPath</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="bp">UICollectionViewLayoutAttributes</span><span class="o">?</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">let</span> <span class="n">attributes</span> <span class="o">=</span> <span class="nb">super</span><span class="p">.</span><span class="n">initialLayoutAttributesForAppearingItemAtIndexPath</span><span class="p">(</span><span class="n">itemIndexPath</span><span class="p">)</span><span class="o">?</span><span class="p">.</span><span class="k">copy</span><span class="p">()</span> <span class="kt">as</span><span class="o">?</span> <span class="bp">UICollectionViewLayoutAttributes</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">itemIndexPath</span> <span class="o">==</span> <span class="nb">self</span><span class="p">.</span><span class="n">afterMoveIndexPath</span> <span class="p">{</span>
+</span><span class='line'>        <span class="c1">//afterMoveIndexPath的消失动画和beforeMoveIndexPath的出现动画重合</span>
+</span><span class='line'>        <span class="c1">//init是设置起点，而final设置终点，理论是不重合的</span>
+</span><span class='line'>        <span class="n">attributes</span><span class="o">?</span><span class="p">.</span><span class="n">transform3D</span> <span class="o">=</span> <span class="n">CATransform3DMakeRotation</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="o">*</span><span class="n">CGFloat</span><span class="p">(</span><span class="n">M_PI</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">attributes</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="kr">override</span> <span class="k">func</span> <span class="n">finalLayoutAttributesForDisappearingItemAtIndexPath</span><span class="p">(</span><span class="nl">itemIndexPath</span><span class="p">:</span> <span class="bp">NSIndexPath</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="bp">UICollectionViewLayoutAttributes</span><span class="o">?</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">let</span> <span class="n">attributes</span> <span class="o">=</span> <span class="nb">super</span><span class="p">.</span><span class="n">finalLayoutAttributesForDisappearingItemAtIndexPath</span><span class="p">(</span><span class="n">itemIndexPath</span><span class="p">)</span><span class="o">?</span><span class="p">.</span><span class="k">copy</span><span class="p">()</span> <span class="kt">as</span><span class="o">?</span> <span class="bp">UICollectionViewLayoutAttributes</span>
+</span><span class='line'>    <span class="k">if</span> <span class="nb">self</span><span class="p">.</span><span class="n">beforeMoveIndexPath</span> <span class="o">==</span> <span class="n">itemIndexPath</span> <span class="p">{</span>
+</span><span class='line'>        <span class="c1">//afterMoveIndexPath的消失动画和beforeMoveIndexPath的出现动画重合，设置他们旋转的角度一样，方向相反</span>
+</span><span class='line'>        <span class="n">attributes</span><span class="o">?</span><span class="p">.</span><span class="n">transform3D</span> <span class="o">=</span> <span class="n">CATransform3DMakeRotation</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="o">*</span><span class="n">CGFloat</span><span class="p">(</span><span class="n">M_PI</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">attributes</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>效果如下：</p>
+
+<p><img src="http://ww1.sinaimg.cn/large/7746cd07jw1eyb0375fz7g208j0g9go4.gif" alt="" /></p>
+
+<p>了解了UICollectionView的动画流程，以及默认系统的四种动画的执行规则，若是跟着我一样修改了系统默认的动画，这个时候应该对CollectionView的动画也了解了差不多了。</p>
+
+<h2>总结：</h2>
+
+<p>1、CollectionView更新时，执行动画的时候会访问layout中哪些api，整个流程是如何形成的        <br/>
+2、修改CollectionView动画就是修改出现动画的起点和消失动画的终点，即layout当中的initialLayoutAttributesForAppearingItemAtIndexPath和finalLayoutAttributesForDisappearingItemAtIndexPath方法进行修改。     <br/>
+3、插入、删除、刷新、移动内部执行哪些动画，我们如何去修改。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">刘春桂</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2015-11-24T00:00:26+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>24</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>12:00 am</span></time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+
+  
+    <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+	<span class="jiathis_txt">分享到：</span>
+	<a class="jiathis_button_tools_1"></a>
+	<a class="jiathis_button_tools_2"></a>
+	<a class="jiathis_button_tools_3"></a>
+	<a class="jiathis_button_tools_4"></a>
+	<a href="http://www.jiathis.com/share?uid=2059456" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+	<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config = {data_track_clickback:'true'};
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=2059456" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2059456"></script>
+<!-- UY END -->
+
+  
+
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2015/11/06/uicollectionviewzhi-zi-ding-yi-layout/" title="Previous Post: UICollectionView之自定义Layout">&laquo; UICollectionView之自定义Layout</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/11/24/uicollectionviewdong-hua/">UICollectionView动画</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/11/06/uicollectionviewzhi-zi-ding-yi-layout/">UICollectionView之自定义Layout</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/11/02/uicollectionviewzhi-jie-shao-shi-yong-pian/">UICollectionView之介绍使用篇</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/10/23/gitzong-jie/">Git简单总结</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/10/21/mhuan-jing-xia-nginxshi-xian-fan-xiang-dai-li/">Mac环境下Nginx实现反向代理</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+ <h1>Categories</h1>
+ <ul id="categories">
+  <li class='category'><a href='/blog/categories/git/'>git (1)</a></li>
+<li class='category'><a href='/blog/categories/ios/'>ios (3)</a></li>
+<li class='category'><a href='/blog/categories/mac/'>mac (1)</a></li>
+<li class='category'><a href='/blog/categories/nginx/'>nginx (1)</a></li>
+<li class='category'><a href='/blog/categories/octopress/'>octopress (1)</a></li>
+<li class='category'><a href='/blog/categories/web/'>web (1)</a></li>
+
+ </ul>
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?40391c9d11f57c2384e5811d517bef62";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+<script>
+
+(function(){
+
+    var bp = document.createElement('script');
+
+    bp.src = '//push.zhanzhang.baidu.com/push.js';
+
+    var s = document.getElementsByTagName("script")[0];
+
+    s.parentNode.insertBefore(bp, s);
+
+})();
+
+</script>
+
+<p>
+  &copy; 2015 - 刘春桂 -
+  <span class="credit">基于 <a href="http://octopress.org" target="_blank">Octopress</a></span>
+  <span class="credit">, 感谢 <a href="http://gitcafe.com/signup?invited_by=tangqiaoboy" target="_blank">GitCafe</a> 为本站提供存储空间</span>
+</p>
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
