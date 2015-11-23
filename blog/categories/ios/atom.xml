@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Ios | liuchungui's Blog]]></title>
   <link href="http://liuchungui.github.io/blog/categories/ios/atom.xml" rel="self"/>
   <link href="http://liuchungui.github.io/"/>
-  <updated>2015-11-24T01:21:35+08:00</updated>
+  <updated>2015-11-24T01:23:30+08:00</updated>
   <id>http://liuchungui.github.io/</id>
   <author>
     <name><![CDATA[刘春桂]]></name>
@@ -196,19 +196,17 @@ override func finalLayoutAttributesForDisappearingItemAtIndexPath(itemIndexPath:
 
 <p><img src="http://ww1.sinaimg.cn/large/7746cd07jw1eyb0375fz7g208j0g9go4.gif" alt="" /></p>
 
-<p>了解了UICollectionView的动画流程，以及默认系统的四种动画的执行规则，若是跟着我一样修改了系统默认的动画，这个时候应该对CollectionView的动画也了解了差不多了。</p>
+<p>上面都是纯颜色，在示例工程<a href="https://github.com/liuchungui/UICollectionViewAnimationDemo">UICollectionViewAnimationDemo</a>中，我还添加了一个图片的<code>BGSimpleImageSelectCollectionViewDemo2</code>。布局基本上相同，唯一不同的是图片因为上下不可以倒转，没办法做到统一的旋转180°。</p>
+
+<p>效果如下：</p>
+
+<p><img src="http://ww3.sinaimg.cn/large/7746cd07jw1eybewu3qyxg208j0g9k2r.gif" alt="" /></p>
 
 <h2>总结：</h2>
 
 <p>1、CollectionView更新时，执行动画的时候会访问layout中哪些api，整个流程是如何形成的        <br/>
 2、修改CollectionView动画就是修改出现动画的起点和消失动画的终点，即layout当中的initialLayoutAttributesForAppearingItemAtIndexPath和finalLayoutAttributesForDisappearingItemAtIndexPath方法进行修改。     <br/>
 3、插入、删除、刷新、移动内部执行哪些动画，我们如何去修改。</p>
-
-<p>上面都是纯颜色，在示例工程<a href="https://github.com/liuchungui/UICollectionViewAnimationDemo">UICollectionViewAnimationDemo</a>中，我还添加了一个图片的<code>BGSimpleImageSelectCollectionViewDemo2</code>。布局基本上相同，唯一不同的是图片因为上下不可以倒转，没办法做到统一的旋转180°。</p>
-
-<p>效果如下：</p>
-
-<p><img src="http://ww3.sinaimg.cn/large/7746cd07jw1eybewu3qyxg208j0g9k2r.gif" alt="" /></p>
 ]]></content>
   </entry>
   
