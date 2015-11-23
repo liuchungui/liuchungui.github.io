@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Ios | liuchungui's Blog]]></title>
   <link href="http://liuchungui.github.io/blog/categories/ios/atom.xml" rel="self"/>
   <link href="http://liuchungui.github.io/"/>
-  <updated>2015-11-24T01:23:30+08:00</updated>
+  <updated>2015-11-24T01:26:12+08:00</updated>
   <id>http://liuchungui.github.io/</id>
   <author>
     <name><![CDATA[刘春桂]]></name>
@@ -207,6 +207,10 @@ override func finalLayoutAttributesForDisappearingItemAtIndexPath(itemIndexPath:
 <p>1、CollectionView更新时，执行动画的时候会访问layout中哪些api，整个流程是如何形成的        <br/>
 2、修改CollectionView动画就是修改出现动画的起点和消失动画的终点，即layout当中的initialLayoutAttributesForAppearingItemAtIndexPath和finalLayoutAttributesForDisappearingItemAtIndexPath方法进行修改。     <br/>
 3、插入、删除、刷新、移动内部执行哪些动画，我们如何去修改。</p>
+
+<h2>参考：</h2>
+
+<p><a href="http://objccn.io/issue-12-5/">Collection View 动画</a></p>
 ]]></content>
   </entry>
   
