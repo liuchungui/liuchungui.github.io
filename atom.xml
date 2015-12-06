@@ -4,7 +4,7 @@
   <title><![CDATA[liuchungui's Blog]]></title>
   <link href="http://liuchungui.github.io/atom.xml" rel="self"/>
   <link href="http://liuchungui.github.io/"/>
-  <updated>2015-12-06T16:57:29+08:00</updated>
+  <updated>2015-12-06T23:01:20+08:00</updated>
   <id>http://liuchungui.github.io/</id>
   <author>
     <name><![CDATA[刘春桂]]></name>
@@ -141,7 +141,7 @@ github地址:<a href="https://github.com/GitbookIO/gitbook">https://github.com/G
 
 <h3>4、发布电子书gitbook官网</h3>
 
-<p>到<a href="https://www.gitbook.com/">gitbook官网</a>创建一个账号，创建一本<code>test</code>电子书，创建电子书的时候，gitbook会创建git仓库<a href="https://git.gitbook.liuchungui/test.git%E3%80%82">https://git.gitbook.liuchungui/test.git%E3%80%82</a></p>
+<p>到<a href="https://www.gitbook.com/">gitbook官网</a>创建一个账号，创建一本<code>test</code>电子书，创建电子书的时候，gitbook会创建git仓库<code>https://git.gitbook.liuchungui/test.git</code>。</p>
 
 <p>然后下载<a href="https://www.gitbook.com/editor">gitbook editor</a>，登陆账号，将电子书clone一份下来，将前面新建电子书将前面编辑的内容拖到这个电子书下，然后同步到官网就可以看到内容了，例如我的<a href="https://liuchungui.gitbooks.io/test/content/">test</a>。</p>
 
