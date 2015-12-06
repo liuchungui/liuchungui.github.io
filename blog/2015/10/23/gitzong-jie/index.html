@@ -122,11 +122,15 @@
 
 <h4>4、添加密钥</h4>
 
-<p>在git服务端添加客户端的公钥后，以后git访问不需要密码了，下面是客户端与服务端的操作。    <br/>
-客户端：   <br/>
-使用<code>ssh-keygen</code>命令生成密钥，输入命令，直接回车就行了。执行完后会生成<code>id_rsa</code>和<code>id_rsa.pub</code>两个文件，其中<code>id_rsa</code>是私钥，<code>id_rsa.pub</code>是公钥。客户端将<code>id_rsa.pub</code>文件交给git服务端就行了。       <br/>
-服务端：       <br/>
-将客户端的<code>id_rsa.pub</code>中的内容放到<code>/Users/git/.ssh/authorized_keys</code>文件中。主要，客户端每个公钥占用独立的一行，有时复制会出现问题，可以使用<code>cat id_rsa.pub &gt;&gt; /Users/git/.ssh/authorized_keys</code>命令。<code>如果.ssh文件夹不存在，则使用git服务端用户创建文件夹mkdir ~Users/git/.ssh创建一下</code>。</p>
+<p>在git服务端添加客户端的公钥后，以后git访问不需要密码了，下面是客户端与服务端的操作。</p>
+
+<ul>
+<li><p><strong>客户端</strong>：   <br/>
+使用<code>ssh-keygen</code>命令生成密钥，输入命令，直接回车就行了。执行完后会生成<code>id_rsa</code>和<code>id_rsa.pub</code>两个文件，其中<code>id_rsa</code>是私钥，<code>id_rsa.pub</code>是公钥。客户端将<code>id_rsa.pub</code>文件交给git服务端就行了。</p></li>
+<li><p><strong>服务端</strong>：       <br/>
+将客户端的<code>id_rsa.pub</code>中的内容放到<code>/Users/git/.ssh/authorized_keys</code>文件中。主要，客户端每个公钥占用独立的一行，有时复制会出现问题，可以使用<code>cat id_rsa.pub &gt;&gt; /Users/git/.ssh/authorized_keys</code>命令。<code>如果.ssh文件夹不存在，则使用git服务端用户创建文件夹mkdir /Users/git/.ssh创建一下</code>。</p></li>
+</ul>
+
 
 <!-- more -->
 
