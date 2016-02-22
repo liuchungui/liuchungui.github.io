@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[liuchungui's Blog]]></title>
-  <link href="http://liuchungui.github.io/atom.xml" rel="self"/>
-  <link href="http://liuchungui.github.io/"/>
-  <updated>2015-12-06T23:01:20+08:00</updated>
-  <id>http://liuchungui.github.io/</id>
+  <link href="http://www.liuchungui.com/atom.xml" rel="self"/>
+  <link href="http://www.liuchungui.com/"/>
+  <updated>2016-02-22T17:19:19+08:00</updated>
+  <id>http://www.liuchungui.com/</id>
   <author>
     <name><![CDATA[刘春桂]]></name>
     
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Gitbook安装使用]]></title>
-    <link href="http://liuchungui.github.io/blog/2015/12/06/gitbookan-zhuang-shi-yong/"/>
-    <updated>2015-12-06T16:53:15+08:00</updated>
-    <id>http://liuchungui.github.io/blog/2015/12/06/gitbookan-zhuang-shi-yong</id>
+    <link href="http://www.liuchungui.com/blog/2015/12/26/gitbookan-zhuang-shi-yong/"/>
+    <updated>2015-12-26T17:15:07+08:00</updated>
+    <id>http://www.liuchungui.com/blog/2015/12/26/gitbookan-zhuang-shi-yong</id>
     <content type="html"><![CDATA[<blockquote><p>GitBook 是一个基于 Node.js 的命令行工具，可使用 Github/Git 和 Markdown 来制作精美的电子书。</p></blockquote>
 
 <p>在这篇博客中，记录了一下gitbook的安装使用，更详细的使用请查看下面内容：
@@ -29,9 +29,6 @@ github地址:<a href="https://github.com/GitbookIO/gitbook">https://github.com/G
 
 <p>首先到<a href="http://nodejs.cn/">nodejs</a>下载，安装Node.js的包管理器npm。
 然后，通过<code>sudo npm install -g gitbook-cli</code>命令安装gitbook</p>
-
-<!-- more -->
-
 
 <h3>2、初始化gitbook</h3>
 
@@ -141,7 +138,7 @@ github地址:<a href="https://github.com/GitbookIO/gitbook">https://github.com/G
 
 <h3>4、发布电子书gitbook官网</h3>
 
-<p>到<a href="https://www.gitbook.com/">gitbook官网</a>创建一个账号，创建一本<code>test</code>电子书，创建电子书的时候，gitbook会创建git仓库<code>https://git.gitbook.liuchungui/test.git</code>。</p>
+<p>到<a href="https://www.gitbook.com/">gitbook官网</a>创建一个账号，创建一本<code>test</code>电子书，创建电子书的时候，gitbook会创建git仓库<a href="https://git.gitbook.liuchungui/test.git%E3%80%82">https://git.gitbook.liuchungui/test.git%E3%80%82</a></p>
 
 <p>然后下载<a href="https://www.gitbook.com/editor">gitbook editor</a>，登陆账号，将电子书clone一份下来，将前面新建电子书将前面编辑的内容拖到这个电子书下，然后同步到官网就可以看到内容了，例如我的<a href="https://liuchungui.gitbooks.io/test/content/">test</a>。</p>
 
@@ -190,9 +187,8 @@ github地址:<a href="https://github.com/GitbookIO/gitbook">https://github.com/G
 
 <h3>总结</h3>
 
-<p>gitbook操作其实就分为两个方面内容，一个是建立git仓库对内容进行管理，另外一个就是使用markdown对内容进行编辑，然后使用SUMARRY.md生成书的目录。</p>
-
-<p>而gitbook这么优雅大方的页面，我们喜欢的话，完全可以将它做成我们的技术博客。而它还具有简单标题检索功能，我甚至想过将它做成一个api接口管理页面。</p>
+<p>gitbook操作其实就分为两个方面内容，一个是建立git仓库对内容进行管理，另外一个就是使用markdown对内容进行编辑，然后使用SUMARRY.md生成书的目录。  <br/>
+而gitbook这么优雅大方的页面，我们喜欢的话，完全可以将它做成我们的技术博客。而它还具有简单标题检索功能，我甚至想过将它做成一个api接口管理页面。</p>
 
 <h3>参考：</h3>
 
@@ -204,9 +200,9 @@ github地址:<a href="https://github.com/GitbookIO/gitbook">https://github.com/G
   
   <entry>
     <title type="html"><![CDATA[UICollectionView动画]]></title>
-    <link href="http://liuchungui.github.io/blog/2015/11/24/uicollectionviewdong-hua/"/>
+    <link href="http://www.liuchungui.com/blog/2015/11/24/uicollectionviewdong-hua/"/>
     <updated>2015-11-24T00:00:26+08:00</updated>
-    <id>http://liuchungui.github.io/blog/2015/11/24/uicollectionviewdong-hua</id>
+    <id>http://www.liuchungui.com/blog/2015/11/24/uicollectionviewdong-hua</id>
     <content type="html"><![CDATA[<h2>一、简单使用</h2>
 
 <p>UICollectionView更新事件有四种分别是<code>插入</code>、<code>删除</code>、<code>刷新</code>、<code>移动</code>，
@@ -478,9 +474,9 @@ api使用起来和UITableView类似，具体可以自己在代码中找，如果
   
   <entry>
     <title type="html"><![CDATA[UICollectionView之自定义Layout]]></title>
-    <link href="http://liuchungui.github.io/blog/2015/11/06/uicollectionviewzhi-zi-ding-yi-layout/"/>
-    <updated>2015-11-06T00:21:08+08:00</updated>
-    <id>http://liuchungui.github.io/blog/2015/11/06/uicollectionviewzhi-zi-ding-yi-layout</id>
+    <link href="http://www.liuchungui.com/blog/2015/11/06/uicollectionviewzhi-zi-ding-yi-layout/"/>
+    <updated>2015-11-06T00:00:26+08:00</updated>
+    <id>http://www.liuchungui.com/blog/2015/11/06/uicollectionviewzhi-zi-ding-yi-layout</id>
     <content type="html"><![CDATA[<p>当我们使用系统自带的UICollectionViewFlowLayout无法实现我们的布局时，我们就可以考虑自定义layout。     <br/>
 所以，了解并学习一下自定义Layout是很有必要。    <br/>
 其实可以分三个步骤：</p>
@@ -642,9 +638,9 @@ api使用起来和UITableView类似，具体可以自己在代码中找，如果
   
   <entry>
     <title type="html"><![CDATA[UICollectionView之介绍使用篇]]></title>
-    <link href="http://liuchungui.github.io/blog/2015/11/02/uicollectionviewzhi-jie-shao-shi-yong-pian/"/>
+    <link href="http://www.liuchungui.com/blog/2015/11/02/uicollectionviewzhi-jie-shao-shi-yong-pian/"/>
     <updated>2015-11-02T00:29:12+08:00</updated>
-    <id>http://liuchungui.github.io/blog/2015/11/02/uicollectionviewzhi-jie-shao-shi-yong-pian</id>
+    <id>http://www.liuchungui.com/blog/2015/11/02/uicollectionviewzhi-jie-shao-shi-yong-pian</id>
     <content type="html"><![CDATA[<p>实现垂直方向的单列表来说，使用UITableView足以；若是需要构建横向滑动列表、gridView等直线型布局，则使用UICollectionView+UICollectionViewFlowLayout搭建最合适；更复杂的布局，则可以使用UICollectionView+自定义Layout来实现。</p>
 
 <p>而这篇博客就来介绍一下UICollectionView。</p>
@@ -866,9 +862,9 @@ cellCount = (CollectionViewContentWidth-sectionInset.left-sectionInset.right+min
   
   <entry>
     <title type="html"><![CDATA[Git简单总结]]></title>
-    <link href="http://liuchungui.github.io/blog/2015/10/23/gitzong-jie/"/>
+    <link href="http://www.liuchungui.com/blog/2015/10/23/gitzong-jie/"/>
     <updated>2015-10-23T14:45:46+08:00</updated>
-    <id>http://liuchungui.github.io/blog/2015/10/23/gitzong-jie</id>
+    <id>http://www.liuchungui.com/blog/2015/10/23/gitzong-jie</id>
     <content type="html"><![CDATA[<p>这篇文章分为两部分，一是搭建git服务器，二是git命令，主要是记录了一下我搭建git服务器流程和用到的相关命令。</p>
 
 <h2>一、Mac环境下搭建Git服务器</h2>
@@ -886,7 +882,7 @@ cellCount = (CollectionViewContentWidth-sectionInset.left-sectionInset.right+min
 
 <h4>3、初始化一个空仓库</h4>
 
-<p>通过git用户在git用户目录下创建一个repos文件夹专门用来管理仓库，注意</p>
+<p>在git用户目录下创建一个repos文件夹专门用来管理仓库</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -900,15 +896,11 @@ cellCount = (CollectionViewContentWidth-sectionInset.left-sectionInset.right+min
 
 <h4>4、添加密钥</h4>
 
-<p>在git服务端添加客户端的公钥后，以后git访问不需要密码了，下面是客户端与服务端的操作。</p>
-
-<ul>
-<li><p><strong>客户端</strong>：   <br/>
-使用<code>ssh-keygen</code>命令生成密钥，输入命令，直接回车就行了。执行完后会生成<code>id_rsa</code>和<code>id_rsa.pub</code>两个文件，其中<code>id_rsa</code>是私钥，<code>id_rsa.pub</code>是公钥。客户端将<code>id_rsa.pub</code>文件交给git服务端就行了。</p></li>
-<li><p><strong>服务端</strong>：       <br/>
-将客户端的<code>id_rsa.pub</code>中的内容放到<code>/Users/git/.ssh/authorized_keys</code>文件中。主要，客户端每个公钥占用独立的一行，有时复制会出现问题，可以使用<code>cat id_rsa.pub &gt;&gt; /Users/git/.ssh/authorized_keys</code>命令。<code>如果.ssh文件夹不存在，则使用git服务端用户创建文件夹mkdir /Users/git/.ssh创建一下</code>。</p></li>
-</ul>
-
+<p>在git服务端添加客户端的公钥后，以后git访问不需要密码了，下面是客户端与服务端的操作。    <br/>
+客户端：   <br/>
+使用<code>ssh-keygen</code>命令生成密钥，执行完后会生成<code>id_rsa</code>和<code>id_rsa.pub</code>两个文件，其中<code>id_rsa</code>是私钥，<code>id_rsa.pub</code>是公钥。客户端将<code>id_rsa.pub</code>文件交给git服务端就行了。       <br/>
+服务端：       <br/>
+将客户端的<code>id_rsa.pub</code>中的内容放到<code>/Users/git/.ssh/authorized_keys</code>文件中。主要，客户端每个公钥占用独立的一行，有时复制会出现问题，可以使用<code>cat id_rsa.pub &gt;&gt; /Users/git/.ssh/authorized_keys</code>命令。</p>
 
 <!-- more -->
 
@@ -935,7 +927,7 @@ cellCount = (CollectionViewContentWidth-sectionInset.left-sectionInset.right+min
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ git clone git@localhost:/Users/git/repos/test.git
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ git clone user@localhost:/Users/user/repos/test.git
 </span><span class='line'>Cloning into 'test'...
 </span><span class='line'>warning: You appear to have cloned an empty repository.
 </span><span class='line'>Checking connectivity... done.</span></code></pre></td></tr></table></div></figure>
@@ -1051,9 +1043,9 @@ cellCount = (CollectionViewContentWidth-sectionInset.left-sectionInset.right+min
   
   <entry>
     <title type="html"><![CDATA[Mac环境下Nginx实现反向代理]]></title>
-    <link href="http://liuchungui.github.io/blog/2015/10/21/mhuan-jing-xia-nginxshi-xian-fan-xiang-dai-li/"/>
+    <link href="http://www.liuchungui.com/blog/2015/10/21/mhuan-jing-xia-nginxshi-xian-fan-xiang-dai-li/"/>
     <updated>2015-10-21T10:16:01+08:00</updated>
-    <id>http://liuchungui.github.io/blog/2015/10/21/mhuan-jing-xia-nginxshi-xian-fan-xiang-dai-li</id>
+    <id>http://www.liuchungui.com/blog/2015/10/21/mhuan-jing-xia-nginxshi-xian-fan-xiang-dai-li</id>
     <content type="html"><![CDATA[<h2>1、安装</h2>
 
 <p>首先，我们需要搭建Nginx环境，我这里是通过homebrew一键式搭建，步骤如下：  <br/>
@@ -1351,9 +1343,9 @@ alias后面还可以添加正则表达式，例如：</p>
   
   <entry>
     <title type="html"><![CDATA[CocoaPods创建私有Pods]]></title>
-    <link href="http://liuchungui.github.io/blog/2015/10/19/cocoapodschuang-jian-si-you-pods/"/>
+    <link href="http://www.liuchungui.com/blog/2015/10/19/cocoapodschuang-jian-si-you-pods/"/>
     <updated>2015-10-19T21:54:54+08:00</updated>
-    <id>http://liuchungui.github.io/blog/2015/10/19/cocoapodschuang-jian-si-you-pods</id>
+    <id>http://www.liuchungui.com/blog/2015/10/19/cocoapodschuang-jian-si-you-pods</id>
     <content type="html"><![CDATA[<p>创建Pod私有源步骤：  <br/>
 1、创建两个git仓库，一个用来做私有的Spec Repo，一个是我们自己的公共组件  <br/>
 2、添加私有的repo到CocoaPods  <br/>
@@ -1563,7 +1555,7 @@ alias后面还可以添加正则表达式，例如：</p>
 
 <h4>注意</h4>
 
-<p>1、途中遇到了几次问题，就是<code>pod repo push</code>不上去，显示没有找到对应文件，后来发现是版本的问题，没有打上版本号或者<code>Podspec</code>中版本错了。所以我们在维护一个框架时，修改框架之后，先将podspec文件中的版本修改成下一个版本号，push到git服务器之后先打上tag，最后push到对应的pod repo中。</p>
+<p>1、途中遇到了几次问题，就是<code>pod repo push</code>不上去，显示没有找到对应文件，后来发现是版本的问题，没有打上版本号或者<code>Podspec</code>中版本错了。所以我们在维护一个框架时，修改框架之后，push到git服务器之后先打上tag，然后再修改podspec文件中的版本，最后push到对应的pod repo中。</p>
 
 <p>2、若是在框架当中，存在不同的文件夹，请使用<code>subspec</code>。如果不同文件夹之间的文件有相互导入的情况，请将被导入的头文件设置为<code>public_header_files</code>，并且通过<code>dependency</code>设置依赖，具体可以参考<a href="https://github.com/AFNetworking/AFNetworking/blob/master/AFNetworking.podspec">AFNetworking的podspec</a>文件。</p>
 
@@ -1575,7 +1567,7 @@ alias后面还可以添加正则表达式，例如：</p>
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>pod trunk register youremail
-</span><span class='line'>查看自己的信息
+</span><span class='line'>查看信息
 </span><span class='line'>pod trunk me
 </span><span class='line'>将对应的pod推送到服务器
 </span><span class='line'>pod turnk push</span></code></pre></td></tr></table></div></figure>
@@ -1599,9 +1591,9 @@ alias后面还可以添加正则表达式，例如：</p>
   
   <entry>
     <title type="html"><![CDATA[iOS9之适配ATS]]></title>
-    <link href="http://liuchungui.github.io/blog/2015/10/11/ios9zhi-gua-pei-ats/"/>
+    <link href="http://www.liuchungui.com/blog/2015/10/11/ios9zhi-gua-pei-ats/"/>
     <updated>2015-10-11T13:15:11+08:00</updated>
-    <id>http://liuchungui.github.io/blog/2015/10/11/ios9zhi-gua-pei-ats</id>
+    <id>http://www.liuchungui.com/blog/2015/10/11/ios9zhi-gua-pei-ats</id>
     <content type="html"><![CDATA[<p>最近的iOS9系统出来了，而网络方面的ATS(App Transport Security)特性可以说每个人都要经历。而我这篇博客，就是结合我最近几天的经历，来谈谈从服务器到iOS客户端对ATS的适配。</p>
 
 <h3>一、简单谈谈ATS(App Transport Security)</h3>
@@ -1700,7 +1692,7 @@ alias后面还可以添加正则表达式，例如：</p>
 </span><span class='line'>&lt;/VirtualHost&gt;</span></code></pre></td></tr></table></div></figure>
 
 
-<p>最后，重启Apache服务器，在浏览器输入网址查看是否配置成功。我这里是个人使用，申请的是免费的证书，我申请证书的网站是<a href="http://www.wosign.com/DVSSL/DV_KuaiSSL_Free.htm">沃通</a>。  <br/>
+<p>最后，重启Apache服务器，在浏览器输入网址查看是否配置成功。我这里是个人使用，申请的是免费的证书，我申请证书的网站是<a href="https://buy.wosign.com">沃通</a>。  <br/>
 搭建的成果：<a href="https://www.casetree.cn">https://www.casetree.cn</a></p>
 
 <h5>第二种、自建证书配置HTTPS服务器</h5>
@@ -2075,9 +2067,9 @@ _httpClient.securityPolicy = policy;
   
   <entry>
     <title type="html"><![CDATA[自建证书配置HTTPS服务器]]></title>
-    <link href="http://liuchungui.github.io/blog/2015/09/25/zi-jian-zheng-shu-pei-zhi-httpsfu-wu-qi/"/>
+    <link href="http://www.liuchungui.com/blog/2015/09/25/zi-jian-zheng-shu-pei-zhi-httpsfu-wu-qi/"/>
     <updated>2015-09-25T11:24:02+08:00</updated>
-    <id>http://liuchungui.github.io/blog/2015/09/25/zi-jian-zheng-shu-pei-zhi-httpsfu-wu-qi</id>
+    <id>http://www.liuchungui.com/blog/2015/09/25/zi-jian-zheng-shu-pei-zhi-httpsfu-wu-qi</id>
     <content type="html"><![CDATA[<h3>说明</h3>
 
 <p>1、写这篇博客的初衷是因为最近iOS9出来了，苹果官方默认要求使用HTTPS，所以自己想整一个HTTPS服务器，也想好好了解一下HTTPS通信，也知道了HTTPS其实就是在HTTP的基础上加上了SSL/TLS。具体想了解SSL/TLS原理的请浏览<a href="http://www.ruanyifeng.com/blog/2014/02/ssl_tls.html">SSL/TLS协议运行机制的概述</a>和<a href="http://segmentfault.com/a/1190000002554673">SSL/TLS原理详解</a>。中途看了很多博客，也花了不少时间，所以想记录一些东西。</p>
@@ -2392,9 +2384,9 @@ openssl是一套工具，它是一个开源库，可以对相关内容进行加�
   
   <entry>
     <title type="html"><![CDATA[AutoLayout使用代码写约束]]></title>
-    <link href="http://liuchungui.github.io/blog/2015/09/20/autolayoutshi-yong-dai-ma-xie-yue-shu/"/>
+    <link href="http://www.liuchungui.com/blog/2015/09/20/autolayoutshi-yong-dai-ma-xie-yue-shu/"/>
     <updated>2015-09-20T23:20:56+08:00</updated>
-    <id>http://liuchungui.github.io/blog/2015/09/20/autolayoutshi-yong-dai-ma-xie-yue-shu</id>
+    <id>http://www.liuchungui.com/blog/2015/09/20/autolayoutshi-yong-dai-ma-xie-yue-shu</id>
     <content type="html"><![CDATA[<h3>一、约束是什么？</h3>
 
 <p>  约束是视图与视图之间一些属性关系。</p>
@@ -2808,9 +2800,9 @@ openssl是一套工具，它是一个开源库，可以对相关内容进行加�
   
   <entry>
     <title type="html"><![CDATA[Mac电脑上搭建octopress博客]]></title>
-    <link href="http://liuchungui.github.io/blog/2015/09/11/macdian-nao-shang-da-jian-octopressbo-ke/"/>
+    <link href="http://www.liuchungui.com/blog/2015/09/11/macdian-nao-shang-da-jian-octopressbo-ke/"/>
     <updated>2015-09-11T22:51:44+08:00</updated>
-    <id>http://liuchungui.github.io/blog/2015/09/11/macdian-nao-shang-da-jian-octopressbo-ke</id>
+    <id>http://www.liuchungui.com/blog/2015/09/11/macdian-nao-shang-da-jian-octopressbo-ke</id>
     <content type="html"><![CDATA[<p>搭建octopress博客的文章很详细已经有很多了，文章末尾就有相关的参考，我这里只简单记录下mac电脑上搭建octopress博客的步骤。</p>
 
 <h4>1、搭建环境</h4>

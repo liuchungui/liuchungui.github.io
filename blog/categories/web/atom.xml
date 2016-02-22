@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: Web | liuchungui's Blog]]></title>
-  <link href="http://liuchungui.github.io/blog/categories/web/atom.xml" rel="self"/>
-  <link href="http://liuchungui.github.io/"/>
-  <updated>2015-12-06T23:01:20+08:00</updated>
-  <id>http://liuchungui.github.io/</id>
+  <link href="http://www.liuchungui.com/blog/categories/web/atom.xml" rel="self"/>
+  <link href="http://www.liuchungui.com/"/>
+  <updated>2016-02-22T17:19:19+08:00</updated>
+  <id>http://www.liuchungui.com/</id>
   <author>
     <name><![CDATA[刘春桂]]></name>
     
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Mac环境下Nginx实现反向代理]]></title>
-    <link href="http://liuchungui.github.io/blog/2015/10/21/mhuan-jing-xia-nginxshi-xian-fan-xiang-dai-li/"/>
+    <link href="http://www.liuchungui.com/blog/2015/10/21/mhuan-jing-xia-nginxshi-xian-fan-xiang-dai-li/"/>
     <updated>2015-10-21T10:16:01+08:00</updated>
-    <id>http://liuchungui.github.io/blog/2015/10/21/mhuan-jing-xia-nginxshi-xian-fan-xiang-dai-li</id>
+    <id>http://www.liuchungui.com/blog/2015/10/21/mhuan-jing-xia-nginxshi-xian-fan-xiang-dai-li</id>
     <content type="html"><![CDATA[<h2>1、安装</h2>
 
 <p>首先，我们需要搭建Nginx环境，我这里是通过homebrew一键式搭建，步骤如下：  <br/>
@@ -228,9 +228,9 @@ $ sudo nginx -s reload
   
   <entry>
     <title type="html"><![CDATA[自建证书配置HTTPS服务器]]></title>
-    <link href="http://liuchungui.github.io/blog/2015/09/25/zi-jian-zheng-shu-pei-zhi-httpsfu-wu-qi/"/>
+    <link href="http://www.liuchungui.com/blog/2015/09/25/zi-jian-zheng-shu-pei-zhi-httpsfu-wu-qi/"/>
     <updated>2015-09-25T11:24:02+08:00</updated>
-    <id>http://liuchungui.github.io/blog/2015/09/25/zi-jian-zheng-shu-pei-zhi-httpsfu-wu-qi</id>
+    <id>http://www.liuchungui.com/blog/2015/09/25/zi-jian-zheng-shu-pei-zhi-httpsfu-wu-qi</id>
     <content type="html"><![CDATA[<h3>说明</h3>
 
 <p>1、写这篇博客的初衷是因为最近iOS9出来了，苹果官方默认要求使用HTTPS，所以自己想整一个HTTPS服务器，也想好好了解一下HTTPS通信，也知道了HTTPS其实就是在HTTP的基础上加上了SSL/TLS。具体想了解SSL/TLS原理的请浏览<a href="http://www.ruanyifeng.com/blog/2014/02/ssl_tls.html">SSL/TLS协议运行机制的概述</a>和<a href="http://segmentfault.com/a/1190000002554673">SSL/TLS原理详解</a>。中途看了很多博客，也花了不少时间，所以想记录一些东西。</p>

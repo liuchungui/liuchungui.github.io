@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: Octopress | liuchungui's Blog]]></title>
-  <link href="http://liuchungui.github.io/blog/categories/octopress/atom.xml" rel="self"/>
-  <link href="http://liuchungui.github.io/"/>
-  <updated>2015-12-06T23:01:20+08:00</updated>
-  <id>http://liuchungui.github.io/</id>
+  <link href="http://www.liuchungui.com/blog/categories/octopress/atom.xml" rel="self"/>
+  <link href="http://www.liuchungui.com/"/>
+  <updated>2016-02-22T17:19:19+08:00</updated>
+  <id>http://www.liuchungui.com/</id>
   <author>
     <name><![CDATA[刘春桂]]></name>
     
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Mac电脑上搭建octopress博客]]></title>
-    <link href="http://liuchungui.github.io/blog/2015/09/11/macdian-nao-shang-da-jian-octopressbo-ke/"/>
+    <link href="http://www.liuchungui.com/blog/2015/09/11/macdian-nao-shang-da-jian-octopressbo-ke/"/>
     <updated>2015-09-11T22:51:44+08:00</updated>
-    <id>http://liuchungui.github.io/blog/2015/09/11/macdian-nao-shang-da-jian-octopressbo-ke</id>
+    <id>http://www.liuchungui.com/blog/2015/09/11/macdian-nao-shang-da-jian-octopressbo-ke</id>
     <content type="html"><![CDATA[<p>搭建octopress博客的文章很详细已经有很多了，文章末尾就有相关的参考，我这里只简单记录下mac电脑上搭建octopress博客的步骤。</p>
 
 <h4>1、搭建环境</h4>

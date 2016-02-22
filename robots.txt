@@ -1,4 +1,4 @@
 User-agent: *
 Disallow: 
 
-Sitemap: http://liuchungui.github.io/sitemap.xml 
+Sitemap: http://www.liuchungui.com/sitemap.xml 

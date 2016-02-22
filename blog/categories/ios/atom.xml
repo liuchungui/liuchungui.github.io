@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: Ios | liuchungui's Blog]]></title>
-  <link href="http://liuchungui.github.io/blog/categories/ios/atom.xml" rel="self"/>
-  <link href="http://liuchungui.github.io/"/>
-  <updated>2015-12-06T23:01:20+08:00</updated>
-  <id>http://liuchungui.github.io/</id>
+  <link href="http://www.liuchungui.com/blog/categories/ios/atom.xml" rel="self"/>
+  <link href="http://www.liuchungui.com/"/>
+  <updated>2016-02-22T17:19:19+08:00</updated>
+  <id>http://www.liuchungui.com/</id>
   <author>
     <name><![CDATA[刘春桂]]></name>
     
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[UICollectionView动画]]></title>
-    <link href="http://liuchungui.github.io/blog/2015/11/24/uicollectionviewdong-hua/"/>
+    <link href="http://www.liuchungui.com/blog/2015/11/24/uicollectionviewdong-hua/"/>
     <updated>2015-11-24T00:00:26+08:00</updated>
-    <id>http://liuchungui.github.io/blog/2015/11/24/uicollectionviewdong-hua</id>
+    <id>http://www.liuchungui.com/blog/2015/11/24/uicollectionviewdong-hua</id>
     <content type="html"><![CDATA[<h2>一、简单使用</h2>
 
 <p>UICollectionView更新事件有四种分别是<code>插入</code>、<code>删除</code>、<code>刷新</code>、<code>移动</code>，
@@ -216,9 +216,9 @@ override func finalLayoutAttributesForDisappearingItemAtIndexPath(itemIndexPath:
   
   <entry>
     <title type="html"><![CDATA[UICollectionView之自定义Layout]]></title>
-    <link href="http://liuchungui.github.io/blog/2015/11/06/uicollectionviewzhi-zi-ding-yi-layout/"/>
-    <updated>2015-11-06T00:21:08+08:00</updated>
-    <id>http://liuchungui.github.io/blog/2015/11/06/uicollectionviewzhi-zi-ding-yi-layout</id>
+    <link href="http://www.liuchungui.com/blog/2015/11/06/uicollectionviewzhi-zi-ding-yi-layout/"/>
+    <updated>2015-11-06T00:00:26+08:00</updated>
+    <id>http://www.liuchungui.com/blog/2015/11/06/uicollectionviewzhi-zi-ding-yi-layout</id>
     <content type="html"><![CDATA[<p>当我们使用系统自带的UICollectionViewFlowLayout无法实现我们的布局时，我们就可以考虑自定义layout。     <br/>
 所以，了解并学习一下自定义Layout是很有必要。    <br/>
 其实可以分三个步骤：</p>
@@ -331,9 +331,9 @@ override func finalLayoutAttributesForDisappearingItemAtIndexPath(itemIndexPath:
   
   <entry>
     <title type="html"><![CDATA[UICollectionView之介绍使用篇]]></title>
-    <link href="http://liuchungui.github.io/blog/2015/11/02/uicollectionviewzhi-jie-shao-shi-yong-pian/"/>
+    <link href="http://www.liuchungui.com/blog/2015/11/02/uicollectionviewzhi-jie-shao-shi-yong-pian/"/>
     <updated>2015-11-02T00:29:12+08:00</updated>
-    <id>http://liuchungui.github.io/blog/2015/11/02/uicollectionviewzhi-jie-shao-shi-yong-pian</id>
+    <id>http://www.liuchungui.com/blog/2015/11/02/uicollectionviewzhi-jie-shao-shi-yong-pian</id>
     <content type="html"><![CDATA[<p>实现垂直方向的单列表来说，使用UITableView足以；若是需要构建横向滑动列表、gridView等直线型布局，则使用UICollectionView+UICollectionViewFlowLayout搭建最合适；更复杂的布局，则可以使用UICollectionView+自定义Layout来实现。</p>
 
 <p>而这篇博客就来介绍一下UICollectionView。</p>
@@ -523,9 +523,9 @@ cellCount = (CollectionViewContentWidth-sectionInset.left-sectionInset.right+min
   
   <entry>
     <title type="html"><![CDATA[CocoaPods创建私有Pods]]></title>
-    <link href="http://liuchungui.github.io/blog/2015/10/19/cocoapodschuang-jian-si-you-pods/"/>
+    <link href="http://www.liuchungui.com/blog/2015/10/19/cocoapodschuang-jian-si-you-pods/"/>
     <updated>2015-10-19T21:54:54+08:00</updated>
-    <id>http://liuchungui.github.io/blog/2015/10/19/cocoapodschuang-jian-si-you-pods</id>
+    <id>http://www.liuchungui.com/blog/2015/10/19/cocoapodschuang-jian-si-you-pods</id>
     <content type="html"><![CDATA[<p>创建Pod私有源步骤：  <br/>
 1、创建两个git仓库，一个用来做私有的Spec Repo，一个是我们自己的公共组件  <br/>
 2、添加私有的repo到CocoaPods  <br/>
@@ -675,14 +675,14 @@ end
 
 <h4>注意</h4>
 
-<p>1、途中遇到了几次问题，就是<code>pod repo push</code>不上去，显示没有找到对应文件，后来发现是版本的问题，没有打上版本号或者<code>Podspec</code>中版本错了。所以我们在维护一个框架时，修改框架之后，先将podspec文件中的版本修改成下一个版本号，push到git服务器之后先打上tag，最后push到对应的pod repo中。</p>
+<p>1、途中遇到了几次问题，就是<code>pod repo push</code>不上去，显示没有找到对应文件，后来发现是版本的问题，没有打上版本号或者<code>Podspec</code>中版本错了。所以我们在维护一个框架时，修改框架之后，push到git服务器之后先打上tag，然后再修改podspec文件中的版本，最后push到对应的pod repo中。</p>
 
 <p>2、若是在框架当中，存在不同的文件夹，请使用<code>subspec</code>。如果不同文件夹之间的文件有相互导入的情况，请将被导入的头文件设置为<code>public_header_files</code>，并且通过<code>dependency</code>设置依赖，具体可以参考<a href="https://github.com/AFNetworking/AFNetworking/blob/master/AFNetworking.podspec">AFNetworking的podspec</a>文件。</p>
 
 <p>3、若是需要提交给官方，请使用</p>
 
 <pre><code>pod trunk register youremail
-查看自己的信息
+查看信息
 pod trunk me
 将对应的pod推送到服务器
 pod turnk push
@@ -704,9 +704,9 @@ $ pod update --verbose --no-repo-update
   
   <entry>
     <title type="html"><![CDATA[iOS9之适配ATS]]></title>
-    <link href="http://liuchungui.github.io/blog/2015/10/11/ios9zhi-gua-pei-ats/"/>
+    <link href="http://www.liuchungui.com/blog/2015/10/11/ios9zhi-gua-pei-ats/"/>
     <updated>2015-10-11T13:15:11+08:00</updated>
-    <id>http://liuchungui.github.io/blog/2015/10/11/ios9zhi-gua-pei-ats</id>
+    <id>http://www.liuchungui.com/blog/2015/10/11/ios9zhi-gua-pei-ats</id>
     <content type="html"><![CDATA[<p>最近的iOS9系统出来了，而网络方面的ATS(App Transport Security)特性可以说每个人都要经历。而我这篇博客，就是结合我最近几天的经历，来谈谈从服务器到iOS客户端对ATS的适配。</p>
 
 <h3>一、简单谈谈ATS(App Transport Security)</h3>
@@ -778,7 +778,7 @@ SSLCACertificateFile "/alidata/server/httpd/conf/ssl/ca.crt"
 &lt;/VirtualHost&gt;
 </code></pre>
 
-<p>最后，重启Apache服务器，在浏览器输入网址查看是否配置成功。我这里是个人使用，申请的是免费的证书，我申请证书的网站是<a href="http://www.wosign.com/DVSSL/DV_KuaiSSL_Free.htm">沃通</a>。  <br/>
+<p>最后，重启Apache服务器，在浏览器输入网址查看是否配置成功。我这里是个人使用，申请的是免费的证书，我申请证书的网站是<a href="https://buy.wosign.com">沃通</a>。  <br/>
 搭建的成果：<a href="https://www.casetree.cn">https://www.casetree.cn</a></p>
 
 <h5>第二种、自建证书配置HTTPS服务器</h5>
