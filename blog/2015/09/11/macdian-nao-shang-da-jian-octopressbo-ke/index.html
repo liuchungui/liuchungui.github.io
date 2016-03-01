@@ -212,6 +212,13 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
+<p>默认情况，所有文字的排头会对齐，但如果有列表项的情况下也如此，列表头就会冲出文章的主体区块了。在 octopress/sass/custom/_layout.scss 文件中找到#$indented-lists: true 行，去掉#注释即可。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">$indented</span><span class="o">-</span><span class="nx">lists</span><span class="o">:</span> <span class="kc">true</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
 <p>其它，界面、侧边栏、底部栏、添加top回到顶部等，请参考<a href="http://foggry.com/blog/2014/04/28/custom-your-octopress-blog/">自定义你的Octopress博客</a></p>
 
 <p><strong>注意：当自定义了博客时，修改了头、侧边栏、底部栏、添加评论等配置文件后，使用rake generate生成一下。</strong></p>
@@ -299,6 +306,10 @@ var jiathis_config = {data_track_clickback:'true'};
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2016/01/01/2015nian-zong-jie/">2015年总结</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/12/26/gitbookan-zhuang-shi-yong/">Gitbook安装使用</a>
       </li>
     
@@ -314,10 +325,6 @@ var jiathis_config = {data_track_clickback:'true'};
         <a href="/blog/2015/11/02/uicollectionviewzhi-jie-shao-shi-yong-pian/">UICollectionView之介绍使用篇</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2015/10/23/gitzong-jie/">Git简单总结</a>
-      </li>
-    
   </ul>
 </section>
 <section>
@@ -328,6 +335,7 @@ var jiathis_config = {data_track_clickback:'true'};
 <li class='category'><a href='/blog/categories/ios/'>ios (6)</a></li>
 <li class='category'><a href='/blog/categories/octopress/'>octopress (1)</a></li>
 <li class='category'><a href='/blog/categories/web/'>web (2)</a></li>
+<li class='category'><a href='/blog/categories/年度总结/'>年度总结 (1)</a></li>
 
  </ul>
 </section>

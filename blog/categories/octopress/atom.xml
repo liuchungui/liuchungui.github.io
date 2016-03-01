@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Octopress | liuchungui's Blog]]></title>
   <link href="http://www.liuchungui.com/blog/categories/octopress/atom.xml" rel="self"/>
   <link href="http://www.liuchungui.com/"/>
-  <updated>2016-02-22T17:19:19+08:00</updated>
+  <updated>2016-03-02T00:09:37+08:00</updated>
   <id>http://www.liuchungui.com/</id>
   <author>
     <name><![CDATA[刘春桂]]></name>
@@ -112,7 +112,12 @@ git push origin source
 </script>
 
 
-<p>```</p>
+<pre><code>
+默认情况，所有文字的排头会对齐，但如果有列表项的情况下也如此，列表头就会冲出文章的主体区块了。在 octopress/sass/custom/_layout.scss 文件中找到#$indented-lists: true 行，去掉#注释即可。
+</code></pre>
+
+<p>$indented-lists: true
+```</p>
 
 <p>其它，界面、侧边栏、底部栏、添加top回到顶部等，请参考<a href="http://foggry.com/blog/2014/04/28/custom-your-octopress-blog/">自定义你的Octopress博客</a></p>
 

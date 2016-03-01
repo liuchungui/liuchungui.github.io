@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: 年度总结 | liuchungui's Blog]]></title>
+  <link href="http://www.liuchungui.com/blog/categories/nian-du-zong-jie/atom.xml" rel="self"/>
+  <link href="http://www.liuchungui.com/"/>
+  <updated>2016-03-02T00:09:37+08:00</updated>
+  <id>http://www.liuchungui.com/</id>
+  <author>
+    <name><![CDATA[刘春桂]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[2015年总结]]></title>
+    <link href="http://www.liuchungui.com/blog/2016/01/01/2015nian-zong-jie/"/>
+    <updated>2016-01-01T01:22:29+08:00</updated>
+    <id>http://www.liuchungui.com/blog/2016/01/01/2015nian-zong-jie</id>
+    <content type="html"><![CDATA[<p>现在已经2016年1点了，去年这个时候看到别人都纷纷写着一年的总结，那个时候顿生崇拜。今年，我也来个简短的总结吧！</p>
+
+<p>2015这一年，换了一家公司，而就是从这个时候，我感觉我整个写代码的思想发生了不小的变化，事情就从这里开始吧。</p>
+
+<p>五月份的时候，跟着领导一起来到了一家新的公司。新的公司团队正在建立，由于领导的器重，我参与了项目重构前的框架设计。</p>
+
+<p>在这其中，我最主要的是重构网络框架这一块。网络框架是基于AF第二次开发的，并且最初版本是我们在上一个公司一起讨论，然后由我们一个同事李鹏总理设计实现的。而重构网络框架这一块，经过多次讨论之后，我们的想法其实可以归纳成两点：第一个是移植性，不需像以前一样，每做个项目都需要修改网络框架内部的底层，而我们总体框架也是非常强调移植性；第二个就是业务层使用上体验更好，最初版本是发送一个请求调回一个成功和一个失败的block，成功的block里面只返回了一个request，取数据的时候需要从当前这个request当中获取，这样具有迷惑性；而且我们不但要在processResultWithDic:这个处理数据的方法当中判断是否是业务层成功，还需要在成功调回的block当中进行判断，这样相当于进行了两次判断。</p>
+
+<h5>针对这两点，我重新设计了一下。</h5>
+
+<ul>
+<li>解决移植性，我在原来的基础上增加了一个NetworkHelper类，这个类是一个单例，它的作用主要是提供BaseURL、成功的返回码、取返回码的key值、请求的缓存码、处理请求参数、处理请求头、处理返回的数据，而且上面如果还满足不了，这个Helper还可以返回AF的requestSerializer和responseSerializer。而在项目当中，只需要继承这个类，实现里面的方法就可以配置整个网络框架，这就解决了移植性的问题。</li>
+<li>使业务层使用体验更好，为了做到这个，我做了两点。一是在原来的基础上增加一个block，那就是一共三个分别是业务成功、业务失败、网络失败；二是每个block调回，不但调回request，而且返回response或者NSError。</li>
+</ul>
+
+
+<p>网络这样重构之后，我们放到了一个整体的工程中PublicProject，项目引入的时候导入整个工程，引用其中静态包文件就行了。这个框架，在公司当中我们多个项目都在使用，建立项目时，给我们使用起来带来不小的便利。后来，我们研究了一下私有的CocoaPods，使用起来更方便，后期新项目我们可以使用这个来进行管理，具体使用可以参照我的另外一篇博客<a href="http://www.liuchungui.com/blog/2015/10/19/cocoapodschuang-jian-si-you-pods/">CocoaPods创建私有Pods</a>。之后，参照了<a href="http://casatwy.com/iosying-yong-jia-gou-tan-wang-luo-ceng-she-ji-fang-an.html">iOS应用架构谈 网络层设计方案</a>的思想，重新架构了下，自己重写了一遍网络框架<a href="https://github.com/liuchungui/BGNetwork">BGNetwork</a>，放在了github上面。相比以前的网络框架，主要增加了缓存机制，扩展了可配置性的功能。之后，也许是用惯了block回调的方式，反而觉得block回调更好，又在此基础上重新开了一个<a href="https://github.com/liuchungui/BGNetwork/tree/dev">dev分支</a>。参照<a href="https://github.com/yuantiku/YTKNetwork">YTKNetwork</a>，在dev分支上更是添加了批量处理请求、上传请求和下载请求。后来陆陆续续整了下<a href="https://travis-ci.org/liuchungui/BGNetwork">travis-ci</a>和<a href="https://codecov.io/github/liuchungui/BGNetwork">codecov</a>。</p>
+
+<p>整个网络封装之后，收获还是挺多的。不过，特别遗憾的是没有好好的写使用教程和宣传下，带动更多的人参与进来，star少的可怜。</p>
+
+<p>2015年还有个重要的事情就是使用了git，真正参与进了github，真正的为github的世界向往和激动。在之前，git对我来说也就是和svn一样的工具，github就是一个下载开源代码的网站。而在同学说git怎么怎么好的时候，我终于使用了git，立马就感觉使用git原来这么爽。后来，进入github在某个项目里面问了个问题，发现有很多很多人来回答，大家就像一个大家庭一样，为整个开源项目发展的更好而努力。所以，我有什么想法的时候，也会自己创建项目放在上面。</p>
+
+<p>2015年，还有一件事情不得不提，就是和我一个室友在一起做了一个项目，做得项目是一个为群众提供法律服务的平台，做了客户端和律师端。当时，我还专门针对一个网站用php写了一个抓取数据的代码，最后花了将近一个月的时间抓取了七百多万条数据。他更是写了一段代码分析出其中的案件类型、律师名、律师下所打的官司等有价值的数据，还做了一个小网站。后来，我们做APP，我写服务器接口，写了几个之后，他参照着写了许多。iOS客户端有两个，是我和另外一个同学一块写的。当时我这个室友特别有激情，专门花了三天的功夫做了一个特别棒的PPT，在他导师的牵头下，邀请了法律界的律师、法院的人和北大的教授在国家会议中心做了一次演讲。本来是打算激情四射的准备搞起，融资创建公司，最后专业人士提出了各种各样的问题，最后没有搞起来。</p>
+
+<p>不过，这也成为了我们一个重要的经验。对我来说，我经历了抓取数据，专门实践了一番正则表达式，而且我当时是自己整了一个简单的php框架，然后就写起了服务器端的接口。</p>
+
+<p>后来，他们公司要做一个项目，服务器接口是由我一个人写的，iOS客户端是由我和另外一个同学写的。这一次，我使用了在<a href="https://github.com/bcit-ci/CodeIgniter">CI</a>基础封装的Resetful API框架<a href="https://github.com/chriskacerguis/codeigniter-restserver">codeigniter-restserver</a>，接口文档专门由<a href="https://tower.im/">Tower</a>管理。</p>
+
+<p>总结写的有点啰嗦，大概就一些这样的事情，也算是对2015年的记录吧！</p>
+
+<p>2016年计划：
+其实想过各种各样的计划，想做的事情也特别特别多，但是说多了，肯定又实现不了，还是来点实际的吧！</p>
+
+<ol>
+<li>2016年要学习一门新的技术，暂时选定的是H5。</li>
+<li>github上好好维护自己的项目，做出一个有点名气的项目来。</li>
+<li>做一个自己的网站和App，越炫酷越好。</li>
+<li>好好维护自己的博客，每个月至少一篇博客。</li>
+<li>带着女朋友好好去旅游一次</li>
+</ol>
+
+]]></content>
+  </entry>
+  
+</feed>

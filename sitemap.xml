@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>http://www.liuchungui.com/blog/2016/01/01/2015nian-zong-jie/</loc>
+<lastmod>2016-01-01T01:22:29+08:00</lastmod>
+</url>
+<url>
 <loc>http://www.liuchungui.com/blog/2015/12/26/gitbookan-zhuang-shi-yong/</loc>
 <lastmod>2015-12-26T17:15:07+08:00</lastmod>
 </url>
@@ -67,6 +71,9 @@
 </url>
 <url>
 <loc>http://www.liuchungui.com/blog/categories/gitbook/</loc>
+</url>
+<url>
+<loc>http://www.liuchungui.com/blog/categories/nian-du-zong-jie/</loc>
 </url>
 <url>
 <loc>http://www.liuchungui.com/posts/2/</loc>
