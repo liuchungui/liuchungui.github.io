@@ -4,7 +4,7 @@
   <title><![CDATA[liuchungui's Blog]]></title>
   <link href="http://www.liuchungui.com/atom.xml" rel="self"/>
   <link href="http://www.liuchungui.com/"/>
-  <updated>2016-03-02T00:11:31+08:00</updated>
+  <updated>2016-03-02T00:16:50+08:00</updated>
   <id>http://www.liuchungui.com/</id>
   <author>
     <name><![CDATA[刘春桂]]></name>
@@ -81,6 +81,9 @@ github地址:<a href="https://github.com/GitbookIO/gitbook">https://github.com/G
 
 <p>首先到<a href="http://nodejs.cn/">nodejs</a>下载，安装Node.js的包管理器npm。
 然后，通过<code>sudo npm install -g gitbook-cli</code>命令安装gitbook</p>
+
+<!-- more -->
+
 
 <h3>2、初始化gitbook</h3>
 
