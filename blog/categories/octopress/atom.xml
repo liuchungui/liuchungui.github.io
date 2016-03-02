@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Octopress | liuchungui's Blog]]></title>
   <link href="http://www.liuchungui.com/blog/categories/octopress/atom.xml" rel="self"/>
   <link href="http://www.liuchungui.com/"/>
-  <updated>2016-03-02T11:21:49+08:00</updated>
+  <updated>2016-03-02T13:19:05+08:00</updated>
   <id>http://www.liuchungui.com/</id>
   <author>
     <name><![CDATA[刘春桂]]></name>
@@ -130,6 +130,8 @@ git push origin source
 <p><a href="http://matrixzk.github.io/blog/20141020/octopress-setup-and-analysis/#section">使用 Octopress 2.0 搭建基于 Github Pages 个人博客的详细过程及原理分析</a></p>
 
 <p><a href="http://www.jianshu.com/p/0ac2ac1a8e45">octopress博客搭建和个性化配置</a></p>
+
+<p><a href="http://biaobiaoqi.github.io/blog/2013/07/10/decorate-octopress/">定制Octopress</a></p>
 ]]></content>
   </entry>
   
