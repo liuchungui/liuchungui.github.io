@@ -157,7 +157,7 @@ pod trunk register youremail
 查看信息
 pod trunk me
 将对应的pod推送到服务器
-pod turnk push
+pod trunk push
 ```
 
 4、使用`pod install`时，它首先会更新整个官方的源，而Cocoapods每天都有很多人提交，所以更新比较慢。所以，建议每过一段时间更新一下官方库，平常的时候，咱们可以在`instal`l或`update`加一个参数`--no-repo-update`让它不用更新。
