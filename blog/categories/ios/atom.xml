@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Ios | liuchungui's Blog]]></title>
   <link href="http://www.liuchungui.com/blog/categories/ios/atom.xml" rel="self"/>
   <link href="http://www.liuchungui.com/"/>
-  <updated>2016-03-02T00:16:50+08:00</updated>
+  <updated>2016-03-02T11:21:49+08:00</updated>
   <id>http://www.liuchungui.com/</id>
   <author>
     <name><![CDATA[刘春桂]]></name>
@@ -685,7 +685,7 @@ end
 查看信息
 pod trunk me
 将对应的pod推送到服务器
-pod turnk push
+pod trunk push
 </code></pre>
 
 <p>4、使用<code>pod install</code>时，它首先会更新整个官方的源，而Cocoapods每天都有很多人提交，所以更新比较慢。所以，建议每过一段时间更新一下官方库，平常的时候，咱们可以在<code>instal</code>l或<code>update</code>加一个参数<code>--no-repo-update</code>让它不用更新。</p>
