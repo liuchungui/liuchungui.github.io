@@ -115,3 +115,5 @@ $indented-lists: true
 [使用 Octopress 2.0 搭建基于 Github Pages 个人博客的详细过程及原理分析](http://matrixzk.github.io/blog/20141020/octopress-setup-and-analysis/#section)
 
 [octopress博客搭建和个性化配置](http://www.jianshu.com/p/0ac2ac1a8e45)
+
+[定制Octopress](http://biaobiaoqi.github.io/blog/2013/07/10/decorate-octopress/)
