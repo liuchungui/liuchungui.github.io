@@ -5,7 +5,7 @@ date: 2015-10-19 21:54:54 +0800
 comments: true
 tags: [cocoapods, private pods, cocoapods私有源]
 keywords: cocoapods, private pods, cocoapods私有源
-categories: mac
+categories: ios
 ---
 创建Pod私有源步骤：    
 1、创建两个git仓库，一个用来做私有的Spec Repo，一个是我们自己的公共组件    

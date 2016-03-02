@@ -99,6 +99,12 @@ git push origin source
 
 ```
 
+默认情况，所有文字的排头会对齐，但如果有列表项的情况下也如此，列表头就会冲出文章的主体区块了。在 octopress/sass/custom/_layout.scss 文件中找到#$indented-lists: true 行，去掉#注释即可。
+
+```
+$indented-lists: true
+```
+
 其它，界面、侧边栏、底部栏、添加top回到顶部等，请参考[自定义你的Octopress博客](http://foggry.com/blog/2014/04/28/custom-your-octopress-blog/)
 
 **注意：当自定义了博客时，修改了头、侧边栏、底部栏、添加评论等配置文件后，使用rake generate生成一下。**

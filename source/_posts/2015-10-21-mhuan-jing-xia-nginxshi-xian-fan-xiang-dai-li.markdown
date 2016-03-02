@@ -6,7 +6,7 @@ comments: true
 tags: [Mac环境下安装Nginx, Nginx, 反向代理, Nginx反向代理, Mac]
 keywords: Mac环境下安装Nginx, Nginx, 反向代理, Nginx反向代理, Mac
 description: Mac环境下Nginx实现反向代理
-categories: Nginx
+categories: web
 ---
 ##1、安装
 首先，我们需要搭建Nginx环境，我这里是通过homebrew一键式搭建，步骤如下：    
