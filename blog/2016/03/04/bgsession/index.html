@@ -1,0 +1,347 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>BGSession一个基于NSUserDefaults实现的轻量级本地数据存储 - liuchungui's Blog</title>
+  <meta name="author" content="刘春桂">
+
+  
+  <meta name="description" content="BGSession是一个基于NSUserDefaults实现的轻量级数据存储，你只需要简单的继承它，给它添加属性，设置属性的值，就能通过NSUserDefaults同步到本地。 BGSession的由来 在昨天以前，对于一些轻量级数据，我一共使用过三种方案。 第一种， &hellip;">
+  <meta name="keywords" content="BGSession, NSUserDefaults, 轻量级数据存储">
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://www.liuchungui.com/blog/2016/03/04/bgsession/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="liuchungui's Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="http://cdn.staticfile.org/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<script type="text/javascript">
+  function addBlankTargetForLinks () {
+      $('a[href^="http"]').each(function(){
+          $(this).attr('target', '_blank');
+      });
+  }
+  $(document).bind('DOMNodeInserted', function(event) {
+      addBlankTargetForLinks();
+  });
+</script>
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">liuchungui's Blog</a></h1>
+  
+    <h2>代码嗨起来</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="www.liuchungui.com">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">BGSession一个基于NSUserDefaults实现的轻量级本地数据存储</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-03-04T16:35:38+08:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>4</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>4:35 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p><a href="https://github.com/liuchungui/BGSession">BGSession</a>是一个基于NSUserDefaults实现的轻量级数据存储，你只需要简单的继承它，给它添加属性，设置属性的值，就能通过NSUserDefaults同步到本地。</p>
+
+<!-- more -->
+
+
+<h2>BGSession的由来</h2>
+
+<p>在昨天以前，对于一些轻量级数据，我一共使用过三种方案。</p>
+
+<p>第一种，直接使用NSUserDefaults进行读取，代码如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="c1">//写入</span>
+</span><span class='line'><span class="p">[[</span><span class="bp">NSUserDefaults</span> <span class="n">standardUserDefaults</span><span class="p">]</span> <span class="nl">setValue</span><span class="p">:</span><span class="s">@&quot;Jack&quot;</span> <span class="nl">forKey</span><span class="p">:</span><span class="s">@&quot;UserDefaults_userName&quot;</span><span class="p">];</span>
+</span><span class='line'><span class="p">[[</span><span class="bp">NSUserDefaults</span> <span class="n">standardUserDefaults</span><span class="p">]</span> <span class="n">synchronize</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//读取</span>
+</span><span class='line'><span class="bp">NSString</span> <span class="o">*</span><span class="n">userName</span> <span class="o">=</span> <span class="p">[[</span><span class="bp">NSUserDefaults</span> <span class="n">standardUserDefaults</span><span class="p">]</span> <span class="nl">valueForKey</span><span class="p">:</span><span class="s">@&quot;UserDefaults_userName&quot;</span><span class="p">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>第二种，数据归档，代码如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="c1">//使用归档写入</span>
+</span><span class='line'><span class="bp">NSString</span> <span class="o">*</span><span class="n">userName</span> <span class="o">=</span> <span class="s">@&quot;Jack&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="bp">NSString</span> <span class="o">*</span><span class="n">filePath</span> <span class="o">=</span> <span class="p">[[</span><span class="n">NSSearchPathForDirectoriesInDomains</span><span class="p">(</span><span class="n">NSDocumentDirectory</span><span class="p">,</span> <span class="n">NSUserDomainMask</span><span class="p">,</span> <span class="nb">YES</span><span class="p">)</span> <span class="n">lastObject</span><span class="p">]</span> <span class="nl">stringByAppendingPathComponent</span><span class="p">:</span><span class="s">@&quot;UserNameFile&quot;</span><span class="p">];</span>
+</span><span class='line'><span class="p">[</span><span class="bp">NSKeyedArchiver</span> <span class="nl">archiveRootObject</span><span class="p">:</span><span class="n">userName</span> <span class="nl">toFile</span><span class="p">:</span><span class="n">filePath</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//使用解归档读取</span>
+</span><span class='line'><span class="n">userName</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSKeyedUnarchiver</span> <span class="nl">unarchiveObjectWithFile</span><span class="p">:</span><span class="n">filePath</span><span class="p">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>第三种，建立一个全局的单例，然后给定相应的属性值，存储时的代码如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="c1">//写入</span>
+</span><span class='line'><span class="p">[</span><span class="n">BGGlobal</span> <span class="n">sharedGlobal</span><span class="p">].</span><span class="n">userName</span> <span class="o">=</span> <span class="s">@&quot;Jack&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="c1">//写入文件，我使用的是将整个对象归档到一个文件当中</span>
+</span><span class='line'><span class="p">[</span><span class="n">BGGlobal</span> <span class="n">writeToFile</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//读取</span>
+</span><span class='line'><span class="bp">NSString</span> <span class="o">*</span><span class="n">userName</span> <span class="o">=</span> <span class="p">[</span><span class="n">BGGlobal</span> <span class="n">sharedGlobal</span><span class="p">].</span><span class="n">userName</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p> 比较上面三种方案：  <br/>
+ 第一种我使用过之后就再也不怎么用了，有段时间几乎遗忘了它，因为使用它真的很麻烦，打出<code>[NSUserDefaults standardUserDefaults]</code>已经感觉很长了，后面还需要输入一个自己定义的key值，虽然可以全局定义常量，但是当常量够多的时候，也不能一时找到，而且设置值之后，如果要写入磁盘，还需要使用<code>[[NSUserDefaults standardUserDefaults] synchronize]</code>同步到本地；读取时和写入类似，需要一个key值。</p>
+
+<p> 第二种，数据归档和第一种一样，存取时比较麻烦，而且因为归档的时候需要不停的读取文件，性能也不好。</p>
+
+<p> 第三种，在全局单例实现<code>NSCoding</code>协议，只需要添加属性值，就可以使用点语法直接存取，存取非常的方便。存储本地时，和<code>[[NSUserDefaults standardUserDefaults] synchronize]</code>类似，使用<code>[BGGlobal writeToFile]</code>全局归档写入文件。</p>
+
+<p> 比较这三种方案，我选择了第三种。第二种，直接舍弃；第一种虽然在性能比第二种更优，但是使用不是很方便，况且我们这是存储轻量级数据，性能差异根本看不出来什么。</p>
+
+<p> 但，在使用过程中，我们遇到了一些问题，就是<code>[BGGlobal writeToFile]</code>会忘记写，从而造成了bug。而且，在整个工程项目中<code>[BGGlobal writeToFile]</code>出现的次数特别的多，这一步是否可以优化掉？</p>
+
+<p> 后来，一致商议，我们项目中将全局单例的global中归档写入文件的方式替换成NSUserDefaults的存储方式，然后在内部实现了同步本地的操作。这样只要我们在外面使用设置新的值时，它会自动同步到本地，而且性能方面更佳。</p>
+
+<p> 但是，在使用过一段时间之后，我发现并不是很方便，因为在使用的时候，##每添加一个字段都需要做如下两步##。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'> <span class="c1">//1、定义一个常量来作为NSUserDefaults的key</span>
+</span><span class='line'> <span class="k">static</span> <span class="bp">NSString</span> <span class="o">*</span><span class="k">const</span> <span class="n">kSessionUserName</span> <span class="o">=</span> <span class="s">@&quot;kSessionUserName&quot;</span><span class="p">;</span>
+</span><span class='line'> <span class="c1">//2、在全局单例内部实现getter和setter方法</span>
+</span><span class='line'> <span class="o">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nl">setUserName</span><span class="p">:(</span><span class="bp">NSString</span> <span class="o">*</span><span class="p">)</span><span class="n">userName</span><span class="p">{</span>
+</span><span class='line'>    <span class="p">[</span><span class="nb">self</span> <span class="nl">setValue</span><span class="p">:</span><span class="n">userName</span> <span class="nl">forKey</span><span class="p">:</span><span class="n">kSessionUserName</span><span class="p">];</span>
+</span><span class='line'> <span class="p">}</span>
+</span><span class='line'> <span class="o">-</span> <span class="p">(</span><span class="bp">NSString</span> <span class="o">*</span><span class="p">)</span><span class="n">userName</span><span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="p">[</span><span class="nb">self</span> <span class="nl">getValueForKey</span><span class="p">:</span><span class="n">kSessionUserName</span><span class="p">];</span>
+</span><span class='line'> <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p> 这些步骤我们是否可以完全省略呢？</p>
+
+<p> 在一次我自己做项目的时候，我使用全局单例舍弃NSUserDefaults进行存储，仍然使用的是归档的形式，而且那个全局单例继承的是<a href="https://github.com/elado/jastor">jastor</a>，它内部自己实现了归档协议，我只需要每次使用的时候，多添加<code>[BGGlobal writeToFile]</code>同步到本地就行了，比前面使用NSUserDefaults方便很多。</p>
+
+<p> 但是，我一直都认为有更好的实现方案，终于在看runtime和KVO东西的时候想到了一种方案。于是，立马回家写了一个实现了<a href="https://github.com/liuchungui/BGSession">BGSession</a>。</p>
+
+<h2>BGSession实现原理</h2>
+
+<p> BGSession是一个全局单例，主要采用的是KVC/KVO和Runtime进行实现的。使用BGSession作为轻量级数据存储时，只需要继承BGSession，然后在BGSession的派生类添加相关的属性。当给这些属性设置新的值后，BGSession会监听到属性值的变化，然后使用KVC自动将它同步到NSUserDefaults。这样，存取时，我们就可以当做使用单例一样使用，简单方便。</p>
+
+<h2>Github地址</h2>
+
+<p><a href="https://github.com/liuchungui/BGSession">https://github.com/liuchungui/BGSession</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">刘春桂</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2016-03-04T16:35:38+08:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>4</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>4:35 pm</span></time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+
+  
+    <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+	<span class="jiathis_txt">分享到：</span>
+	<a class="jiathis_button_tools_1"></a>
+	<a class="jiathis_button_tools_2"></a>
+	<a class="jiathis_button_tools_3"></a>
+	<a class="jiathis_button_tools_4"></a>
+	<a href="http://www.jiathis.com/share?uid=2059456" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+	<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config = {data_track_clickback:'true'};
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=2059456" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2059456"></script>
+<!-- UY END -->
+
+  
+
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2016/01/01/2015nian-zong-jie/" title="Previous Post: 2015年总结">&laquo; 2015年总结</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/03/04/bgsession/">BGSession一个基于NSUserDefaults实现的轻量级本地数据存储</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/01/01/2015nian-zong-jie/">2015年总结</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/12/26/gitbookan-zhuang-shi-yong/">Gitbook安装使用</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/11/24/uicollectionviewdong-hua/">UICollectionView动画</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/11/06/uicollectionviewzhi-zi-ding-yi-layout/">UICollectionView之自定义Layout</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+ <h1>Categories</h1>
+ <ul id="categories">
+  <li class='category'><a href='/blog/categories/git/'>git (1)</a></li>
+<li class='category'><a href='/blog/categories/gitbook/'>gitbook (1)</a></li>
+<li class='category'><a href='/blog/categories/ios/'>ios (6)</a></li>
+<li class='category'><a href='/blog/categories/octopress/'>octopress (1)</a></li>
+<li class='category'><a href='/blog/categories/web/'>web (2)</a></li>
+<li class='category'><a href='/blog/categories/年度总结/'>年度总结 (1)</a></li>
+
+ </ul>
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?40391c9d11f57c2384e5811d517bef62";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+<p>
+  &copy; 2016 - 刘春桂 -
+  <span class="credit">基于 <a href="http://octopress.org" target="_blank">Octopress</a></span>
+  <span class="credit">, 感谢 <a href="http://gitcafe.com/signup?invited_by=tangqiaoboy" target="_blank">GitCafe</a> 为本站提供存储空间</span>
+</p>
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
