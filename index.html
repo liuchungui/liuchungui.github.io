@@ -9,7 +9,7 @@
   <meta name="author" content="刘春桂">
 
   
-  <meta name="description" content="BGSession是一个基于NSUserDefaults实现的轻量级数据存储，你只需要简单的继承它，给它添加属性，设置属性的值，就能通过NSUserDefaults同步到本地。 ">
+  <meta name="description" content="以前在使用jastor解析Json成model的时候里面涉及到了Runtime里面的知识，所以专门看了Objective-C Runtime 运行时之一到六这一系列的文章，整个Jastor也就懂了，现在非常出名的框架Mantle，JSONModel也都是差不多的原理。但是， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -72,6 +72,40 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/03/14/runtimezhi-lei-yu-dui-xiang-zong-jie/">Runtime之类与对象总结</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-03-14T23:30:27+08:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>14</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>11:30 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>以前在使用<a href="https://github.com/elado/jastor">jastor</a>解析Json成model的时候里面涉及到了Runtime里面的知识，所以专门看了<a href="http://blog.jobbole.com/79566/">Objective-C Runtime 运行时之一到六</a>这一系列的文章，整个Jastor也就懂了，现在非常出名的框架<a href="https://github.com/Mantle/Mantle">Mantle</a>，<a href="https://github.com/icanzilb/JSONModel">JSONModel</a>也都是差不多的原理。但是，一年之后的今天重新再看的时候，发现大概思路知道，但是具体的一些细节实现需要写的时候，却一时上不了手，所以重新看了<a href="http://blog.jobbole.com/79566/">Objective-C Runtime 运行时</a>一系列，然后整理了一下，细节部分附上一些代码，方便以后查找。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2016/03/14/runtimezhi-lei-yu-dui-xiang-zong-jie/">更多 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -520,53 +554,6 @@ api使用起来和UITableView类似，具体可以自己在代码中找，如果
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/10/11/ios9zhi-gua-pei-ats/">iOS9之适配ATS</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-10-11T13:15:11+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>11</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>1:15 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>最近的iOS9系统出来了，而网络方面的ATS(App Transport Security)特性可以说每个人都要经历。而我这篇博客，就是结合我最近几天的经历，来谈谈从服务器到iOS客户端对ATS的适配。</p>
-
-<h3>一、简单谈谈ATS(App Transport Security)</h3>
-
-<p>ATS(App Transport Security)是为了提高App与服务器之间安全传输数据一个特性，这个特性从iOS9和OSX10.11开始出现，它默认需要满足以下几个条件：</p>
-
-<ul>
-<li>服务器TLS版本至少是1.2版本</li>
-<li>连接加密只允许几种先进的加密</li>
-<li>证书必须使用SHA256或者更好的哈希算法进行签名，要么是2048位或者更长的RSA密钥，要么就是256位或更长的ECC密钥</li>
-</ul>
-
-
-<p>如果想了解哪几种先进的加密是被允许的，详情请见官方文档<a href="https://developer.apple.com/library/mac/technotes/App-Transport-Security-Technote/">App Transport Security Technote</a></p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/10/11/ios9zhi-gua-pei-ats/">更多 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -580,6 +567,10 @@ api使用起来和UITableView类似，具体可以自己在代码中找，如果
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/03/14/runtimezhi-lei-yu-dui-xiang-zong-jie/">Runtime之类与对象总结</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2016/03/04/bgsession/">BGSession一个基于NSUserDefaults实现的轻量级本地数据存储</a>
@@ -597,10 +588,6 @@ api使用起来和UITableView类似，具体可以自己在代码中找，如果
         <a href="/blog/2015/11/24/uicollectionviewdong-hua/">UICollectionView动画</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2015/11/06/uicollectionviewzhi-zi-ding-yi-layout/">UICollectionView之自定义Layout</a>
-      </li>
-    
   </ul>
 </section>
 <section>
@@ -608,7 +595,7 @@ api使用起来和UITableView类似，具体可以自己在代码中找，如果
  <ul id="categories">
   <li class='category'><a href='/blog/categories/git/'>git (1)</a></li>
 <li class='category'><a href='/blog/categories/gitbook/'>gitbook (1)</a></li>
-<li class='category'><a href='/blog/categories/ios/'>ios (6)</a></li>
+<li class='category'><a href='/blog/categories/ios/'>ios (8)</a></li>
 <li class='category'><a href='/blog/categories/octopress/'>octopress (1)</a></li>
 <li class='category'><a href='/blog/categories/web/'>web (2)</a></li>
 <li class='category'><a href='/blog/categories/年度总结/'>年度总结 (1)</a></li>

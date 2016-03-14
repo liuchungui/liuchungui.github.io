@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Ios | liuchungui's Blog]]></title>
   <link href="http://www.liuchungui.com/blog/categories/ios/atom.xml" rel="self"/>
   <link href="http://www.liuchungui.com/"/>
-  <updated>2016-03-04T17:09:42+08:00</updated>
+  <updated>2016-03-15T00:05:35+08:00</updated>
   <id>http://www.liuchungui.com/</id>
   <author>
     <name><![CDATA[刘春桂]]></name>
@@ -12,6 +12,525 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Runtime之类与对象总结]]></title>
+    <link href="http://www.liuchungui.com/blog/2016/03/14/runtimezhi-lei-yu-dui-xiang-zong-jie/"/>
+    <updated>2016-03-14T23:30:27+08:00</updated>
+    <id>http://www.liuchungui.com/blog/2016/03/14/runtimezhi-lei-yu-dui-xiang-zong-jie</id>
+    <content type="html"><![CDATA[<p>以前在使用<a href="https://github.com/elado/jastor">jastor</a>解析Json成model的时候里面涉及到了Runtime里面的知识，所以专门看了<a href="http://blog.jobbole.com/79566/">Objective-C Runtime 运行时之一到六</a>这一系列的文章，整个Jastor也就懂了，现在非常出名的框架<a href="https://github.com/Mantle/Mantle">Mantle</a>，<a href="https://github.com/icanzilb/JSONModel">JSONModel</a>也都是差不多的原理。但是，一年之后的今天重新再看的时候，发现大概思路知道，但是具体的一些细节实现需要写的时候，却一时上不了手，所以重新看了<a href="http://blog.jobbole.com/79566/">Objective-C Runtime 运行时</a>一系列，然后整理了一下，细节部分附上一些代码，方便以后查找。</p>
+
+<!-- more -->
+
+
+<h2>一、对象、类、元类之间的关系</h2>
+
+<ul>
+<li>每个对象是一个objc_object结构体，此结构体只有一个元素即指向其类的isa指针，isa指针的类型为Class。(Class的结构体后面有）</li>
+<li>每个类也是一个对象，它的isa指针指向它的元类(meta class)，一般元类都是唯一的。</li>
+<li>每个元类也是一个对象，它的isa指针指向NSObject的元类，而NSObject的元类指向它本身（即NSObject元类）</li>
+<li>而每个类的super class都指向它的父类，直至NSObject，NSObject的super class为null。</li>
+<li>每个元类的super class都指向它的父元类，直至NSObject元类。NSObject元类的父元类是NSObject，NSObject的父类是nil。</li>
+</ul>
+
+
+<p>注：上面使用代码测试过，主要使用object_getClass、class_getSuperClass和objc_getMetaClass来获取类、父类、元类，然后打印指针进行查看。</p>
+
+<h2>二、类与对象基础数据结构</h2>
+
+<p>Objective-C类是由Class类型来表示的，它实际上是一个指向objc_class结构体的指针，它的定义如下：</p>
+
+<pre><code class="objc">typedef struct objc_class *Class;
+</code></pre>
+
+<p>查看objc/runtime.h中objc_class结构体的定义如下：</p>
+
+<pre><code>struct objc_class {
+    Class isa  OBJC_ISA_AVAILABILITY;
+
+#if !__OBJC2__
+    Class super_class                       OBJC2_UNAVAILABLE;  // 父类
+    const char *name                        OBJC2_UNAVAILABLE;  // 类名
+    long version                            OBJC2_UNAVAILABLE;  // 类的版本信息，默认为0
+    long info                               OBJC2_UNAVAILABLE;  // 类信息，供运行期使用的一些位标识
+    long instance_size                      OBJC2_UNAVAILABLE;  // 该类的实例变量大小
+    struct objc_ivar_list *ivars            OBJC2_UNAVAILABLE;  // 该类的成员变量链表
+    struct objc_method_list **methodLists   OBJC2_UNAVAILABLE;  // 方法定义的链表
+    struct objc_cache *cache                OBJC2_UNAVAILABLE;  // 方法缓存
+    struct objc_protocol_list *protocols    OBJC2_UNAVAILABLE;  // 协议链表
+#endif
+
+} OBJC2_UNAVAILABLE;
+</code></pre>
+
+<h2>三、调用方法时的流程</h2>
+
+<p>首先到当前对象所属的类中的方法缓存列表中查找这个方法，如果没有则到该类的方法定义链表中查找方法，如果查找到，则执行这个方法将返回值返回给原调用对象，并且将这个方法加入缓存cache当中；如果没有查找到则通过super_class找到它的父类，到它的父类中查找。</p>
+
+<p>想了解更多Runtime方法调用知识，请看<a href="http://blog.jobbole.com/79574/">Objective-C Runtime 运行时之三：方法与消息</a></p>
+
+<h2>四、类与对象的操作函数</h2>
+
+<p>runtime提供了大量的函数来操作类与对象，操作类的函数一般前缀是class，而操作对象的函数一般前缀是objc。</p>
+
+<h4>1、类相关操作函数</h4>
+
+<pre><code>// 获取类的类名
+const char * class_getName ( Class cls );
+// 获取类的父类
+Class class_getSuperclass ( Class cls );
+
+// 判断给定的Class是否是一个元类
+BOOL class_isMetaClass ( Class cls );
+// 获取实例大小
+size_t class_getInstanceSize ( Class cls );
+</code></pre>
+
+<h4>2、成员变量相关操作函数</h4>
+
+<pre><code>// 获取类中指定名称实例成员变量的信息
+Ivar class_getInstanceVariable ( Class cls, const char *name );
+
+// 获取类成员变量的信息
+Ivar class_getClassVariable ( Class cls, const char *name );
+
+// 添加成员变量
+BOOL class_addIvar ( Class cls, const char *name, size_t size, uint8_t alignment, const char *types );
+
+// 获取整个成员变量列表
+Ivar * class_copyIvarList ( Class cls, unsigned int *outCount );
+</code></pre>
+
+<p>需要注意：</p>
+
+<ul>
+<li>class_copyIvarList：获取的是所有成员实例属性，与property获取不一样。</li>
+<li>class_addIvar: <strong>OC不支持往已存在的类中添加实例变量</strong>，因此不管是系统库提供的类，还是我们自定义的类，都无法动态给它添加成员变量。<strong>但，如果是我们通过运行时来创建的类，我们可以使用class_addIvar来添加。不过，需要注意的是，这个方法只能在objc_allocateClassPair函数与objc_registerClassPair之间调用。</strong>另外，<strong>这个类也不能是元类</strong>。</li>
+</ul>
+
+
+<p>代码测试：</p>
+
+<pre><code>/**
+ *  测试成员变量
+ */
+- (void)testIvar {
+    unsigned int outCount;
+    if(class_addIvar([Student class], "_hell", sizeof(id), log2(sizeof(id)), "@")) {
+        NSLog(@"Add Ivar Success!");
+    }
+    else {
+        NSLog(@"Add Ivar failed!");
+    }
+    Ivar *ivarList = class_copyIvarList([Student class], &amp;outCount);
+    for (unsigned int i = 0; i &lt; outCount; i++) {
+        Ivar ivar = ivarList[i];
+        const char *ivarName = ivar_getName(ivar);
+        ptrdiff_t offset = ivar_getOffset(ivar);
+        const char *types = ivar_getTypeEncoding(ivar);
+        NSLog(@"ivar:%s, offset:%zd, type:%s", ivarName, offset, types);
+    }
+    free(ivarList);
+}
+</code></pre>
+
+<p>注意：class_addIvar中第三个参数设置类型的大小，第四个参数设置对齐，对齐传递log2(size)，具体原因参考：<a href="http://stackoverflow.com/questions/33184826/what-does-class-addivars-alignment-do-in-objective-c">http://stackoverflow.com/questions/33184826/what-does-class-addivars-alignment-do-in-objective-c</a></p>
+
+<h4>3、属性操作函数</h4>
+
+<pre><code>// 获取指定的属性
+objc_property_t class_getProperty ( Class cls, const char *name );
+
+// 获取属性列表
+objc_property_t * class_copyPropertyList ( Class cls, unsigned int *outCount );
+
+// 为类添加属性
+BOOL class_addProperty ( Class cls, const char *name, const objc_property_attribute_t *attributes, unsigned int attributeCount );
+
+// 替换类的属性
+void class_replaceProperty ( Class cls, const char *name, const objc_property_attribute_t *attributes, unsigned int attributeCount );
+</code></pre>
+
+<p>这一种方法也是针对ivar来操作的，不过它只操作那些property的值，包括扩展中的property。</p>
+
+<p>代码实践：</p>
+
+<pre><code>- (void)testProperty {
+    /**
+     *  添加property
+     */
+    objc_property_attribute_t attribute1 = {"T", "@\"NSString\""};
+    objc_property_attribute_t attribute2 = {"C", ""};
+    objc_property_attribute_t attribute3 = {"N", ""};
+    objc_property_attribute_t attribute4 = {"V", "_lcg"};
+    objc_property_attribute_t attributesList[] = {attribute1, attribute2, attribute3, attribute4};
+    if(class_addProperty([Student class], "lcg", attributesList, 4)) {
+        NSLog(@"add property success!");
+    }
+    else {
+        NSLog(@"add property failure!");
+    }
+
+    /**
+     *  打印property的name和property_attribute_t
+     */
+    unsigned int outCount;
+    objc_property_t *propertyList = class_copyPropertyList([Student class], &amp;outCount);
+    for (unsigned int i = 0; i &lt; outCount; i++) {
+        objc_property_t property = propertyList[i];
+        const char *propertyName = property_getName(property);
+        const char *attribute = property_getAttributes(property);
+        NSLog(@"propertyName: %s, attribute: %s", propertyName, attribute);
+
+        unsigned int attributeCount;
+        objc_property_attribute_t *attributeList = property_copyAttributeList(property, &amp;attributeCount);
+        for (unsigned int j = 0; j &lt; attributeCount; j++) {
+            objc_property_attribute_t attribute = attributeList[j];
+            const char *name = attribute.name;
+            const char *value = attribute.value;
+            NSLog(@"attribute name: %s, value: %s", name, value);
+        }
+    }
+}
+</code></pre>
+
+<p>上面代码有几个知识点需要说一下：</p>
+
+<p>(1) 其中property_attribute的相关内容需要说明下。</p>
+
+<p>   property_attribute为<strong>T@&ldquo;NSString&rdquo;,&amp;,N,V_exprice</strong>时：</p>
+
+<ul>
+<li><strong>T</strong> 是固定的，放在第一个</li>
+<li><strong>@&ldquo;NSString&rdquo;</strong> 代表这个property是一个字符串对象</li>
+<li><strong>&amp;</strong> 代表强引用，其中与之并列的是：'C'代表Copy，'&amp;&lsquo;代表强引用，'W'表示weak，assign为空，默认为assign。</li>
+<li><strong>N</strong> 区分的nonatomic和atomic，默认为atomic，atomic为空，'N'代表是nonatomic</li>
+<li><strong>V_exprice</strong> V代表变量，后面紧跟着的是成员变量名，代表这个property的成员变量名为_exprice。</li>
+</ul>
+
+
+<p> property_attribute为<strong>T@&ldquo;NSNumber&rdquo;,R,N,V_yearsOld</strong>时：</p>
+
+<ul>
+<li><strong>T</strong> 是固定的，放在第一个</li>
+<li><strong>@&ldquo;NSNumber&rdquo;</strong> 代表这个property是一个NSNumber对象</li>
+<li><strong>R</strong> 代表readOnly属性，readwrite时为空</li>
+<li><strong>N</strong> 区分的nonatomic和atomic，默认为atomic，atomic为空，'N'代表是nonatomic</li>
+<li><strong>V_yearsOld</strong> V代表变量，后面紧跟着的是成员变量名，代表这个property的成员变量名为_yearsOld。</li>
+</ul>
+
+
+<p>使用例子参考：<a href="http://www.tuicool.com/articles/aY3Ujii">http://www.tuicool.com/articles/aY3Ujii</a>  <br/>
+官方参考：<a href="https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Articles/ocrtPropertyIntrospection.html#//apple_ref/doc/uid/TP40008048-CH101-SW6">Property Type</a></p>
+
+<p>（2） 添加property，property_attribute_t是一个结构体，没有具体创建的方法，我们就只能使用{}这样结构体直接赋值过去。而且，添加property成功之后，它并不会生成<strong>实例属性、setter方法和getter方法</strong>。如果要真正调用的话，还需要我们自己添加对应的setter和getter方法。  <br/>
+详情使用请见：<a href="http://blog.csdn.net/meegomeego/article/details/18356169">http://blog.csdn.net/meegomeego/article/details/18356169</a></p>
+
+<h4>4、协议相关函数</h4>
+
+<pre><code>// 添加协议
+BOOL class_addProtocol ( Class cls, Protocol *protocol );
+
+// 返回类是否实现指定的协议
+BOOL class_conformsToProtocol ( Class cls, Protocol *protocol );
+
+// 返回类实现的协议列表
+Protocol * class_copyProtocolList ( Class cls, unsigned int *outCount );
+</code></pre>
+
+<p>代码实践：</p>
+
+<pre><code>- (void)testProtocolList {
+    //添加协议
+    Protocol *p = @protocol(StudentDataSource);
+    if(class_addProtocol([Student class], p)) {
+        NSLog(@"添加协议成功!");
+    }
+    else {
+        NSLog(@"添加协议失败!");
+    }
+
+    //判断是否实现了指定的协议
+    if(class_conformsToProtocol([Student class], p)) {
+        NSLog(@"遵循 %s协议", protocol_getName(p));
+    }
+    else {
+        NSLog(@"不遵循 %s协议", protocol_getName(p));
+    }
+
+    //获取类的协议列表
+    unsigned int outCount;
+    Protocol * __unsafe_unretained *protocolList = class_copyProtocolList([Student class], &amp;outCount);
+    for (unsigned int i = 0; i &lt; outCount; i++) {
+        Protocol *protocol = protocolList[i];
+        const char *name = protocol_getName(protocol);
+        NSLog(@"%s", name);
+    }
+    free(protocolList);
+}
+</code></pre>
+
+<p><strong>注意：可以使用runtime添加协议</strong></p>
+
+<h4>6、版本号（Version)</h4>
+
+<p>版本的使用两个方法，获取版本和设置版本，请看代码：</p>
+
+<pre><code>- (void)testVersion {
+    int version = class_getVersion([Student class]);
+    NSLog(@"%d", version);
+    class_setVersion([Student class], 100);
+    version = class_getVersion([Student class]);
+    NSLog(@"%d", version);
+}
+</code></pre>
+
+<h2>五、动态创建类和对象</h2>
+
+<h4>1、动态创建类</h4>
+
+<p>涉及以下函数</p>
+
+<pre><code>// 创建一个新类和元类
+Class objc_allocateClassPair ( Class superclass, const char *name, size_t extraBytes );
+
+// 销毁一个类及其相关联的类
+void objc_disposeClassPair ( Class cls );
+
+// 在应用中注册由objc_allocateClassPair创建的类
+void objc_registerClassPair ( Class cls );
+</code></pre>
+
+<p>注意：objc_disposeClassPair只能销毁由objc_allocateClassPair创建的类，当有实例存在或者它的子类存在时，调用这个函数会抛出异常。</p>
+
+<p>代码实践：</p>
+
+<pre><code>- (void)testCreateClass {
+    Class cls = objc_allocateClassPair([Person class], "Teacher", 0);
+    //添加成员变量，只能在运行时创建类添加，并且是在objc_allocateClassPair与objc_registerClassPair之间
+    if(class_addIvar(cls, "_level", sizeof(id), log2(sizeof(id)), "@\"NSString\"")) {
+        NSLog(@"添加_level成员变量成功");
+    }
+    else {
+        NSLog(@"添加_level成员变量失败");
+    }
+    objc_registerClassPair(cls);
+
+    /**
+     *  当有实例存在不能销毁类，所以讲代码放到里面
+     */
+    {
+        //创建对象
+        Person *p = [[cls alloc] init];
+        NSLog(@"%@", [p class]);
+        [p printInfo];
+        //设置值
+        [p setValue:@"高级讲师" forKey:@"level"];
+        NSString *level = [p valueForKey:@"level"];
+        NSLog(@"level: %@", level);
+    }
+
+    //销毁类，当有实例存在的时候是不能销毁类
+    objc_disposeClassPair(cls);
+}
+</code></pre>
+
+<h2>六、实例操作函数</h2>
+
+<pre><code>// 返回指定对象的一份拷贝
+id object_copy ( id obj, size_t size );
+
+// 释放指定对象占用的内存
+id object_dispose ( id obj );
+// 修改类实例的实例变量的值
+Ivar object_setInstanceVariable ( id obj, const char *name, void *value );
+
+// 获取对象实例变量的值
+Ivar object_getInstanceVariable ( id obj, const char *name, void **outValue );
+
+// 返回指向给定对象分配的任何额外字节的指针
+void * object_getIndexedIvars ( id obj );
+
+// 返回对象中实例变量的值
+id object_getIvar ( id obj, Ivar ivar );
+
+// 设置对象中实例变量的值
+void object_setIvar ( id obj, Ivar ivar, id value );
+// 返回给定对象的类名
+const char * object_getClassName ( id obj );
+
+// 返回对象的类
+Class object_getClass ( id obj );
+
+// 设置对象的类
+Class object_setClass ( id obj, Class cls );
+</code></pre>
+
+<p>实践代码：</p>
+
+<pre><code>- (void)testInstance {
+    Person *p = [Person new];
+    //object_copy在ARC下不能使用
+//    p = object_copy(p, class_getInstanceSize([Student class]));
+    //将p的isa指向Student
+    object_setClass(p, [Student class]);
+    [(Student *)p setName:@"Jack"];
+}
+</code></pre>
+
+<p>这里只是简单的将p这个对象的class设置为Student类，其实就是将p对象的isa指针指向Student类，KVO中的isa-swizzling其实就是这样干的。当调用setName:的方法的时候，就调用到了Student类中的setName。不过，这里调用Person类没有，而Student类有的方法会崩溃，报错Heap buffer overflow，就算是在非ARC下使用object_copy也是一样。</p>
+
+<h2>七、获取类的定义</h2>
+
+<pre><code>// 获取已注册的类定义的列表
+int objc_getClassList ( Class *buffer, int bufferCount );
+
+// 创建并返回一个指向所有已注册类的指针列表
+Class * objc_copyClassList ( unsigned int *outCount );
+
+// 返回指定类的类定义
+Class objc_lookUpClass ( const char *name );
+Class objc_getClass ( const char *name );
+Class objc_getRequiredClass ( const char *name );
+
+// 返回指定类的元类
+Class objc_getMetaClass ( const char *name );
+</code></pre>
+
+<p>objc_getClassList和objc_copyClassList都是获取所有已注册的类；而objc_lookUpClass获取指定的类，如果没有注册则返回nil；objc_getRequiredClass也是获取指定的类，不过如果这个类不存则，则会崩溃；objc_getMetaClass专门用来获取类的元类，每个类都有一个有效并且唯一的元类，如果这个类没有注册则返回nil。</p>
+
+<p>代码实践：</p>
+
+<pre><code>- (void)testGetClass {
+    /**
+     *  第一种获取所有注册的类
+     */
+    Class *bufferClass;
+    int numClasses;
+    numClasses = objc_getClassList(NULL, 0);
+    if(numClasses &gt; 0) {
+        bufferClass = (Class *)malloc(sizeof(Class)*numClasses);
+        numClasses = objc_getClassList(bufferClass, numClasses);
+        NSLog(@"numer of classes: %d", numClasses);
+        for (int i = 0; i &lt; numClasses; i++) {
+            Class cls = bufferClass[i];
+            NSLog(@"class name: %s", class_getName(cls));
+        }
+        free(bufferClass);
+    }
+
+    /**
+     *  第二种获取所有注册的类
+     */
+    unsigned int outCount;
+    Class *classLiset = objc_copyClassList(&amp;outCount);
+    for (unsigned int i = 0; i &lt; outCount; i++) {
+        Class cls = classLiset[i];
+        NSLog(@"class name: %s", class_getName(cls));
+    }
+    free(classLiset);
+}
+</code></pre>
+
+<p>第二种获取所有注册的类比第一种简单多了，建议使用第二种。</p>
+
+<h2>参考</h2>
+
+<p><a href="http://blog.jobbole.com/79566/">Objective-C Runtime 运行时之一：类与对象</a></p>
+
+<p><a href="https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Articles/ocrtTypeEncodings.html#//apple_ref/doc/uid/TP40008048-CH100">Type Encodings</a></p>
+
+<p><a href="https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Articles/ocrtPropertyIntrospection.html#//apple_ref/doc/uid/TP40008048-CH101-SW6">Property Type</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[BGSession一个基于NSUserDefaults实现的轻量级本地数据存储]]></title>
+    <link href="http://www.liuchungui.com/blog/2016/03/04/bgsession/"/>
+    <updated>2016-03-04T16:35:38+08:00</updated>
+    <id>http://www.liuchungui.com/blog/2016/03/04/bgsession</id>
+    <content type="html"><![CDATA[<p><a href="https://github.com/liuchungui/BGSession">BGSession</a>是一个基于NSUserDefaults实现的轻量级数据存储，你只需要简单的继承它，给它添加属性，设置属性的值，就能通过NSUserDefaults同步到本地。</p>
+
+<!-- more -->
+
+
+<h2>BGSession的由来</h2>
+
+<p>在昨天以前，对于一些轻量级数据，我一共使用过三种方案。</p>
+
+<p>第一种，直接使用NSUserDefaults进行读取，代码如下：</p>
+
+<pre><code class="objc">    //写入
+    [[NSUserDefaults standardUserDefaults] setValue:@"Jack" forKey:@"UserDefaults_userName"];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+
+    //读取
+    NSString *userName = [[NSUserDefaults standardUserDefaults] valueForKey:@"UserDefaults_userName"];
+</code></pre>
+
+<p>第二种，数据归档，代码如下：</p>
+
+<pre><code>    //使用归档写入
+    NSString *userName = @"Jack";
+    NSString *filePath = [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:@"UserNameFile"];
+    [NSKeyedArchiver archiveRootObject:userName toFile:filePath];
+
+    //使用解归档读取
+    userName = [NSKeyedUnarchiver unarchiveObjectWithFile:filePath];
+</code></pre>
+
+<p>第三种，建立一个全局的单例，然后给定相应的属性值，存储时的代码如下：</p>
+
+<pre><code>    //写入
+    [BGGlobal sharedGlobal].userName = @"Jack";
+    //写入文件，我使用的是将整个对象归档到一个文件当中
+    [BGGlobal writeToFile];
+
+    //读取
+    NSString *userName = [BGGlobal sharedGlobal].userName;
+</code></pre>
+
+<p> 比较上面三种方案：  <br/>
+ 第一种我使用过之后就再也不怎么用了，有段时间几乎遗忘了它，因为使用它真的很麻烦，打出<code>[NSUserDefaults standardUserDefaults]</code>已经感觉很长了，后面还需要输入一个自己定义的key值，虽然可以全局定义常量，但是当常量够多的时候，也不能一时找到，而且设置值之后，如果要写入磁盘，还需要使用<code>[[NSUserDefaults standardUserDefaults] synchronize]</code>同步到本地；读取时和写入类似，需要一个key值。</p>
+
+<p> 第二种，数据归档和第一种一样，存取时比较麻烦，而且因为归档的时候需要不停的读取文件，性能也不好。</p>
+
+<p> 第三种，在全局单例实现<code>NSCoding</code>协议，只需要添加属性值，就可以使用点语法直接存取，存取非常的方便。存储本地时，和<code>[[NSUserDefaults standardUserDefaults] synchronize]</code>类似，使用<code>[BGGlobal writeToFile]</code>全局归档写入文件。</p>
+
+<p> 比较这三种方案，我选择了第三种。第二种，直接舍弃；第一种虽然在性能比第二种更优，但是使用不是很方便，况且我们这是存储轻量级数据，性能差异根本看不出来什么。</p>
+
+<p> 但，在使用过程中，我们遇到了一些问题，就是<code>[BGGlobal writeToFile]</code>会忘记写，从而造成了bug。而且，在整个工程项目中<code>[BGGlobal writeToFile]</code>出现的次数特别的多，这一步是否可以优化掉？</p>
+
+<p> 后来，一致商议，我们项目中将全局单例的global中归档写入文件的方式替换成NSUserDefaults的存储方式，然后在内部实现了同步本地的操作。这样只要我们在外面使用设置新的值时，它会自动同步到本地，而且性能方面更佳。</p>
+
+<p> 但是，在使用过一段时间之后，我发现并不是很方便，因为在使用的时候，##每添加一个字段都需要做如下两步##。</p>
+
+<pre><code> //1、定义一个常量来作为NSUserDefaults的key
+ static NSString *const kSessionUserName = @"kSessionUserName";
+ //2、在全局单例内部实现getter和setter方法
+ - (void)setUserName:(NSString *)userName{
+    [self setValue:userName forKey:kSessionUserName];
+ }
+ - (NSString *)userName{
+    return [self getValueForKey:kSessionUserName];
+ }
+</code></pre>
+
+<p> 这些步骤我们是否可以完全省略呢？</p>
+
+<p> 在一次我自己做项目的时候，我使用全局单例舍弃NSUserDefaults进行存储，仍然使用的是归档的形式，而且那个全局单例继承的是<a href="https://github.com/elado/jastor">jastor</a>，它内部自己实现了归档协议，我只需要每次使用的时候，多添加<code>[BGGlobal writeToFile]</code>同步到本地就行了，比前面使用NSUserDefaults方便很多。</p>
+
+<p> 但是，我一直都认为有更好的实现方案，终于在看runtime和KVO东西的时候想到了一种方案。于是，立马回家写了一个实现了<a href="https://github.com/liuchungui/BGSession">BGSession</a>。</p>
+
+<h2>BGSession实现原理</h2>
+
+<p> BGSession是一个全局单例，主要采用的是KVC/KVO和Runtime进行实现的。使用BGSession作为轻量级数据存储时，只需要继承BGSession，然后在BGSession的派生类添加相关的属性。当给这些属性设置新的值后，BGSession会监听到属性值的变化，然后使用KVC自动将它同步到NSUserDefaults。这样，存取时，我们就可以当做使用单例一样使用，简单方便。</p>
+
+<h2>Github地址</h2>
+
+<p><a href="https://github.com/liuchungui/BGSession">https://github.com/liuchungui/BGSession</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[UICollectionView动画]]></title>
@@ -518,497 +1037,6 @@ cellCount = (CollectionViewContentWidth-sectionInset.left-sectionInset.right+min
 
 <p><a href="https://developer.apple.com/library/prerelease/ios/documentation/WindowsViews/Conceptual/CollectionViewPGforIOS/Introduction/Introduction.html">Collection View Programming Guide for iOS</a>   <br/>
 <a href="http://www.onevcat.com/2012/06/introducing-collection-views/">WWDC 2012 Session笔记——205 Introducing Collection Views</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[CocoaPods创建私有Pods]]></title>
-    <link href="http://www.liuchungui.com/blog/2015/10/19/cocoapodschuang-jian-si-you-pods/"/>
-    <updated>2015-10-19T21:54:54+08:00</updated>
-    <id>http://www.liuchungui.com/blog/2015/10/19/cocoapodschuang-jian-si-you-pods</id>
-    <content type="html"><![CDATA[<p>创建Pod私有源步骤：  <br/>
-1、创建两个git仓库，一个用来做私有的Spec Repo，一个是我们自己的公共组件  <br/>
-2、添加私有的repo到CocoaPods  <br/>
-3、制作Podspec，并且推送到你创建的私有repo   <br/>
-4、使用Pod，在Podfile添加私有源来搭建项目</p>
-
-<!-- more -->
-
-
-<p></p>
-
-<h3>1、创建两个git仓库，一个用来做私有的Spec Repo，一个是我们自己的公共组件</h3>
-
-<p>在这一步当中需要git服务器用来创建仓库，我这里只是作为一个例子，所以直接使用github来当做我的服务器，我创建的这些项目都是public的。你如果是练手的话，也可以仿照我一样在github上面创建仓库。如果是为公司建立私有的公共组件库，你可以在github等平台上面创建私有仓库，或者直接搭建一个git服务器来创建仓库。搭建服务器可以参考<a href="http://www.liuchungui.com/blog/2015/10/23/gitzong-jie/">Git简单总结</a>的第一部分，里面有Mac搭建也有Linux搭建的链接。    <br/>
-在这里，我们需要搭建两个git仓库。     <br/>
-第一个仓库名称是<a href="https://github.com/liuchungui/first.git">first</a>，专门用来做私有Spec Repo。      <br/>
-第二个仓库名称是<a href="https://github.com/liuchungui/BGNetwork">BGNetwork</a>，这个就是我们公共组件库。     <br/>
-在这里，我们来说一下什么是Spec Repo?</p>
-
-<blockquote><p>他是所有的Pods的一个索引，就是一个容器，所有公开的Pods都在这个里面，他实际是一个Git仓库remote端。  <br/>
-在GitHub上，当你使用了Cocoapods后他会被clone到本地的~/.cocoapods/repos目录下，可以进入到这个目录看到master文件夹就是这个官方的Spec Repo了。</p></blockquote>
-
-<p>这里引用了<a href="http://blog.wtlucky.com/blog/2015/02/26/create-private-podspec/">使用Cocoapods创建私有podspec</a>的内容。</p>
-
-<h3>2、添加私有的repo到CocoaPods</h3>
-
-<p>主要命令是<code>pod repo add REPO_NAME SOURCE_URL</code>。其中，REPO_NAME是私有repo的名字，取一个容易记住的名字，后面还会用到，以后公司内部的组件对应的podspec都可以推送到这个repo中；SOURCE_URL就是刚刚我们创建的<code>first</code>仓库链接。</p>
-
-<pre><code>$ pod repo add liuchungui https://github.com/liuchungui/first.git
-$ ls ~/.cocoapods/repos  
-liuchungui  master
-</code></pre>
-
-<p>这时，你会发现有两个文件夹<code>liuchungui</code>和<code>master</code>，master是Cocoapods官方的repo，而liuchungui就是我刚刚创建的。进入liuchungui文件夹查看，你会发现它是clone了一份<code>https://github.com/liuchungui/first.git</code>。   <br/>
-在这里，我们是一个空的仓库，可以不检查，但是你的仓库如果有什么其他东西的话，可以检查一下。</p>
-
-<pre><code>$ cd ~/.cocoapods/repos/liuchungui
-$ pod repo lint .
-</code></pre>
-
-<h3>3、制作Podspec，并且推送到你创建的私有repo</h3>
-
-<p>1、将我们前面创建的BGNetwork项目克隆到本地   <br/>
-<code>git clone https://github.com/liuchungui/BGNetwork.git</code>   <br/>
-2、在本地我们使用了xcode创建了项目，并且写了一个网络框架，运行没有问题，我们准备提交到github，并打上版本号。</p>
-
-<pre><code>git add .
-git commit -m 'add file'
-git push origin master
-git tag -m 'add tag' '0.1.1'
-git push --tags
-</code></pre>
-
-<p>3、我们开始制作Podspec文件。  <br/>
-<code>BGNetwork</code>是一个基于<code>AFNetworking</code>而封装的网络框架，它主要的源文件都在<code>BGNetwork/BGNetwork</code>路径下。我们将它放在CocoaPods给第三方使用，主要是将这个文件夹下的源文件加载到第三方的项目中以供使用。
-下面是供第三方使用的源文件结构，具体可以下载<a href="https://github.com/liuchungui/BGNetwork">BGNetwork</a>代码查看</p>
-
-<pre><code>____BGNetwork
-| |____BGAFHTTPClient.h
-| |____BGAFHTTPClient.m
-| |____BGAFRequestSerializer.h
-| |____BGAFRequestSerializer.m
-| |____BGAFResponseSerializer.h
-| |____BGAFResponseSerializer.m
-| |____BGNetworkCache.h
-| |____BGNetworkCache.m
-| |____BGNetworkConfiguration.h
-| |____BGNetworkConfiguration.m
-| |____BGNetworkConnector.h
-| |____BGNetworkConnector.m
-| |____BGNetworkManager.h
-| |____BGNetworkManager.m
-| |____BGNetworkRequest.h
-| |____BGNetworkRequest.m
-| |____BGNetworkUtil.h
-| |____BGNetworkUtil.m
-</code></pre>
-
-<p>在BGNetwork项目的根目录下创建一个BGNetwork.podspec文件，对应上面的需求，我们的podspec可以这么写</p>
-
-<pre><code>Pod::Spec.new do |spec|
-  #项目名称
-  spec.name         = 'BGNetwork'
-  #版本号
-  spec.version      = '0.1.1'
-  #开源协议
-  spec.license      = 'MIT'
-  #对开源项目的描述
-  spec.summary      = 'BGNetwork is a request util based on AFNetworking'
-  #开源项目的首页
-  spec.homepage     = 'https://github.com/chunguiLiu/BGNetwork'
-  #作者信息
-  spec.author       = {'chunguiLiu' =&gt; 'chunguiLiu@126.com'}
-  #项目的源和版本号
-  spec.source       = { :git =&gt; 'https://github.com/chunguiLiu/BGNetwork.git', :tag =&gt; '0.1.1' }
-  #源文件，这个就是供第三方使用的源文件
-  spec.source_files = "BGNetwork/*"
-  #适用于ios7及以上版本
-  spec.platform     = :ios, '7.0'
-  #使用的是ARC
-  spec.requires_arc = true
-  #依赖AFNetworking2.0
-  spec.dependency 'AFNetworking', '~&gt; 2.0'
-end
-</code></pre>
-
-<p><strong>注意：</strong>spec.source源是<code>BGNetwork</code>的git仓库，版本号是我们上一步打上的版本号0.1.1。</p>
-
-<p>4、验证并推送到服务器    <br/>
-在推送前，我们先验证Podspec，验证的时候是验证BGNetwork.podspec文件，所以我们需要保证进入的目录和BGNetwork.podspec同级的    <br/>
-<code>$ pod lib lint</code>   <br/>
-注意：验证的时候，会获取<code>BGNetwork.podspec</code>文件中的<code>spec.source</code>来获取git服务器上面对应版本的代码，然后再找到<code>spec.source_files</code>中的源代码，通过xcode命令行工具建立工程并且进行编译。所以这一步的过程会比较久，如果没有编译没有错误，就验证通过。</p>
-
-<p>如果没有错误和警告我们就可以推送到服务器了，推送使用的命令是<code>pod repo push REPO_NAME SPEC_NAME.podspec</code>，它也会先验证，然后再推送。         <br/>
-<code>$ pod repo push liuchungui BGNetwork.podspec</code> <br/>
-如果没有错误，但是有警告，我们就将警告解决，也可以加<code>--allow-warnings</code>来提交   <br/>
-<code>$ pod repo push liuchungui BGNetwork.podspec --allow-warnings</code>   <br/>
-如果有错误，我们可以去查看错误信息对应下的Note信息并解决。在这错误当中，常常会遇到找不到对应文件的错误，这个时候你需要查看<code>BGNetwork.podspec</code>文件中<code>spec.source</code>下git仓库链接是否没问题，git仓库下对应的tag版本中<code>spec.source_files</code>路径下是否正确。</p>
-
-<p>5、搜索我们的框架
-到这一步，我们就可以通过<code>pod search BGNetwork</code>来搜索了，搜索到了说明我们私有源建立成功。</p>
-
-<pre><code>$ pod search BGNetwork
--&gt; BGNetwork (0.1.2)
-   BGNetwork is a request util based on AFNetworking
-   pod 'BGNetwork', '~&gt; 0.1.2'
-   Homepage: https://github.com/chunguiLiu/BGNetwork
-   Source:   https://github.com/chunguiLiu/BGNetwork.git
-   Versions: 0.1.1, 0.1.0 [liuchungui repo] - 0.1.2, 0.1.1 [master repo]
-</code></pre>
-
-<p>由上面的搜索知道，BGNetwork在liuchungui这个私有repo中存在0.1.1和0.1.0版本，在master中存在0.1.2和0.1.1版本。  <br/>
-搜索成功之后，我们将BGNetwork.podspec也推送到远程服务器。</p>
-
-<h3>4、使用Pod，在Podfile添加私有源来搭建项目</h3>
-
-<p>使用时，在Podfile文件中添加<strong>本地私有源和官方源</strong>。如果没有添加本地私有源，它默认是用官方的repo，这样找不到本地的Pod；如果只是设置了本地私有源，就不会再去官方源中查找。
- 下面是Podfile内容</p>
-
-<pre><code class="```">   #官方Cocoapods的源
-   source 'https://github.com/CocoaPods/Specs.git'
-   #本地私有源
-   source 'https://github.com/liuchungui/first.git'
-   platform :ios, '7.0'
-   pod 'BGNetwork', '~&gt; 0.1.1'
-</code></pre>
-
-<h4>注意</h4>
-
-<p>1、途中遇到了几次问题，就是<code>pod repo push</code>不上去，显示没有找到对应文件，后来发现是版本的问题，没有打上版本号或者<code>Podspec</code>中版本错了。所以我们在维护一个框架时，修改框架之后，push到git服务器之后先打上tag，然后再修改podspec文件中的版本，最后push到对应的pod repo中。</p>
-
-<p>2、若是在框架当中，存在不同的文件夹，请使用<code>subspec</code>。如果不同文件夹之间的文件有相互导入的情况，请将被导入的头文件设置为<code>public_header_files</code>，并且通过<code>dependency</code>设置依赖，具体可以参考<a href="https://github.com/AFNetworking/AFNetworking/blob/master/AFNetworking.podspec">AFNetworking的podspec</a>文件。</p>
-
-<p>3、若是需要提交给官方，请使用</p>
-
-<pre><code>pod trunk register youremail
-查看信息
-pod trunk me
-将对应的pod推送到服务器
-pod trunk push
-</code></pre>
-
-<p>4、使用<code>pod install</code>时，它首先会更新整个官方的源，而Cocoapods每天都有很多人提交，所以更新比较慢。所以，建议每过一段时间更新一下官方库，平常的时候，咱们可以在<code>instal</code>l或<code>update</code>加一个参数<code>--no-repo-update</code>让它不用更新。</p>
-
-<pre><code>$ pod install --verbose --no-repo-update
-$ pod update --verbose --no-repo-update
-</code></pre>
-
-<h4>参考</h4>
-
-<p><a href="https://guides.cocoapods.org/making/private-cocoapods.html">Private Pods</a>   <br/>
-<a href="http://blog.wtlucky.com/blog/2015/02/26/create-private-podspec/">使用Cocoapods创建私有podspec</a>   <br/>
-<a href="http://blog.csdn.net/wzzvictory/article/details/18737437?utm_source=tuicool">CocoaPods详解之&mdash;-使用篇</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[iOS9之适配ATS]]></title>
-    <link href="http://www.liuchungui.com/blog/2015/10/11/ios9zhi-gua-pei-ats/"/>
-    <updated>2015-10-11T13:15:11+08:00</updated>
-    <id>http://www.liuchungui.com/blog/2015/10/11/ios9zhi-gua-pei-ats</id>
-    <content type="html"><![CDATA[<p>最近的iOS9系统出来了，而网络方面的ATS(App Transport Security)特性可以说每个人都要经历。而我这篇博客，就是结合我最近几天的经历，来谈谈从服务器到iOS客户端对ATS的适配。</p>
-
-<h3>一、简单谈谈ATS(App Transport Security)</h3>
-
-<p>ATS(App Transport Security)是为了提高App与服务器之间安全传输数据一个特性，这个特性从iOS9和OSX10.11开始出现，它默认需要满足以下几个条件：</p>
-
-<ul>
-<li>服务器TLS版本至少是1.2版本</li>
-<li>连接加密只允许几种先进的加密</li>
-<li>证书必须使用SHA256或者更好的哈希算法进行签名，要么是2048位或者更长的RSA密钥，要么就是256位或更长的ECC密钥</li>
-</ul>
-
-
-<p>如果想了解哪几种先进的加密是被允许的，详情请见官方文档<a href="https://developer.apple.com/library/mac/technotes/App-Transport-Security-Technote/">App Transport Security Technote</a></p>
-
-<!-- more -->
-
-
-<h3>二、搭建HTTPS服务器</h3>
-
-<p>搭建HTTPS服务器有两种方式，一种是创建证书请求，然后到权威机构认证，随之配置到服务器；另外一种是自建证书，然后配置给服务器。第一种方式搭建的HTTPS服务器当然是最优的了，建立网站的话，直接就会被信任，而作为移动端app的服务器时，也不需要为ATS做过多的适配。虽然说权威的机构认证都是需要钱的，但是如今也不乏存在免费的第三方认证机构；第二种方式搭建的HTTPS服务器，对于网站来说完全不可行，用户打开时直接弹出一个警告提醒，说这是一个不受信任的网站，让用户是否继续，体验很差，而且让用户感觉网站不安全。对于移动端来说，在iOS9出现之前，这个没什么问题，但是在iOS9出来之后，第二种方式是通不过ATS特性，需要将NSAllowsArbitraryLoads设置为YES才行。所以，我推荐使用第一种方式搭建HTTPS服务器。   <br/>
-下面，咱们来说说这两种方式都如何进行操作。</p>
-
-<h5>第一种、使用CA机构认证的证书搭建HTTPS服务器</h5>
-
-<p>1、创建证书请求，并提交给CA机构认证</p>
-
-<pre><code>#生成私钥
-openssl genrsa -des3 -out private.key 2048
-#生成服务器的私钥，去除密钥口令 
-openssl rsa -in private.key -out server.key
-#生成证书请求
-openssl req -new -key private.key -out server.csr
-</code></pre>
-
-<p>将生成server.csr提交给CA机构，CA机构对它进行签名之后，然后会生成签名后的根证书和服务器证书发送给你，这个时候的证书就是CA认证之后的证书。我们这里将根证书和服务器证书分别改名为ca.crt和serve.crt。</p>
-
-<p>2、配置Apache服务器   <br/>
-将ca.crt、server.key、server.crt上传到阿里云服务器，使用SSH登陆进入这三个文件的目录，执行下面命令</p>
-
-<pre><code>mkdir ssl
-cp server.crt /alidata/server/httpd/conf/ssl/server.crt
-cp server.key /alidata/server/httpd/conf/ssl/server.key
-cp demoCA/cacert.pem /alidata/server/httpd/conf/ssl/ca.crt
-cp -r ssl /alidata/server/httpd/conf/
-</code></pre>
-
-<p>编辑<code>/alidata/server/httpd/conf/extra/httpd-ssl.conf</code>文件，找到SSLCertificateFile、SSLCertificateKeyFile、SSLCACertificatePath、SSLCACertificateFile进行修改</p>
-
-<pre><code># 指定服务器证书位置
-SSLCertificateFile "/alidata/server/httpd/conf/ssl/server.crt"
-# 指定服务器证书key位置
-SSLCertificateKeyFile "/alidata/server/httpd/conf/ssl/server.key"
-# 证书目录
-SSLCACertificatePath "/alidata/server/httpd/conf/ssl"
-# 根证书位置
-SSLCACertificateFile "/alidata/server/httpd/conf/ssl/ca.crt"
-</code></pre>
-
-<p>修改vhost配置<code>vim /alidata/server/httpd/conf/vhosts/phpwind.conf</code></p>
-
-<pre><code>&lt;VirtualHost *:443&gt;
-        SSLCertificateFile    /alidata/server/httpd/conf/ssl/server.crt
-        SSLCertificateKeyFile /alidata/server/httpd/conf/ssl/server.key
-        SSLCACertificatePath /alidata/server/httpd/conf/ssl
-        SSLCACertificateFile /alidata/server/httpd/conf/ssl/ca.crt
-        ServerName www.casetree.cn
-        DocumentRoot /alidata/www
-&lt;/VirtualHost&gt;
-</code></pre>
-
-<p>最后，重启Apache服务器，在浏览器输入网址查看是否配置成功。我这里是个人使用，申请的是免费的证书，我申请证书的网站是<a href="https://buy.wosign.com">沃通</a>。  <br/>
-搭建的成果：<a href="https://www.casetree.cn">https://www.casetree.cn</a></p>
-
-<h5>第二种、自建证书配置HTTPS服务器</h5>
-
-<p>请查看我的上一篇<a href="http://www.liuchungui.com/blog/2015/09/25/zi-jian-zheng-shu-pei-zhi-httpsfu-wu-qi/">自建证书配置HTTPS服务器</a></p>
-
-<h3>三、使用nscurl对服务器进行检测</h3>
-
-<p>搭建完HTTPS服务器之后，可以使用nscurl命令来进行检测，查看建立的HTTPS服务器是否能通过ATS特性。</p>
-
-<pre><code>nscurl --ats-diagnostics --verbose https://casetree.cn
-</code></pre>
-
-<p>如果HTTPS服务器能通过ATS特性，则上面所有测试案例都是PASS；如果某一项的Reuslt是FAIL，就找到ATS Dictionary来查看，就能知道HTTPS服务器不满足ATS哪个条件。
-这里我前面碰到一个问题，就是自建证书的时候，通过此命令进行测试时，发现Result全是FAIL，而且在iOS的代码测试中也出现了一个很奇怪的现象，就是相同的代码，在iOS8.4请求数据完全正常，但是在iOS9上，直接是连接失败。最终发现，其实就是因为自建证书不受信任，是通不过ATS的，除非将NSAllowsArbitraryLoads设置为YES。</p>
-
-<h3>四、iOS客户端</h3>
-
-<p>在上面的第二大步骤当中，HTTPS服务器满足ATS默认的条件，而且SSL证书是通过权威的CA机构认证过的，那么我们在使用Xcode7开发的时候，对网络的适配什么都不用做，我们也能正常与服务器通信。但是，当我们对安全性有更高的要求时或者我们自建证书时，我们需要本地导入证书来进行验证。   <br/>
-那么，如何本地导入证书进行验证呢？   <br/>
-在这里先提一下，由于iOS客户端支持的证书是DER格式的，我们需要创建客户端证书。创建客户端证书，直接将服务端的CA根证书导出成DER格式就行。</p>
-
-<pre><code>openssl  x509  -inform PEM  -outform DER -in ca.crt -out ca.cer
-</code></pre>
-
-<p>导入完证书之后，我们分别来说说使用NSURLSession和AFNetworking来进行本地验证。</p>
-
-<h5>首先，来说说使用NSURLSession验证</h5>
-
-<p>验证步骤如下：   <br/>
-1、导入CA根证书到工程中，即我们创建的ca.cer   <br/>
-2、获取trust object，通过SecCertificateCreateWithData方法读取导入的证书的数据生成一个证书对象，然后通过SecTrustSetAnchorCertificates
-设置这个证书为trust object的信任根证书（trusted anchor)  <br/>
-3、通过SecTrustEvaluate方法去验证trust object  <br/>
-下面是主要OC实现代码，Demo工程我也放在github上了，有OC和Swift两种语言，下载Demo请点击<a href="https://github.com/liuchungui/HTTPSConnectDemo">HTTPSConnectDemo</a>。</p>
-
-<pre><code class="objc">- (void)viewDidLoad {
-    [super viewDidLoad];
-    //导入客户端证书
-    NSString *cerPath = [[NSBundle mainBundle] pathForResource:@"ca" ofType:@"cer"];
-    NSData *data = [NSData dataWithContentsOfFile:cerPath];
-    SecCertificateRef certificate = SecCertificateCreateWithData(NULL, (__bridge CFDataRef) data);
-    self.trustedCerArr = @[(__bridge_transfer id)certificate];
-
-    //发送请求
-    NSURL *testURL = [NSURL URLWithString:@"https://casetree.cn/web/test/demo.php"];
-    NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration] delegate:self delegateQueue:[NSOperationQueue mainQueue]];
-    NSURLSessionDataTask *task = [session dataTaskWithRequest:[NSURLRequest requestWithURL:testURL]];
-    [task resume];
-    // Do any additional setup after loading the view, typically from a nib.
-}
-
-#pragma mark - NSURLSessionDelegate
-- (void)URLSession:(NSURLSession *)session didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge
- completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition, NSURLCredential * __nullable credential))completionHandler{
-
-    OSStatus err;
-    NSURLSessionAuthChallengeDisposition disposition = NSURLSessionAuthChallengePerformDefaultHandling;
-    SecTrustResultType  trustResult = kSecTrustResultInvalid;
-    NSURLCredential *credential = nil;
-
-    //获取服务器的trust object
-    SecTrustRef serverTrust = challenge.protectionSpace.serverTrust;
-
-    //将读取的证书设置为serverTrust的根证书
-    err = SecTrustSetAnchorCertificates(serverTrust, (__bridge CFArrayRef)self.trustedCerArr);
-
-    if(err == noErr){
-        //通过本地导入的证书来验证服务器的证书是否可信，如果将SecTrustSetAnchorCertificatesOnly设置为NO，则只要通过本地或者系统证书链任何一方认证就行
-        err = SecTrustEvaluate(serverTrust, &amp;trustResult);
-    }
-
-    if (err == errSecSuccess &amp;&amp; (trustResult == kSecTrustResultProceed || trustResult == kSecTrustResultUnspecified)){
-        //认证成功，则创建一个凭证返回给服务器
-        disposition = NSURLSessionAuthChallengeUseCredential;
-        credential = [NSURLCredential credentialForTrust:serverTrust];
-    }
-    else{
-        disposition = NSURLSessionAuthChallengeCancelAuthenticationChallenge;
-    }
-
-    //回调凭证，传递给服务器
-    if(completionHandler){
-        completionHandler(disposition, credential);
-    }
-}
-</code></pre>
-
-<p>注意：   <br/>
-1、SecTrustSetAnchorCertificates方法会设置一个标示去屏蔽trust object对其它根证书的信任；如果你也想信任系统默认的根证书，请调用SecTrustSetAnchorCertificatesOnly方法，清空这个标示（设置为NO）
-2、验证的方法不仅仅只有这一种，更多的验证方法，请参考<a href="https://developer.apple.com/library/ios/technotes/tn2232/_index.html#//apple_ref/doc/uid/DTS40012884-CH1-SECCUSTOMIZEAPIS">HTTPS Server Trust Evaluation</a></p>
-
-<h5>下面，来谈谈AFNetworking是如何验证的，我们如何使用AFNetworking</h5>
-
-<p>AFNetworking的证书验证工作是由AFSecurityPolicy来完成的，所以这里我们主要来了解一下AFSecurityPolicy。<strong>注意：我这里使用的是AFNetworking2.6.0，它跟2.5.0是有区别的。</strong>  <br/>
-说到AFSecurityPolicy，我们必须要提到它三个重要的属性，如下：</p>
-
-<pre><code>@property (readonly, nonatomic, assign) AFSSLPinningMode SSLPinningMode;
-@property (nonatomic, assign) BOOL allowInvalidCertificates;
-@property (nonatomic, assign) BOOL validatesDomainName;
-</code></pre>
-
-<p>SSLPingMode是最重要的属性，它标明了AFSecurityPolicy是以何种方式来验证。它是一个枚举类型，这个枚举类型有三个值，分别是AFSSLPinningModeNone、AFSSLPinningModePublicKey、AFSSLPinningModeCertificate。其中，AFSSLPinningModeNone代表了AFSecurityPolicy不做更严格的验证，只要是系统信任的证书就可以通过验证，不过，它受到allowInvalidCertificates和validatesDomainName的影响；AFSSLPinningModePublicKey是通过比较证书当中公钥(PublicKey)部分来进行验证，通过SecTrustCopyPublicKey方法获取本地证书和服务器证书，然后进行比较，如果有一个相同，则通过验证，此方式主要适用于自建证书搭建的HTTPS服务器和需要较高安全要求的验证；AFSSLPinningModeCertificate则是直接将本地的证书设置为信任的根证书，然后来进行判断，并且比较本地证书的内容和服务器证书内容是否相同，来进行二次判断，此方式适用于较高安全要求的验证。   <br/>
-allowInvalidCertificates属性代表是否允许不信任的证书通过验证，默认为NO   <br/>
-validatesDomainName属性代表是否验证主机名，默认为YES</p>
-
-<p>接下来，我们说下验证流程。验证流程主要放在AFSecurityPolicy的- (BOOL)evaluateServerTrust:(SecTrustRef)serverTrust forDomain:(NSString *)domain方法当中。</p>
-
-<pre><code>- (BOOL)evaluateServerTrust:(SecTrustRef)serverTrust
-                  forDomain:(NSString *)domain
-{
-    //当使用自建证书验证域名时，需要使用AFSSLPinningModePublicKey或者AFSSLPinningModeCertificate
-    if (domain &amp;&amp; self.allowInvalidCertificates &amp;&amp; self.validatesDomainName &amp;&amp; (self.SSLPinningMode == AFSSLPinningModeNone || [self.pinnedCertificates count] == 0)) {
-        NSLog(@"In order to validate a domain name for self signed certificates, you MUST use pinning.");
-        return NO;
-    }
-
-    NSMutableArray *policies = [NSMutableArray array];
-    //需要验证域名时，需要添加一个验证域名的策略
-    if (self.validatesDomainName) {
-        [policies addObject:(__bridge_transfer id)SecPolicyCreateSSL(true, (__bridge CFStringRef)domain)];
-    } else {
-        [policies addObject:(__bridge_transfer id)SecPolicyCreateBasicX509()];
-    }
-
-    //设置验证的策略，可以是多个
-    SecTrustSetPolicies(serverTrust, (__bridge CFArrayRef)policies);
-
-    //SSLPinningMode为AFSSLPinningModeNone时，allowInvalidCertificates为YES，则代表服务器任何证书都能验证通过；如果它为NO，则需要判断此服务器证书是否是系统信任的证书
-    if (self.SSLPinningMode == AFSSLPinningModeNone) {
-        if (self.allowInvalidCertificates || AFServerTrustIsValid(serverTrust)){
-            return YES;
-        } else {
-            return NO;
-        }
-    } else if (!AFServerTrustIsValid(serverTrust) &amp;&amp; !self.allowInvalidCertificates) {
-        return NO;
-    }
-
-    //获取服务器证书的内容
-    NSArray *serverCertificates = AFCertificateTrustChainForServerTrust(serverTrust);
-    switch (self.SSLPinningMode) {
-        case AFSSLPinningModeNone:
-        default:
-            return NO;
-        case AFSSLPinningModeCertificate: {
-            //AFSSLPinningModeCertificate是直接将本地的证书设置为信任的根证书，然后来进行判断，并且比较本地证书的内容和服务器证书内容是否相同，如果有一个相同则返回YES
-
-            NSMutableArray *pinnedCertificates = [NSMutableArray array];
-            for (NSData *certificateData in self.pinnedCertificates) {
-                [pinnedCertificates addObject:(__bridge_transfer id)SecCertificateCreateWithData(NULL, (__bridge CFDataRef)certificateData)];
-            }
-            //设置本地的证书为根证书
-            SecTrustSetAnchorCertificates(serverTrust, (__bridge CFArrayRef)pinnedCertificates);
-
-            //通过本地的证书来判断服务器证书是否可信，不可信，则验证不通过
-            if (!AFServerTrustIsValid(serverTrust)) {
-                return NO;
-            }
-
-            //判断本地证书和服务器证书的内容是否相同
-            NSUInteger trustedCertificateCount = 0;
-            for (NSData *trustChainCertificate in serverCertificates) {
-                if ([self.pinnedCertificates containsObject:trustChainCertificate]) {
-                    trustedCertificateCount++;
-                }
-            }
-            return trustedCertificateCount &gt; 0;
-        }
-        case AFSSLPinningModePublicKey: {
-            //AFSSLPinningModePublicKey是通过比较证书当中公钥(PublicKey)部分来进行验证，通过SecTrustCopyPublicKey方法获取本地证书和服务器证书，然后进行比较，如果有一个相同，则通过验证
-
-            NSUInteger trustedPublicKeyCount = 0;
-            NSArray *publicKeys = AFPublicKeyTrustChainForServerTrust(serverTrust);
-
-            //判断服务器证书的公钥与本地的证书公钥是否相同，相同则客户端认证通过
-            for (id trustChainPublicKey in publicKeys) {
-                for (id pinnedPublicKey in self.pinnedPublicKeys) {
-                    if (AFSecKeyIsEqualToKey((__bridge SecKeyRef)trustChainPublicKey, (__bridge SecKeyRef)pinnedPublicKey)) {
-                        trustedPublicKeyCount += 1;
-                    }
-                }
-            }
-            return trustedPublicKeyCount &gt; 0;
-        }
-    }
-
-    return NO;
-}
-</code></pre>
-
-<p>说了验证流程，我们最后来看看AFNetworking怎么使用，代码如下：</p>
-
-<pre><code> _httpClient = [[BGAFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:baseURL]];
- AFSecurityPolicy *policy = [AFSecurityPolicy policyWithPinningMode:AFSSLPinningModeCertificate];
- //是否允许CA不信任的证书通过
-policy.allowInvalidCertificates = YES;
-//是否验证主机名
-policy.validatesDomainName = YES;
-_httpClient.securityPolicy = policy;  
-</code></pre>
-
-<p> 这里我就没有建立Demo了，如果要看的话，可以看看我写的一个框架<a href="https://github.com/liuchungui/BGNetwork">BGNetwork</a>，里面的Demo对ATS进行了适配，AFNetworking的使用放在BGNetworkConnector类里面的<code>- (instancetype)initWithBaseURL:(NSString *)baseURL delegate:(id&lt;BGNetworkConnectorDelegate&gt;)delegate</code>初始化方法中。</p>
-
-<h3>五、适配ATS</h3>
-
-<p>前面的内容讲述都是满足ATS特性的情况，但若是服务器是自建证书搭建的，或者TLS版本是1.0的话，服务器又不能轻易改动，那么我们客户端如何适配呢？
-不急，我们可以在工程中的Info.plist文件当中进行设置，主要参照下图：
-<img src="http://ww3.sinaimg.cn/large/91c6e389jw1ewvshzy5ilj21340m641y.jpg" alt="图片" />
-适配过程中的一些总结： <br/>
-1、如果是自建证书，没有经过权威机构认证的证书，那么需要将NSAllowsArbitraryLoads设置为YES才能通过。NSAllowsArbitraryLoads为YES，以前的HTTP请求也能通过。       <br/>
-2、如果是认证过的证书，那么可以通过<code>nscurl --ats-diagnostics --verbose https://casetree.cn</code>这样的命令来查看服务器支持的ATS Dictionary，然后进行对应的设置。</p>
-
-<p>适配的部分，也可以参照<a href="https://github.com/ChenYilong/iOS9AdaptationTips#1-demo1_ios9%E7%BD%91%E7%BB%9C%E9%80%82%E9%85%8D_ats%E6%94%B9%E7%94%A8%E6%9B%B4%E5%AE%89%E5%85%A8%E7%9A%84https">Demo1_iOS9网络适配_ATS：改用更安全的HTTPS</a></p>
-
-<h3>总结</h3>
-
-<p>回顾前面的内容，总结一下，主要讲了一下几点内容  <br/>
-1. ATS需要满足的条件  <br/>
-2. 如何建立证书，搭建HTTPS服务器    <br/>
-3. 使用nscurl命令来检测HTTPS服务器是否满足ATS特性  <br/>
-4. 客户端的适配，讲述了NSURLSession和AFNetworking的使用  <br/>
-5. 讲述了如果建立的服务器不满足ATS的条件时，我们如何适配</p>
-
-<h3>参考</h3>
-
-<p><a href="https://developer.apple.com/library/mac/technotes/App-Transport-Security-Technote/">App Transport Security Technote</a>   <br/>
-<a href="https://developer.apple.com/library/ios/technotes/tn2232/_index.html#//apple_ref/doc/uid/DTS40012884-CH1-SECCUSTOMIZEAPIS">HTTPS Server Trust Evaluation</a>   <br/>
-<a href="http://www.cocoachina.com/ios/20150810/12947.html">打造安全的App！iOS安全系列之 HTTPS</a>   <br/>
-<a href="http://www.cocoachina.com/ios/20140916/9632.html">AFNetworking源码解析&lt;三></a></p>
 ]]></content>
   </entry>
   
