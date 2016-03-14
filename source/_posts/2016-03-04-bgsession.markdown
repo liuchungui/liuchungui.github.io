@@ -5,7 +5,7 @@ date: 2016-03-04 16:35:38 +0800
 comments: true
 tags: [BGSession, NSUserDefaults, 轻量级数据存储]
 keywords: BGSession, NSUserDefaults, 轻量级数据存储
-categories: 
+categories: ios
 ---
 [BGSession](https://github.com/liuchungui/BGSession)是一个基于NSUserDefaults实现的轻量级数据存储，你只需要简单的继承它，给它添加属性，设置属性的值，就能通过NSUserDefaults同步到本地。
 <!-- more -->
