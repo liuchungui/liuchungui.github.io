@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Octopress | liuchungui's Blog]]></title>
   <link href="http://www.liuchungui.com/blog/categories/octopress/atom.xml" rel="self"/>
   <link href="http://www.liuchungui.com/"/>
-  <updated>2016-04-05T21:14:57+08:00</updated>
+  <updated>2016-04-05T21:22:19+08:00</updated>
   <id>http://www.liuchungui.com/</id>
   <author>
     <name><![CDATA[刘春桂]]></name>
@@ -122,6 +122,13 @@ git push origin source
 <p>其它，界面、侧边栏、底部栏、添加top回到顶部等，请参考<a href="http://foggry.com/blog/2014/04/28/custom-your-octopress-blog/">自定义你的Octopress博客</a></p>
 
 <p><strong>注意：当自定义了博客时，修改了头、侧边栏、底部栏、添加评论等配置文件后，使用rake generate生成一下。</strong></p>
+
+<h4>新增</h4>
+
+<ul>
+<li>2016.4.5 为表格添加边框，参考<a href="http://programus.github.io/blog/2012/03/07/add-table-data-css-for-octopress/">为Octopress追加数据表格的CSS</a></li>
+</ul>
+
 
 <h4>参考</h4>
 
