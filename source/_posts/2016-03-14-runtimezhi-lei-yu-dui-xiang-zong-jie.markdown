@@ -3,7 +3,7 @@ layout: post
 title: "Runtime之类与对象总结"
 date: 2016-03-14 23:30:27 +0800
 comments: true
-keywords: Runtime, Runtime总结, Runtime调用代码
+keywords: [Runtime, Runtime总结, Runtime调用代码]
 tags: Runtime, Runtime总结, Runtime调用代码
 categories: ios
 ---
