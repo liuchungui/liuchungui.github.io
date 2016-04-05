@@ -108,6 +108,11 @@ $indented-lists: true
 其它，界面、侧边栏、底部栏、添加top回到顶部等，请参考[自定义你的Octopress博客](http://foggry.com/blog/2014/04/28/custom-your-octopress-blog/)
 
 **注意：当自定义了博客时，修改了头、侧边栏、底部栏、添加评论等配置文件后，使用rake generate生成一下。**
+
+####新增
+* 2016.4.5 为表格添加边框，参考[为Octopress追加数据表格的CSS](http://programus.github.io/blog/2012/03/07/add-table-data-css-for-octopress/)
+
+
 ####参考
 
 添加评论和分享系统，请参考[象写程序一样写博客：搭建基于github的博客](http://blog.devtang.com/blog/2012/02/10/setup-blog-based-on-github/)
