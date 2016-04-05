@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Octopress | liuchungui's Blog]]></title>
   <link href="http://www.liuchungui.com/blog/categories/octopress/atom.xml" rel="self"/>
   <link href="http://www.liuchungui.com/"/>
-  <updated>2016-04-05T21:22:19+08:00</updated>
+  <updated>2016-04-05T21:33:47+08:00</updated>
   <id>http://www.liuchungui.com/</id>
   <author>
     <name><![CDATA[刘春桂]]></name>
@@ -122,6 +122,19 @@ git push origin source
 <p>其它，界面、侧边栏、底部栏、添加top回到顶部等，请参考<a href="http://foggry.com/blog/2014/04/28/custom-your-octopress-blog/">自定义你的Octopress博客</a></p>
 
 <p><strong>注意：当自定义了博客时，修改了头、侧边栏、底部栏、添加评论等配置文件后，使用rake generate生成一下。</strong></p>
+
+<h4>6、发布博客（2016.4.5新增）</h4>
+
+<p>添加这个，是因为某一天不小心使用命令行全删了，后来发现自己的博客只是<code>rake deploy</code>，却没有将源代码的样式和博客的markdown文件提交到github，当时心里挺难受的，难道要一个一个恢复？因为这件事情，中间还断过一段时间，好在后来一一在另外一个目录下找到了。但是，这种事情不允许再次发生，所以专门写了一个简单的blogPublish脚本。
+脚本的内容特别简单，就是deploy文章，然后将源代码push到github上。</p>
+
+<pre><code class="sh">#!/bin/bash
+rake generate
+rake deploy
+git add .
+git commit -m 'update blog'
+git push origin source
+</code></pre>
 
 <h4>新增</h4>
 

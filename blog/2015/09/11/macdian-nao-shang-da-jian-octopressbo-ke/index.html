@@ -224,6 +224,26 @@
 
 <p><strong>注意：当自定义了博客时，修改了头、侧边栏、底部栏、添加评论等配置文件后，使用rake generate生成一下。</strong></p>
 
+<h4>6、发布博客（2016.4.5新增）</h4>
+
+<p>添加这个，是因为某一天不小心使用命令行全删了，后来发现自己的博客只是<code>rake deploy</code>，却没有将源代码的样式和博客的markdown文件提交到github，当时心里挺难受的，难道要一个一个恢复？因为这件事情，中间还断过一段时间，好在后来一一在另外一个目录下找到了。但是，这种事情不允许再次发生，所以专门写了一个简单的blogPublish脚本。
+脚本的内容特别简单，就是deploy文章，然后将源代码push到github上。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'>rake generate
+</span><span class='line'>rake deploy
+</span><span class='line'>git add .
+</span><span class='line'>git commit -m <span class="s1">&#39;update blog&#39;</span>
+</span><span class='line'>git push origin <span class="nb">source</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
 <h4>新增</h4>
 
 <ul>
