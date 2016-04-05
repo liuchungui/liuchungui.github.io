@@ -1,0 +1,899 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>GCD总结 - liuchungui's Blog</title>
+  <meta name="author" content="刘春桂">
+
+  
+  <meta name="description" content="GCD的知识点： queue分成两种，分别是串行队列(Serial Dispatch Queue)和并行队列（Concurrent Dispatch Queue)。
+串行队列只会创建一个线程，而各个串行队列之间是并行的。
+串行队列个数创建不受限制，也就是通过串行队列创建的线程可以有很多个， &hellip;">
+  <meta name="keywords" content="GCD, GCD API, GCD总结">
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://www.liuchungui.com/blog/2016/04/04/gcdzong-jie/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/stylesheets/data-table.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="liuchungui's Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="http://cdn.staticfile.org/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<script type="text/javascript">
+  function addBlankTargetForLinks () {
+      $('a[href^="http"]').each(function(){
+          $(this).attr('target', '_blank');
+      });
+  }
+  $(document).bind('DOMNodeInserted', function(event) {
+      addBlankTargetForLinks();
+  });
+</script>
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">liuchungui's Blog</a></h1>
+  
+    <h2>代码嗨起来</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="www.liuchungui.com">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">GCD总结</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-04-04T19:13:33+08:00'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>4</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>7:13 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h3>GCD的知识点：</h3>
+
+<ol>
+<li>queue分成两种，分别是串行队列(Serial Dispatch Queue)和并行队列（Concurrent Dispatch Queue)。</li>
+<li>串行队列只会创建一个线程，而各个串行队列之间是并行的。</li>
+<li>串行队列个数创建不受限制，也就是通过串行队列创建的线程可以有很多个，但是这样会存在消耗大量内存的问题；而并行队列不会，不管创建多少个并行队列，XNU内核只使用有效管理的线程。</li>
+<li>在iOS6以后，ARC已经实现了GCD的内存管理，所以不用我们去管理它的内存了。</li>
+<li>系统已经为我们提供了两个queue，分别是main queue和global queue，其中main queue是串行队列，global queue是并行队列。</li>
+</ol>
+
+
+<!-- more -->
+
+
+<h2>GCD的API：</h2>
+
+<h3>1、dispatch_set_target_queue</h3>
+
+<p>这个api有两个功能，一是设置dispatch_queue_create创建队列的优先级，二是建立队列的执行阶层。</p>
+
+<p>（1）当使用dispatch_queue_create创建队列的时候，不管是串行还是并行，它们的优先级都是<code>DISPATCH_QUEUE_PRIORITY_DEFAULT</code>级别，而这个API就是可以设置队列的优先级。</p>
+
+<p>如下，将serailQueue设置成<code>DISPATCH_QUEUE_PRIORITY_HIGH</code></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="kt">dispatch_queue_t</span> <span class="n">serialQueue</span> <span class="o">=</span> <span class="n">dispatch_queue_create</span><span class="p">(</span><span class="n">kBGGCDTestIdentifier</span><span class="p">,</span> <span class="n">DISPATCH_QUEUE_SERIAL</span><span class="p">);</span>
+</span><span class='line'>    <span class="kt">dispatch_queue_t</span> <span class="n">globalQueue</span> <span class="o">=</span>
+</span><span class='line'><span class="n">dispatch_get_global_queue</span><span class="p">(</span><span class="n">DISPATCH_QUEUE_PRIORITY_HIGH</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+</span><span class='line'><span class="c1">//注意：被设置优先级的队列是第一个参数。</span>
+</span><span class='line'><span class="n">dispatch_set_target_queue</span><span class="p">(</span><span class="n">serialQueue</span><span class="p">,</span> <span class="n">globalQueue</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>（2）使用这个API可以设置队列执行阶层，例如<code>dispatch_set_target_queue(queue1, targetQueue);</code>这样设置时，相当于将queue1指派给targetQueue，如果targetQueue是串行队列，则queue1是串行执行的；如果targetQueue是并行队列，那么queue1是并行的。</p>
+
+<p>当targetQueue为串行队列时，代码：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span> <span class="n">kBGGCDTestIdentifier</span> <span class="o">=</span> <span class="s">&quot;kBGGCDTestIdentifier&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="kt">void</span> <span class="nf">testTargetQueue</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kt">dispatch_queue_t</span> <span class="n">targetQueue</span> <span class="o">=</span> <span class="n">dispatch_queue_create</span><span class="p">(</span><span class="n">kBGGCDTestIdentifier</span><span class="p">,</span> <span class="n">DISPATCH_QUEUE_SERIAL</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kt">dispatch_queue_t</span> <span class="n">queue1</span> <span class="o">=</span> <span class="n">dispatch_queue_create</span><span class="p">(</span><span class="n">kBGGCDTestIdentifier</span><span class="p">,</span> <span class="n">DISPATCH_QUEUE_SERIAL</span><span class="p">);</span>
+</span><span class='line'>    <span class="kt">dispatch_queue_t</span> <span class="n">queue2</span> <span class="o">=</span> <span class="n">dispatch_queue_create</span><span class="p">(</span><span class="n">kBGGCDTestIdentifier</span><span class="p">,</span> <span class="n">DISPATCH_QUEUE_CONCURRENT</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">dispatch_set_target_queue</span><span class="p">(</span><span class="n">queue1</span><span class="p">,</span> <span class="n">targetQueue</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">dispatch_set_target_queue</span><span class="p">(</span><span class="n">queue2</span><span class="p">,</span> <span class="n">targetQueue</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">dispatch_async</span><span class="p">(</span><span class="n">queue1</span><span class="p">,</span> <span class="o">^</span><span class="p">{</span>
+</span><span class='line'>        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;queue1 1&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>    <span class="n">dispatch_async</span><span class="p">(</span><span class="n">queue1</span><span class="p">,</span> <span class="o">^</span><span class="p">{</span>
+</span><span class='line'>        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;queue1 2&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>    <span class="n">dispatch_async</span><span class="p">(</span><span class="n">queue2</span><span class="p">,</span> <span class="o">^</span><span class="p">{</span>
+</span><span class='line'>        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;queue2 1&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>    <span class="n">dispatch_async</span><span class="p">(</span><span class="n">queue2</span><span class="p">,</span> <span class="o">^</span><span class="p">{</span>
+</span><span class='line'>        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;queue2 2&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>    <span class="n">dispatch_async</span><span class="p">(</span><span class="n">targetQueue</span><span class="p">,</span> <span class="o">^</span><span class="p">{</span>
+</span><span class='line'>        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;target queue&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>输出：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="mi">2016</span><span class="o">-</span><span class="mo">03</span><span class="o">-</span><span class="mi">11</span> <span class="mo">00</span><span class="o">:</span><span class="mo">03</span><span class="o">:</span><span class="mf">31.015</span> <span class="n">BGGCDDemo</span><span class="p">[</span><span class="mi">23237</span><span class="o">:</span><span class="mi">6187006</span><span class="p">]</span> <span class="n">queue1</span> <span class="mi">1</span>
+</span><span class='line'><span class="mi">2016</span><span class="o">-</span><span class="mo">03</span><span class="o">-</span><span class="mi">11</span> <span class="mo">00</span><span class="o">:</span><span class="mo">03</span><span class="o">:</span><span class="mf">31.015</span> <span class="n">BGGCDDemo</span><span class="p">[</span><span class="mi">23237</span><span class="o">:</span><span class="mi">6187006</span><span class="p">]</span> <span class="n">queue1</span> <span class="mi">2</span>
+</span><span class='line'><span class="mi">2016</span><span class="o">-</span><span class="mo">03</span><span class="o">-</span><span class="mi">11</span> <span class="mo">00</span><span class="o">:</span><span class="mo">03</span><span class="o">:</span><span class="mf">31.016</span> <span class="n">BGGCDDemo</span><span class="p">[</span><span class="mi">23237</span><span class="o">:</span><span class="mi">6187006</span><span class="p">]</span> <span class="n">queue2</span> <span class="mi">1</span>
+</span><span class='line'><span class="mi">2016</span><span class="o">-</span><span class="mo">03</span><span class="o">-</span><span class="mi">11</span> <span class="mo">00</span><span class="o">:</span><span class="mo">03</span><span class="o">:</span><span class="mf">31.017</span> <span class="n">BGGCDDemo</span><span class="p">[</span><span class="mi">23237</span><span class="o">:</span><span class="mi">6187006</span><span class="p">]</span> <span class="n">queue2</span> <span class="mi">2</span>
+</span><span class='line'><span class="mi">2016</span><span class="o">-</span><span class="mo">03</span><span class="o">-</span><span class="mi">11</span> <span class="mo">00</span><span class="o">:</span><span class="mo">03</span><span class="o">:</span><span class="mf">31.018</span> <span class="n">BGGCDDemo</span><span class="p">[</span><span class="mi">23237</span><span class="o">:</span><span class="mi">6187006</span><span class="p">]</span> <span class="n">target</span> <span class="n">queue</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>当上面代码中targetQueue是并行队列时</p>
+
+<p>输出：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="mi">2016</span><span class="o">-</span><span class="mo">03</span><span class="o">-</span><span class="mi">11</span> <span class="mo">00</span><span class="o">:</span><span class="mo">04</span><span class="o">:</span><span class="mf">48.234</span> <span class="n">BGGCDDemo</span><span class="p">[</span><span class="mi">23331</span><span class="o">:</span><span class="mi">6188776</span><span class="p">]</span> <span class="n">queue2</span> <span class="mi">1</span>
+</span><span class='line'><span class="mi">2016</span><span class="o">-</span><span class="mo">03</span><span class="o">-</span><span class="mi">11</span> <span class="mo">00</span><span class="o">:</span><span class="mo">04</span><span class="o">:</span><span class="mf">48.234</span> <span class="n">BGGCDDemo</span><span class="p">[</span><span class="mi">23331</span><span class="o">:</span><span class="mi">6188777</span><span class="p">]</span> <span class="n">queue1</span> <span class="mi">1</span>
+</span><span class='line'><span class="mi">2016</span><span class="o">-</span><span class="mo">03</span><span class="o">-</span><span class="mi">11</span> <span class="mo">00</span><span class="o">:</span><span class="mo">04</span><span class="o">:</span><span class="mf">48.234</span> <span class="n">BGGCDDemo</span><span class="p">[</span><span class="mi">23331</span><span class="o">:</span><span class="mi">6188780</span><span class="p">]</span> <span class="n">queue2</span> <span class="mi">2</span>
+</span><span class='line'><span class="mi">2016</span><span class="o">-</span><span class="mo">03</span><span class="o">-</span><span class="mi">11</span> <span class="mo">00</span><span class="o">:</span><span class="mo">04</span><span class="o">:</span><span class="mf">48.234</span> <span class="n">BGGCDDemo</span><span class="p">[</span><span class="mi">23331</span><span class="o">:</span><span class="mi">6188786</span><span class="p">]</span> <span class="n">target</span> <span class="n">queue</span>
+</span><span class='line'><span class="mi">2016</span><span class="o">-</span><span class="mo">03</span><span class="o">-</span><span class="mi">11</span> <span class="mo">00</span><span class="o">:</span><span class="mo">04</span><span class="o">:</span><span class="mf">48.235</span> <span class="n">BGGCDDemo</span><span class="p">[</span><span class="mi">23331</span><span class="o">:</span><span class="mi">6188777</span><span class="p">]</span> <span class="n">queue1</span> <span class="mi">2</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>参考：<a href="http://justsee.iteye.com/blog/2233252">http://justsee.iteye.com/blog/2233252</a></p>
+
+<h3>2、dispatch_after</h3>
+
+<p>指定时间执行某些内容，例如，下面一秒后执行打印信息.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'>  <span class="n">dispatch_after</span><span class="p">(</span><span class="n">dispatch_time</span><span class="p">(</span><span class="n">DISPATCH_TIME_NOW</span><span class="p">,</span> <span class="p">(</span><span class="kt">int64_t</span><span class="p">)(</span><span class="mf">1.0</span> <span class="o">*</span> <span class="n">NSEC_PER_SEC</span><span class="p">)),</span> <span class="n">dispatch_get_main_queue</span><span class="p">(),</span> <span class="o">^</span><span class="p">{</span>
+</span><span class='line'>        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;test&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>3、dispatch_group</h3>
+
+<p>经常会有这么个需求，就是多个queue中所有操作执行完之后，想再执行结束处理，而dispatch_group正是干这个的。它有两种操作可以做到，一种是使用dispatch_group_notify，另外一种是使用dispatch_group_wait。</p>
+
+<p>它们区别是dispatch_group_notify是可以将结束追加到某个队列当中，不会阻塞当前执行的线程；而dispatch_group_wait会阻塞当前执行线程，直到group中所有处理全部执行结束或超过等待的指定时间。当然，可以使用<code>DISPATCH_TIME_NOW</code>就不用等待，然后在主线程的Runloop每次循环中，检查执行是否结束，这样就不会堵塞当前执行的线程了，不过这样实现起来就会麻烦很多。所以，推荐使用dispatch_group_notify。</p>
+
+<p>使用dispatch_group_notify时，代码如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="kt">void</span> <span class="nf">testGroupNotification</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kt">dispatch_queue_t</span> <span class="n">serialQueue</span> <span class="o">=</span> <span class="n">dispatch_queue_create</span><span class="p">(</span><span class="s">&quot;BG.serailQueue.com&quot;</span><span class="p">,</span> <span class="n">DISPATCH_QUEUE_SERIAL</span><span class="p">);</span>
+</span><span class='line'>    <span class="kt">dispatch_queue_t</span> <span class="n">concurrentQueue</span> <span class="o">=</span> <span class="n">dispatch_queue_create</span><span class="p">(</span><span class="s">&quot;BG.concurrentQueue.com&quot;</span><span class="p">,</span> <span class="n">DISPATCH_QUEUE_CONCURRENT</span><span class="p">);</span>
+</span><span class='line'>    <span class="kt">dispatch_group_t</span> <span class="n">group</span> <span class="o">=</span> <span class="n">dispatch_group_create</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">dispatch_group_async</span><span class="p">(</span><span class="n">group</span><span class="p">,</span> <span class="n">serialQueue</span><span class="p">,</span> <span class="o">^</span><span class="p">{</span>
+</span><span class='line'>        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;serailQueue 1&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>    <span class="n">dispatch_group_async</span><span class="p">(</span><span class="n">group</span><span class="p">,</span> <span class="n">serialQueue</span><span class="p">,</span> <span class="o">^</span><span class="p">{</span>
+</span><span class='line'>        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;serailQueue 2&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>    <span class="n">dispatch_group_async</span><span class="p">(</span><span class="n">group</span><span class="p">,</span> <span class="n">concurrentQueue</span><span class="p">,</span> <span class="o">^</span><span class="p">{</span>
+</span><span class='line'>        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;concurrentQueue 1&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>    <span class="n">dispatch_group_async</span><span class="p">(</span><span class="n">group</span><span class="p">,</span> <span class="n">concurrentQueue</span><span class="p">,</span> <span class="o">^</span><span class="p">{</span>
+</span><span class='line'>        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;concurrentQueue 2&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>    <span class="n">dispatch_group_notify</span><span class="p">(</span><span class="n">group</span><span class="p">,</span> <span class="n">dispatch_get_main_queue</span><span class="p">(),</span> <span class="o">^</span><span class="p">{</span>
+</span><span class='line'>        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;finish!&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>    <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;testGroupNotification&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>使用dispatch_group_wait时，代码如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="kt">void</span> <span class="nf">testGroupWait</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kt">dispatch_queue_t</span> <span class="n">serialQueue</span> <span class="o">=</span> <span class="n">dispatch_queue_create</span><span class="p">(</span><span class="s">&quot;BG.serailQueue.com&quot;</span><span class="p">,</span> <span class="n">DISPATCH_QUEUE_SERIAL</span><span class="p">);</span>
+</span><span class='line'>    <span class="kt">dispatch_queue_t</span> <span class="n">concurrentQueue</span> <span class="o">=</span> <span class="n">dispatch_queue_create</span><span class="p">(</span><span class="s">&quot;BG.concurrentQueue.com&quot;</span><span class="p">,</span> <span class="n">DISPATCH_QUEUE_CONCURRENT</span><span class="p">);</span>
+</span><span class='line'>    <span class="kt">dispatch_group_t</span> <span class="n">group</span> <span class="o">=</span> <span class="n">dispatch_group_create</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">dispatch_group_async</span><span class="p">(</span><span class="n">group</span><span class="p">,</span> <span class="n">serialQueue</span><span class="p">,</span> <span class="o">^</span><span class="p">{</span>
+</span><span class='line'>        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;serailQueue 1&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>    <span class="n">dispatch_group_async</span><span class="p">(</span><span class="n">group</span><span class="p">,</span> <span class="n">serialQueue</span><span class="p">,</span> <span class="o">^</span><span class="p">{</span>
+</span><span class='line'>        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;serailQueue 2&quot;</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>    <span class="n">dispatch_group_async</span><span class="p">(</span><span class="n">group</span><span class="p">,</span> <span class="n">concurrentQueue</span><span class="p">,</span> <span class="o">^</span><span class="p">{</span>
+</span><span class='line'>        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;concurrentQueue 1&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>    <span class="n">dispatch_group_async</span><span class="p">(</span><span class="n">group</span><span class="p">,</span> <span class="n">concurrentQueue</span><span class="p">,</span> <span class="o">^</span><span class="p">{</span>
+</span><span class='line'>        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;concurrentQueue 2&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>    <span class="n">dispatch_group_wait</span><span class="p">(</span><span class="n">group</span><span class="p">,</span> <span class="n">DISPATCH_TIME_FOREVER</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;testGroupNotification&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>4、dispatch_barrier_async</h3>
+
+<p>dispatch_barrier_async加入的处理，会等待队列中所有的处理结束后才执行barrier当中的处理，而且只有等待barrier执行完之后，才会继续执行后续处理。<strong>使用并行队列和dispatch_barrier_async可以做到很高效的数据库或文件访问</strong>。</p>
+
+<p>测试代码如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="kt">void</span> <span class="nf">testBarrier</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kt">dispatch_queue_t</span> <span class="n">concurrentQueue</span> <span class="o">=</span> <span class="n">dispatch_queue_create</span><span class="p">(</span><span class="s">&quot;BG.concurrent.com&quot;</span><span class="p">,</span> <span class="n">DISPATCH_QUEUE_CONCURRENT</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">dispatch_async</span><span class="p">(</span><span class="n">concurrentQueue</span><span class="p">,</span> <span class="o">^</span><span class="p">{</span>
+</span><span class='line'>        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;reading 1&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>    <span class="n">dispatch_async</span><span class="p">(</span><span class="n">concurrentQueue</span><span class="p">,</span> <span class="o">^</span><span class="p">{</span>
+</span><span class='line'>        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;reading 2&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>    <span class="n">dispatch_async</span><span class="p">(</span><span class="n">concurrentQueue</span><span class="p">,</span> <span class="o">^</span><span class="p">{</span>
+</span><span class='line'>        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;reading 3&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>    <span class="n">dispatch_barrier_async</span><span class="p">(</span><span class="n">concurrentQueue</span><span class="p">,</span> <span class="o">^</span><span class="p">{</span>
+</span><span class='line'>        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;writing&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>    <span class="n">dispatch_async</span><span class="p">(</span><span class="n">concurrentQueue</span><span class="p">,</span> <span class="o">^</span><span class="p">{</span>
+</span><span class='line'>        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;reading 4&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>    <span class="n">dispatch_async</span><span class="p">(</span><span class="n">concurrentQueue</span><span class="p">,</span> <span class="o">^</span><span class="p">{</span>
+</span><span class='line'>        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;reading 5&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>输出结果：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="mi">2016</span><span class="o">-</span><span class="mo">03</span><span class="o">-</span><span class="mi">11</span> <span class="mi">10</span><span class="o">:</span><span class="mi">31</span><span class="o">:</span><span class="mf">47.980</span> <span class="n">BGGCDDemo</span><span class="p">[</span><span class="mi">28694</span><span class="o">:</span><span class="mi">6276100</span><span class="p">]</span> <span class="n">reading</span> <span class="mi">2</span>
+</span><span class='line'><span class="mi">2016</span><span class="o">-</span><span class="mo">03</span><span class="o">-</span><span class="mi">11</span> <span class="mi">10</span><span class="o">:</span><span class="mi">31</span><span class="o">:</span><span class="mf">47.980</span> <span class="n">BGGCDDemo</span><span class="p">[</span><span class="mi">28694</span><span class="o">:</span><span class="mi">6276099</span><span class="p">]</span> <span class="n">reading</span> <span class="mi">1</span>
+</span><span class='line'><span class="mi">2016</span><span class="o">-</span><span class="mo">03</span><span class="o">-</span><span class="mi">11</span> <span class="mi">10</span><span class="o">:</span><span class="mi">31</span><span class="o">:</span><span class="mf">47.981</span> <span class="n">BGGCDDemo</span><span class="p">[</span><span class="mi">28694</span><span class="o">:</span><span class="mi">6276102</span><span class="p">]</span> <span class="n">reading</span> <span class="mi">3</span>
+</span><span class='line'><span class="mi">2016</span><span class="o">-</span><span class="mo">03</span><span class="o">-</span><span class="mi">11</span> <span class="mi">10</span><span class="o">:</span><span class="mi">31</span><span class="o">:</span><span class="mf">47.981</span> <span class="n">BGGCDDemo</span><span class="p">[</span><span class="mi">28694</span><span class="o">:</span><span class="mi">6276102</span><span class="p">]</span> <span class="n">writing</span>
+</span><span class='line'><span class="mi">2016</span><span class="o">-</span><span class="mo">03</span><span class="o">-</span><span class="mi">11</span> <span class="mi">10</span><span class="o">:</span><span class="mi">31</span><span class="o">:</span><span class="mf">47.982</span> <span class="n">BGGCDDemo</span><span class="p">[</span><span class="mi">28694</span><span class="o">:</span><span class="mi">6276102</span><span class="p">]</span> <span class="n">reading</span> <span class="mi">4</span>
+</span><span class='line'><span class="mi">2016</span><span class="o">-</span><span class="mo">03</span><span class="o">-</span><span class="mi">11</span> <span class="mi">10</span><span class="o">:</span><span class="mi">31</span><span class="o">:</span><span class="mf">47.982</span> <span class="n">BGGCDDemo</span><span class="p">[</span><span class="mi">28694</span><span class="o">:</span><span class="mi">6276099</span><span class="p">]</span> <span class="n">reading</span> <span class="mi">5</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>5、dispatch_sync</h3>
+
+<p>与dispatch_async异步不同的是dispatch_sync会等待当前处理结束之后有返回结果时才会继续往下走。与dispatch_group_wait有点类似，当使用dispatch_sync时，当前线程会被阻塞，直到它有返回结果为止。</p>
+
+<p>代码：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="kt">void</span> <span class="nf">testSync</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kt">dispatch_queue_t</span> <span class="n">serialQueue</span> <span class="o">=</span> <span class="n">dispatch_queue_create</span><span class="p">(</span><span class="s">&quot;BG.serailQueue.com&quot;</span><span class="p">,</span> <span class="n">DISPATCH_QUEUE_SERIAL</span><span class="p">);</span>
+</span><span class='line'>    <span class="kt">dispatch_queue_t</span> <span class="n">concurrentQueue</span> <span class="o">=</span> <span class="n">dispatch_queue_create</span><span class="p">(</span><span class="s">&quot;BG.concurrent.com&quot;</span><span class="p">,</span> <span class="n">DISPATCH_QUEUE_CONCURRENT</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">dispatch_sync</span><span class="p">(</span><span class="n">serialQueue</span><span class="p">,</span> <span class="o">^</span><span class="p">{</span>
+</span><span class='line'>        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;test&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>    <span class="n">dispatch_sync</span><span class="p">(</span><span class="n">concurrentQueue</span><span class="p">,</span> <span class="o">^</span><span class="p">{</span>
+</span><span class='line'>        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;test2&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>    <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;finish&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>输出：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="mi">2016</span><span class="o">-</span><span class="mo">03</span><span class="o">-</span><span class="mi">11</span> <span class="mi">10</span><span class="o">:</span><span class="mi">35</span><span class="o">:</span><span class="mf">43.166</span> <span class="n">BGGCDDemo</span><span class="p">[</span><span class="mi">28912</span><span class="o">:</span><span class="mi">6278490</span><span class="p">]</span> <span class="n">test</span>
+</span><span class='line'><span class="mi">2016</span><span class="o">-</span><span class="mo">03</span><span class="o">-</span><span class="mi">11</span> <span class="mi">10</span><span class="o">:</span><span class="mi">35</span><span class="o">:</span><span class="mf">43.167</span> <span class="n">BGGCDDemo</span><span class="p">[</span><span class="mi">28912</span><span class="o">:</span><span class="mi">6278490</span><span class="p">]</span> <span class="n">test2</span>
+</span><span class='line'><span class="mi">2016</span><span class="o">-</span><span class="mo">03</span><span class="o">-</span><span class="mi">11</span> <span class="mi">10</span><span class="o">:</span><span class="mi">35</span><span class="o">:</span><span class="mf">43.167</span> <span class="n">BGGCDDemo</span><span class="p">[</span><span class="mi">28912</span><span class="o">:</span><span class="mi">6278490</span><span class="p">]</span> <span class="n">finish</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>使用dispatch_sync很容易造成死锁，如下代码在主线程中运行就会造成死锁：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="n">dispatch_sync</span><span class="p">(</span><span class="n">dispatch_get_main_queue</span><span class="p">(),</span> <span class="o">^</span><span class="p">{</span>
+</span><span class='line'>    <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;test&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>分析：主线程会等待dispatch_sync函数返回，而dispatch_sync要等block执行完才会返回。而主线程是串行队列，采用FIFO队列执行任务，dispatch_sync加入的block是后加入的，这样的话这个block是得不到执行的，从而产生了死锁。</p>
+
+<p><strong>官方文档指出：dispatch_sync的当前执行队列与提交block执行的目标队列相同时并且是串行队列时将造成死锁。</strong></p>
+
+<p>参考：
+<a href="http://www.jianshu.com/p/44369c02b62a">dispatch_sync死锁问题研究</a>
+<a href="http://www.cnblogs.com/tangbinblog/p/4133481.html">GCD 之线程死锁</a></p>
+
+<h3>6、dispatch_apply</h3>
+
+<p>dispatch_apply函数是dispatch_sync和DISPATCH Group的关联API。该函数按指定的次数将指定的Block追加到指定的队列当中，并等待全部处理执行结束。</p>
+
+<p>代码：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="kt">void</span> <span class="nf">testApply</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kt">dispatch_queue_t</span> <span class="n">concurrentQueue</span> <span class="o">=</span> <span class="n">dispatch_queue_create</span><span class="p">(</span><span class="s">&quot;BG.concurrent.com&quot;</span><span class="p">,</span> <span class="n">DISPATCH_QUEUE_CONCURRENT</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">dispatch_apply</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">concurrentQueue</span><span class="p">,</span> <span class="o">^</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">index</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%zd&quot;</span><span class="p">,</span> <span class="n">index</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>    <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;done!&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>输出：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="mi">2016</span><span class="o">-</span><span class="mo">03</span><span class="o">-</span><span class="mi">11</span> <span class="mi">12</span><span class="o">:</span><span class="mi">08</span><span class="o">:</span><span class="mf">35.524</span> <span class="n">BGGCDDemo</span><span class="p">[</span><span class="mi">32542</span><span class="o">:</span><span class="mi">6331022</span><span class="p">]</span> <span class="mi">0</span>
+</span><span class='line'><span class="mi">2016</span><span class="o">-</span><span class="mo">03</span><span class="o">-</span><span class="mi">11</span> <span class="mi">12</span><span class="o">:</span><span class="mi">08</span><span class="o">:</span><span class="mf">35.524</span> <span class="n">BGGCDDemo</span><span class="p">[</span><span class="mi">32542</span><span class="o">:</span><span class="mi">6331025</span><span class="p">]</span> <span class="mi">2</span>
+</span><span class='line'><span class="mi">2016</span><span class="o">-</span><span class="mo">03</span><span class="o">-</span><span class="mi">11</span> <span class="mi">12</span><span class="o">:</span><span class="mi">08</span><span class="o">:</span><span class="mf">35.524</span> <span class="n">BGGCDDemo</span><span class="p">[</span><span class="mi">32542</span><span class="o">:</span><span class="mi">6330953</span><span class="p">]</span> <span class="mi">1</span>
+</span><span class='line'><span class="mi">2016</span><span class="o">-</span><span class="mo">03</span><span class="o">-</span><span class="mi">11</span> <span class="mi">12</span><span class="o">:</span><span class="mi">08</span><span class="o">:</span><span class="mf">35.524</span> <span class="n">BGGCDDemo</span><span class="p">[</span><span class="mi">32542</span><span class="o">:</span><span class="mi">6331023</span><span class="p">]</span> <span class="mi">3</span>
+</span><span class='line'><span class="mi">2016</span><span class="o">-</span><span class="mo">03</span><span class="o">-</span><span class="mi">11</span> <span class="mi">12</span><span class="o">:</span><span class="mi">08</span><span class="o">:</span><span class="mf">35.525</span> <span class="n">BGGCDDemo</span><span class="p">[</span><span class="mi">32542</span><span class="o">:</span><span class="mi">6331022</span><span class="p">]</span> <span class="mi">4</span>
+</span><span class='line'><span class="mi">2016</span><span class="o">-</span><span class="mo">03</span><span class="o">-</span><span class="mi">11</span> <span class="mi">12</span><span class="o">:</span><span class="mi">08</span><span class="o">:</span><span class="mf">35.525</span> <span class="n">BGGCDDemo</span><span class="p">[</span><span class="mi">32542</span><span class="o">:</span><span class="mi">6330953</span><span class="p">]</span> <span class="n">done</span><span class="o">!</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>注意：因为dispatch_apply会让当前执行的线程等待，阻塞线程，因此最好将它放在dispatch_async中执行。</strong></p>
+
+<h3>7、dispatch_suspend/dispatch_resume</h3>
+
+<p>dispatch_suspend可以暂停当前队列的执行，dispatch_resume恢复当前队列的执行。
+这两个函数都已经执行的处理没有影响。挂起后，追加到queue中但尚未执行的处理在此之后停止执行。而恢复则使得这些处理能够继续执行。</p>
+
+<h3>8、Dispatch Semaphore</h3>
+
+<p>信号量，更细粒度的处理资源竞争的方案。  <br/>
+主要用到三个方法dispatch_semaphore_create、dispatch_semaphore_wait、dispatch_semaphore_signal。</p>
+
+<ul>
+<li>dispatch_semaphore_create：创建一个dispatch_semaphore_t，并且初始化Dispatch Semaphore的计数值；</li>
+<li>dispatch_semaphore_wait：等待Dispatch Semaphore的计数值大于等于1，如果大于等于1，则计数值减1并且往下继续执行；如果等于0，则一直等待计数值增加。</li>
+<li>dispatch_semaphore_sigal：将Dispatch Semaphore的计数值加1</li>
+</ul>
+
+
+<p>这三个方法配合使用，如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="kt">void</span> <span class="nf">testSemaphore</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kt">dispatch_queue_t</span> <span class="n">concurrentQueue</span> <span class="o">=</span> <span class="n">dispatch_queue_create</span><span class="p">(</span><span class="s">&quot;BG.concurrentQueue.com&quot;</span><span class="p">,</span> <span class="n">DISPATCH_QUEUE_CONCURRENT</span><span class="p">);</span>
+</span><span class='line'>    <span class="kt">dispatch_semaphore_t</span> <span class="n">semaphore</span> <span class="o">=</span> <span class="n">dispatch_semaphore_create</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+</span><span class='line'>    <span class="bp">NSMutableArray</span> <span class="o">*</span><span class="n">array</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSMutableArray</span> <span class="n">array</span><span class="p">];</span>
+</span><span class='line'>    <span class="k">for</span> <span class="p">(</span><span class="bp">NSInteger</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">10000</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">dispatch_async</span><span class="p">(</span><span class="n">concurrentQueue</span><span class="p">,</span> <span class="o">^</span><span class="p">{</span>
+</span><span class='line'>            <span class="n">dispatch_semaphore_wait</span><span class="p">(</span><span class="n">semaphore</span><span class="p">,</span> <span class="n">DISPATCH_TIME_FOREVER</span><span class="p">);</span>
+</span><span class='line'>            <span class="p">[</span><span class="n">array</span> <span class="nl">addObject</span><span class="p">:[</span><span class="bp">NSNumber</span> <span class="nl">numberWithInteger</span><span class="p">:</span><span class="n">i</span><span class="p">]];</span>
+</span><span class='line'>            <span class="n">dispatch_semaphore_signal</span><span class="p">(</span><span class="n">semaphore</span><span class="p">);</span>
+</span><span class='line'>            <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%zd&quot;</span><span class="p">,</span> <span class="n">i</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">});</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>9、dispatch_once</h3>
+
+<p>保证在应用程序中只执行一次指定的处理，一般应用场景就是单例了。</p>
+
+<h3>10、dispatch_source</h3>
+
+<p>与Dispatch Queue不同的是，dispatch_source是可以进行取消的，而且可以添加取消的block回调；dispatch_source可以做异步读取文件映像、定时器、监听文件目录变化等等，具体请见下表：</p>
+
+<table>
+<thead>
+<tr>
+<th style="text-align:left;"> 方法 </th>
+<th style="text-align:left;"> 说明 </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;"> DISPATCH_SOURCE_TYPE_DATA_ADD </td>
+<td style="text-align:left;"> 数据增加 </td>
+</tr>
+<tr>
+<td style="text-align:left;"> DISPATCH_SOURCE_TYPE_DATA_OR </td>
+<td style="text-align:left;"> 数据OR </td>
+</tr>
+<tr>
+<td style="text-align:left;"> DISPATCH_SOURCE_TYPE_MACH_SEND </td>
+<td style="text-align:left;"> Mach端口发送 </td>
+</tr>
+<tr>
+<td style="text-align:left;"> DISPATCH_SOURCE_TYPE_MACH_RECV </td>
+<td style="text-align:left;"> Mach端口接收 </td>
+</tr>
+<tr>
+<td style="text-align:left;"> DISPATCH_SOURCE_TYPE_MEMORYPRESSURE </td>
+<td style="text-align:left;"> 内存情况 </td>
+</tr>
+<tr>
+<td style="text-align:left;"> DISPATCH_SOURCE_TYPE_PROC </td>
+<td style="text-align:left;"> 进程事件 </td>
+</tr>
+<tr>
+<td style="text-align:left;"> DISPATCH_SOURCE_TYPE_READ </td>
+<td style="text-align:left;"> 读数据 </td>
+</tr>
+<tr>
+<td style="text-align:left;"> DISPATCH_SOURCE_TYPE_SIGNAL </td>
+<td style="text-align:left;"> 信号 </td>
+</tr>
+<tr>
+<td style="text-align:left;"> DISPATCH_SOURCE_TYPE_TIMER </td>
+<td style="text-align:left;"> 定时器 </td>
+</tr>
+<tr>
+<td style="text-align:left;"> DISPATCH_SOURCE_TYPE_VNODE </td>
+<td style="text-align:left;"> 文件系统变化 </td>
+</tr>
+<tr>
+<td style="text-align:left;"> DISPATCH_SOURCE_TYPE_WRITE </td>
+<td style="text-align:left;"> 文件写入 </td>
+</tr>
+</tbody>
+</table>
+
+
+<p>定时器代码：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">testSourceTimer</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">//定时器在主线程运行</span>
+</span><span class='line'>    <span class="kt">dispatch_source_t</span> <span class="n">timer</span> <span class="o">=</span> <span class="n">dispatch_source_create</span><span class="p">(</span><span class="n">DISPATCH_SOURCE_TYPE_TIMER</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">dispatch_get_main_queue</span><span class="p">());</span>
+</span><span class='line'>    <span class="c1">//设置定时器每隔2秒调用一次，允许延迟1秒</span>
+</span><span class='line'>    <span class="n">dispatch_source_set_timer</span><span class="p">(</span><span class="n">timer</span><span class="p">,</span> <span class="n">DISPATCH_TIME_NOW</span><span class="p">,</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">NSEC_PER_SEC</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="n">NSEC_PER_SEC</span><span class="p">);</span>
+</span><span class='line'>    <span class="c1">//定时器执行的处理</span>
+</span><span class='line'>    <span class="n">dispatch_source_set_event_handler</span><span class="p">(</span><span class="n">timer</span><span class="p">,</span> <span class="o">^</span><span class="p">{</span>
+</span><span class='line'>        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;timer work&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="c1">//        dispatch_source_cancel(timer);</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>    <span class="c1">//定时器取消所做的处理</span>
+</span><span class='line'>    <span class="n">dispatch_source_set_cancel_handler</span><span class="p">(</span><span class="n">timer</span><span class="p">,</span> <span class="o">^</span><span class="p">{</span>
+</span><span class='line'>        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;timer cancel!&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>    <span class="c1">//需要将定时器设置为全局变量，否则就会被提前释放</span>
+</span><span class='line'>    <span class="nb">self</span><span class="p">.</span><span class="n">timer</span> <span class="o">=</span> <span class="n">timer</span><span class="p">;</span>
+</span><span class='line'>    <span class="c1">//启动定时器</span>
+</span><span class='line'>    <span class="n">dispatch_resume</span><span class="p">(</span><span class="n">timer</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>监听文件夹变化代码：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">testSourceForObservFile</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">//创建文件夹，写入文件，用来进行测试</span>
+</span><span class='line'>    <span class="bp">NSString</span> <span class="o">*</span><span class="n">cacheDirectory</span> <span class="o">=</span> <span class="p">[</span><span class="n">NSSearchPathForDirectoriesInDomains</span><span class="p">(</span><span class="n">NSCachesDirectory</span><span class="p">,</span> <span class="n">NSUserDomainMask</span><span class="p">,</span> <span class="nb">YES</span><span class="p">)</span> <span class="n">firstObject</span><span class="p">];</span>
+</span><span class='line'>    <span class="bp">NSString</span> <span class="o">*</span><span class="n">directory</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSString</span> <span class="nl">stringWithFormat</span><span class="p">:</span><span class="s">@&quot;%@/test&quot;</span><span class="p">,</span> <span class="n">cacheDirectory</span><span class="p">];</span>
+</span><span class='line'>    <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="p">[[</span><span class="bp">NSFileManager</span> <span class="n">defaultManager</span><span class="p">]</span> <span class="nl">fileExistsAtPath</span><span class="p">:</span><span class="n">directory</span> <span class="nl">isDirectory</span><span class="p">:</span><span class="nb">nil</span><span class="p">])</span> <span class="p">{</span>
+</span><span class='line'>        <span class="p">[[</span><span class="bp">NSFileManager</span> <span class="n">defaultManager</span><span class="p">]</span> <span class="nl">createDirectoryAtPath</span><span class="p">:</span><span class="n">directory</span> <span class="nl">withIntermediateDirectories</span><span class="p">:</span><span class="nb">YES</span> <span class="nl">attributes</span><span class="p">:</span><span class="nb">nil</span> <span class="nl">error</span><span class="p">:</span><span class="nb">nil</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="bp">NSString</span> <span class="o">*</span><span class="n">filePath</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSString</span> <span class="nl">stringWithFormat</span><span class="p">:</span><span class="s">@&quot;%@/test.txt&quot;</span><span class="p">,</span> <span class="n">directory</span><span class="p">];</span>
+</span><span class='line'>    <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="p">[[</span><span class="bp">NSFileManager</span> <span class="n">defaultManager</span><span class="p">]</span> <span class="nl">fileExistsAtPath</span><span class="p">:</span><span class="n">filePath</span><span class="p">])</span> <span class="p">{</span>
+</span><span class='line'>        <span class="p">[</span><span class="s">@&quot;hello&quot;</span> <span class="nl">writeToFile</span><span class="p">:</span><span class="n">filePath</span> <span class="nl">atomically</span><span class="p">:</span><span class="nb">YES</span> <span class="nl">encoding</span><span class="p">:</span><span class="n">NSUTF8StringEncoding</span> <span class="nl">error</span><span class="p">:</span><span class="nb">nil</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="bp">NSURL</span> <span class="o">*</span><span class="n">directoryURL</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSURL</span> <span class="nl">URLWithString</span><span class="p">:</span><span class="n">directory</span><span class="p">];</span> <span class="c1">// assume this is set to a directory</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="k">const</span> <span class="n">fd</span> <span class="o">=</span> <span class="n">open</span><span class="p">([[</span><span class="n">directoryURL</span> <span class="n">path</span><span class="p">]</span> <span class="n">fileSystemRepresentation</span><span class="p">],</span> <span class="n">O_EVTONLY</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">fd</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="kt">char</span> <span class="n">buffer</span><span class="p">[</span><span class="mi">80</span><span class="p">];</span>
+</span><span class='line'>        <span class="n">strerror_r</span><span class="p">(</span><span class="n">errno</span><span class="p">,</span> <span class="n">buffer</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">buffer</span><span class="p">));</span>
+</span><span class='line'>        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;Unable to open </span><span class="se">\&quot;</span><span class="s">%@</span><span class="se">\&quot;</span><span class="s">: %s (%d)&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">directoryURL</span> <span class="n">path</span><span class="p">],</span> <span class="n">buffer</span><span class="p">,</span> <span class="n">errno</span><span class="p">);</span>
+</span><span class='line'>        <span class="k">return</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="c1">//设置源监听文件夹的变化，其中监听的是写入、删除、更改名字</span>
+</span><span class='line'>    <span class="kt">dispatch_source_t</span> <span class="n">source</span> <span class="o">=</span> <span class="n">dispatch_source_create</span><span class="p">(</span><span class="n">DISPATCH_SOURCE_TYPE_VNODE</span><span class="p">,</span> <span class="n">fd</span><span class="p">,</span>
+</span><span class='line'>                                                      <span class="n">DISPATCH_VNODE_WRITE</span> <span class="o">|</span> <span class="n">DISPATCH_VNODE_DELETE</span> <span class="o">|</span> <span class="n">DISPATCH_VNODE_RENAME</span><span class="p">,</span> <span class="n">DISPATCH_TARGET_QUEUE_DEFAULT</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">dispatch_source_set_event_handler</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="o">^</span><span class="p">(){</span>
+</span><span class='line'>        <span class="c1">//获取源变化的具体标志</span>
+</span><span class='line'>        <span class="kt">unsigned</span> <span class="kt">long</span> <span class="k">const</span> <span class="n">data</span> <span class="o">=</span> <span class="n">dispatch_source_get_data</span><span class="p">(</span><span class="n">source</span><span class="p">);</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="n">data</span> <span class="o">&amp;</span> <span class="n">DISPATCH_VNODE_WRITE</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;The directory changed.&quot;</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="n">data</span> <span class="o">&amp;</span> <span class="n">DISPATCH_VNODE_DELETE</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;The directory has been deleted.&quot;</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>    <span class="n">dispatch_source_set_cancel_handler</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="o">^</span><span class="p">(){</span>
+</span><span class='line'>        <span class="n">close</span><span class="p">(</span><span class="n">fd</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>    <span class="nb">self</span><span class="p">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">source</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">dispatch_resume</span><span class="p">(</span><span class="nb">self</span><span class="p">.</span><span class="n">source</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>参考：<a href="https://github.com/ming1016/study/wiki/%E7%BB%86%E8%AF%B4GCD%EF%BC%88Grand-Central-Dispatch%EF%BC%89%E5%A6%82%E4%BD%95%E7%94%A8">细说GCD如何使用</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">刘春桂</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2016-04-04T19:13:33+08:00'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>4</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>7:13 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/ios/'>ios</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+
+  
+    <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+	<span class="jiathis_txt">分享到：</span>
+	<a class="jiathis_button_tools_1"></a>
+	<a class="jiathis_button_tools_2"></a>
+	<a class="jiathis_button_tools_3"></a>
+	<a class="jiathis_button_tools_4"></a>
+	<a href="http://www.jiathis.com/share?uid=2059456" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+	<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config = {data_track_clickback:'true'};
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=2059456" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2059456"></script>
+<!-- UY END -->
+
+  
+
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2016/04/04/reactnativezhi-flexbu-ju-zong-jie/" title="Previous Post: ReactNative之Flex布局总结">&laquo; ReactNative之Flex布局总结</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/04/04/gcdzong-jie/">GCD总结</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/04/04/reactnativezhi-flexbu-ju-zong-jie/">ReactNative之Flex布局总结</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/03/14/runtimezhi-lei-yu-dui-xiang-zong-jie/">Runtime之类与对象总结</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/03/04/bgsession/">BGSession一个基于NSUserDefaults实现的轻量级本地数据存储</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/01/01/2015nian-zong-jie/">2015年总结</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+ <h1>Categories</h1>
+ <ul id="categories">
+  <li class='category'><a href='/blog/categories/git/'>git (1)</a></li>
+<li class='category'><a href='/blog/categories/gitbook/'>gitbook (1)</a></li>
+<li class='category'><a href='/blog/categories/ios/'>ios (9)</a></li>
+<li class='category'><a href='/blog/categories/octopress/'>octopress (1)</a></li>
+<li class='category'><a href='/blog/categories/reactnative/'>reactnative (1)</a></li>
+<li class='category'><a href='/blog/categories/web/'>web (2)</a></li>
+<li class='category'><a href='/blog/categories/年度总结/'>年度总结 (1)</a></li>
+
+ </ul>
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?40391c9d11f57c2384e5811d517bef62";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+<p>
+  &copy; 2016 - 刘春桂 -
+  <span class="credit">基于 <a href="http://octopress.org" target="_blank">Octopress</a></span>
+  <span class="credit">, 感谢 <a href="http://gitcafe.com/signup?invited_by=tangqiaoboy" target="_blank">GitCafe</a> 为本站提供存储空间</span>
+</p>
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

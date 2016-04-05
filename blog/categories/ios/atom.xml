@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Ios | liuchungui's Blog]]></title>
   <link href="http://www.liuchungui.com/blog/categories/ios/atom.xml" rel="self"/>
   <link href="http://www.liuchungui.com/"/>
-  <updated>2016-04-04T19:05:07+08:00</updated>
+  <updated>2016-04-05T21:14:57+08:00</updated>
   <id>http://www.liuchungui.com/</id>
   <author>
     <name><![CDATA[刘春桂]]></name>
@@ -12,6 +12,437 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[GCD总结]]></title>
+    <link href="http://www.liuchungui.com/blog/2016/04/04/gcdzong-jie/"/>
+    <updated>2016-04-04T19:13:33+08:00</updated>
+    <id>http://www.liuchungui.com/blog/2016/04/04/gcdzong-jie</id>
+    <content type="html"><![CDATA[<h3>GCD的知识点：</h3>
+
+<ol>
+<li>queue分成两种，分别是串行队列(Serial Dispatch Queue)和并行队列（Concurrent Dispatch Queue)。</li>
+<li>串行队列只会创建一个线程，而各个串行队列之间是并行的。</li>
+<li>串行队列个数创建不受限制，也就是通过串行队列创建的线程可以有很多个，但是这样会存在消耗大量内存的问题；而并行队列不会，不管创建多少个并行队列，XNU内核只使用有效管理的线程。</li>
+<li>在iOS6以后，ARC已经实现了GCD的内存管理，所以不用我们去管理它的内存了。</li>
+<li>系统已经为我们提供了两个queue，分别是main queue和global queue，其中main queue是串行队列，global queue是并行队列。</li>
+</ol>
+
+
+<!-- more -->
+
+
+<h2>GCD的API：</h2>
+
+<h3>1、dispatch_set_target_queue</h3>
+
+<p>这个api有两个功能，一是设置dispatch_queue_create创建队列的优先级，二是建立队列的执行阶层。</p>
+
+<p>（1）当使用dispatch_queue_create创建队列的时候，不管是串行还是并行，它们的优先级都是<code>DISPATCH_QUEUE_PRIORITY_DEFAULT</code>级别，而这个API就是可以设置队列的优先级。</p>
+
+<p>如下，将serailQueue设置成<code>DISPATCH_QUEUE_PRIORITY_HIGH</code></p>
+
+<pre><code class="objc">dispatch_queue_t serialQueue = dispatch_queue_create(kBGGCDTestIdentifier, DISPATCH_QUEUE_SERIAL);
+    dispatch_queue_t globalQueue = 
+dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0);
+//注意：被设置优先级的队列是第一个参数。
+dispatch_set_target_queue(serialQueue, globalQueue);
+</code></pre>
+
+<p>（2）使用这个API可以设置队列执行阶层，例如<code>dispatch_set_target_queue(queue1, targetQueue);</code>这样设置时，相当于将queue1指派给targetQueue，如果targetQueue是串行队列，则queue1是串行执行的；如果targetQueue是并行队列，那么queue1是并行的。</p>
+
+<p>当targetQueue为串行队列时，代码：</p>
+
+<pre><code>const char * kBGGCDTestIdentifier = "kBGGCDTestIdentifier";
+void testTargetQueue() {
+    dispatch_queue_t targetQueue = dispatch_queue_create(kBGGCDTestIdentifier, DISPATCH_QUEUE_SERIAL);
+
+    dispatch_queue_t queue1 = dispatch_queue_create(kBGGCDTestIdentifier, DISPATCH_QUEUE_SERIAL);
+    dispatch_queue_t queue2 = dispatch_queue_create(kBGGCDTestIdentifier, DISPATCH_QUEUE_CONCURRENT);
+
+    dispatch_set_target_queue(queue1, targetQueue);
+    dispatch_set_target_queue(queue2, targetQueue);
+
+    dispatch_async(queue1, ^{
+        NSLog(@"queue1 1");
+    });
+    dispatch_async(queue1, ^{
+        NSLog(@"queue1 2");
+    });
+    dispatch_async(queue2, ^{
+        NSLog(@"queue2 1");
+    });
+    dispatch_async(queue2, ^{
+        NSLog(@"queue2 2");
+    });
+    dispatch_async(targetQueue, ^{
+        NSLog(@"target queue");
+    });
+}
+</code></pre>
+
+<p>输出：</p>
+
+<pre><code>2016-03-11 00:03:31.015 BGGCDDemo[23237:6187006] queue1 1
+2016-03-11 00:03:31.015 BGGCDDemo[23237:6187006] queue1 2
+2016-03-11 00:03:31.016 BGGCDDemo[23237:6187006] queue2 1
+2016-03-11 00:03:31.017 BGGCDDemo[23237:6187006] queue2 2
+2016-03-11 00:03:31.018 BGGCDDemo[23237:6187006] target queue
+</code></pre>
+
+<p>当上面代码中targetQueue是并行队列时</p>
+
+<p>输出：</p>
+
+<pre><code>2016-03-11 00:04:48.234 BGGCDDemo[23331:6188776] queue2 1
+2016-03-11 00:04:48.234 BGGCDDemo[23331:6188777] queue1 1
+2016-03-11 00:04:48.234 BGGCDDemo[23331:6188780] queue2 2
+2016-03-11 00:04:48.234 BGGCDDemo[23331:6188786] target queue
+2016-03-11 00:04:48.235 BGGCDDemo[23331:6188777] queue1 2
+</code></pre>
+
+<p>参考：<a href="http://justsee.iteye.com/blog/2233252">http://justsee.iteye.com/blog/2233252</a></p>
+
+<h3>2、dispatch_after</h3>
+
+<p>指定时间执行某些内容，例如，下面一秒后执行打印信息.</p>
+
+<pre><code>  dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        NSLog(@"test");
+    });
+</code></pre>
+
+<h3>3、dispatch_group</h3>
+
+<p>经常会有这么个需求，就是多个queue中所有操作执行完之后，想再执行结束处理，而dispatch_group正是干这个的。它有两种操作可以做到，一种是使用dispatch_group_notify，另外一种是使用dispatch_group_wait。</p>
+
+<p>它们区别是dispatch_group_notify是可以将结束追加到某个队列当中，不会阻塞当前执行的线程；而dispatch_group_wait会阻塞当前执行线程，直到group中所有处理全部执行结束或超过等待的指定时间。当然，可以使用<code>DISPATCH_TIME_NOW</code>就不用等待，然后在主线程的Runloop每次循环中，检查执行是否结束，这样就不会堵塞当前执行的线程了，不过这样实现起来就会麻烦很多。所以，推荐使用dispatch_group_notify。</p>
+
+<p>使用dispatch_group_notify时，代码如下：</p>
+
+<pre><code>void testGroupNotification() {
+    dispatch_queue_t serialQueue = dispatch_queue_create("BG.serailQueue.com", DISPATCH_QUEUE_SERIAL);
+    dispatch_queue_t concurrentQueue = dispatch_queue_create("BG.concurrentQueue.com", DISPATCH_QUEUE_CONCURRENT);
+    dispatch_group_t group = dispatch_group_create();
+
+    dispatch_group_async(group, serialQueue, ^{
+        NSLog(@"serailQueue 1");
+    });
+    dispatch_group_async(group, serialQueue, ^{
+        NSLog(@"serailQueue 2");
+    });
+    dispatch_group_async(group, concurrentQueue, ^{
+        NSLog(@"concurrentQueue 1");
+    });
+    dispatch_group_async(group, concurrentQueue, ^{
+        NSLog(@"concurrentQueue 2");
+    });
+    dispatch_group_notify(group, dispatch_get_main_queue(), ^{
+        NSLog(@"finish!");
+    });
+    NSLog(@"testGroupNotification");
+}
+</code></pre>
+
+<p>使用dispatch_group_wait时，代码如下：</p>
+
+<pre><code>void testGroupWait() {
+    dispatch_queue_t serialQueue = dispatch_queue_create("BG.serailQueue.com", DISPATCH_QUEUE_SERIAL);
+    dispatch_queue_t concurrentQueue = dispatch_queue_create("BG.concurrentQueue.com", DISPATCH_QUEUE_CONCURRENT);
+    dispatch_group_t group = dispatch_group_create();
+
+    dispatch_group_async(group, serialQueue, ^{
+        NSLog(@"serailQueue 1");
+    });
+    dispatch_group_async(group, serialQueue, ^{
+        NSLog(@"serailQueue 2");
+        sleep(1);
+    });
+    dispatch_group_async(group, concurrentQueue, ^{
+        NSLog(@"concurrentQueue 1");
+    });
+    dispatch_group_async(group, concurrentQueue, ^{
+        NSLog(@"concurrentQueue 2");
+    });
+    dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+    NSLog(@"testGroupNotification");
+}
+</code></pre>
+
+<h3>4、dispatch_barrier_async</h3>
+
+<p>dispatch_barrier_async加入的处理，会等待队列中所有的处理结束后才执行barrier当中的处理，而且只有等待barrier执行完之后，才会继续执行后续处理。<strong>使用并行队列和dispatch_barrier_async可以做到很高效的数据库或文件访问</strong>。</p>
+
+<p>测试代码如下：</p>
+
+<pre><code>void testBarrier() {
+    dispatch_queue_t concurrentQueue = dispatch_queue_create("BG.concurrent.com", DISPATCH_QUEUE_CONCURRENT);
+    dispatch_async(concurrentQueue, ^{
+        NSLog(@"reading 1");
+    });
+    dispatch_async(concurrentQueue, ^{
+        NSLog(@"reading 2");
+    });
+    dispatch_async(concurrentQueue, ^{
+        NSLog(@"reading 3");
+    });
+    dispatch_barrier_async(concurrentQueue, ^{
+        NSLog(@"writing");
+    });
+    dispatch_async(concurrentQueue, ^{
+        NSLog(@"reading 4");
+    });
+    dispatch_async(concurrentQueue, ^{
+        NSLog(@"reading 5");
+    });
+}
+</code></pre>
+
+<p>输出结果：</p>
+
+<pre><code>2016-03-11 10:31:47.980 BGGCDDemo[28694:6276100] reading 2
+2016-03-11 10:31:47.980 BGGCDDemo[28694:6276099] reading 1
+2016-03-11 10:31:47.981 BGGCDDemo[28694:6276102] reading 3
+2016-03-11 10:31:47.981 BGGCDDemo[28694:6276102] writing
+2016-03-11 10:31:47.982 BGGCDDemo[28694:6276102] reading 4
+2016-03-11 10:31:47.982 BGGCDDemo[28694:6276099] reading 5
+</code></pre>
+
+<h3>5、dispatch_sync</h3>
+
+<p>与dispatch_async异步不同的是dispatch_sync会等待当前处理结束之后有返回结果时才会继续往下走。与dispatch_group_wait有点类似，当使用dispatch_sync时，当前线程会被阻塞，直到它有返回结果为止。</p>
+
+<p>代码：</p>
+
+<pre><code>void testSync() {
+    dispatch_queue_t serialQueue = dispatch_queue_create("BG.serailQueue.com", DISPATCH_QUEUE_SERIAL);
+    dispatch_queue_t concurrentQueue = dispatch_queue_create("BG.concurrent.com", DISPATCH_QUEUE_CONCURRENT);
+    dispatch_sync(serialQueue, ^{
+        NSLog(@"test");
+    });
+    dispatch_sync(concurrentQueue, ^{
+        NSLog(@"test2");
+    });
+    NSLog(@"finish");
+}
+</code></pre>
+
+<p>输出：</p>
+
+<pre><code>2016-03-11 10:35:43.166 BGGCDDemo[28912:6278490] test
+2016-03-11 10:35:43.167 BGGCDDemo[28912:6278490] test2
+2016-03-11 10:35:43.167 BGGCDDemo[28912:6278490] finish
+</code></pre>
+
+<p>使用dispatch_sync很容易造成死锁，如下代码在主线程中运行就会造成死锁：</p>
+
+<pre><code>    dispatch_sync(dispatch_get_main_queue(), ^{
+        NSLog(@"test");
+    });
+</code></pre>
+
+<p>分析：主线程会等待dispatch_sync函数返回，而dispatch_sync要等block执行完才会返回。而主线程是串行队列，采用FIFO队列执行任务，dispatch_sync加入的block是后加入的，这样的话这个block是得不到执行的，从而产生了死锁。</p>
+
+<p><strong>官方文档指出：dispatch_sync的当前执行队列与提交block执行的目标队列相同时并且是串行队列时将造成死锁。</strong></p>
+
+<p>参考：
+<a href="http://www.jianshu.com/p/44369c02b62a">dispatch_sync死锁问题研究</a>
+<a href="http://www.cnblogs.com/tangbinblog/p/4133481.html">GCD 之线程死锁</a></p>
+
+<h3>6、dispatch_apply</h3>
+
+<p>dispatch_apply函数是dispatch_sync和DISPATCH Group的关联API。该函数按指定的次数将指定的Block追加到指定的队列当中，并等待全部处理执行结束。</p>
+
+<p>代码：</p>
+
+<pre><code>void testApply() {
+    dispatch_queue_t concurrentQueue = dispatch_queue_create("BG.concurrent.com", DISPATCH_QUEUE_CONCURRENT);
+    dispatch_apply(5, concurrentQueue, ^(size_t index) {
+        NSLog(@"%zd", index);
+    });
+    NSLog(@"done!");
+}
+</code></pre>
+
+<p>输出：</p>
+
+<pre><code>2016-03-11 12:08:35.524 BGGCDDemo[32542:6331022] 0
+2016-03-11 12:08:35.524 BGGCDDemo[32542:6331025] 2
+2016-03-11 12:08:35.524 BGGCDDemo[32542:6330953] 1
+2016-03-11 12:08:35.524 BGGCDDemo[32542:6331023] 3
+2016-03-11 12:08:35.525 BGGCDDemo[32542:6331022] 4
+2016-03-11 12:08:35.525 BGGCDDemo[32542:6330953] done!
+</code></pre>
+
+<p><strong>注意：因为dispatch_apply会让当前执行的线程等待，阻塞线程，因此最好将它放在dispatch_async中执行。</strong></p>
+
+<h3>7、dispatch_suspend/dispatch_resume</h3>
+
+<p>dispatch_suspend可以暂停当前队列的执行，dispatch_resume恢复当前队列的执行。
+这两个函数都已经执行的处理没有影响。挂起后，追加到queue中但尚未执行的处理在此之后停止执行。而恢复则使得这些处理能够继续执行。</p>
+
+<h3>8、Dispatch Semaphore</h3>
+
+<p>信号量，更细粒度的处理资源竞争的方案。  <br/>
+主要用到三个方法dispatch_semaphore_create、dispatch_semaphore_wait、dispatch_semaphore_signal。</p>
+
+<ul>
+<li>dispatch_semaphore_create：创建一个dispatch_semaphore_t，并且初始化Dispatch Semaphore的计数值；</li>
+<li>dispatch_semaphore_wait：等待Dispatch Semaphore的计数值大于等于1，如果大于等于1，则计数值减1并且往下继续执行；如果等于0，则一直等待计数值增加。</li>
+<li>dispatch_semaphore_sigal：将Dispatch Semaphore的计数值加1</li>
+</ul>
+
+
+<p>这三个方法配合使用，如下：</p>
+
+<pre><code>void testSemaphore() {
+    dispatch_queue_t concurrentQueue = dispatch_queue_create("BG.concurrentQueue.com", DISPATCH_QUEUE_CONCURRENT);
+    dispatch_semaphore_t semaphore = dispatch_semaphore_create(1);
+    NSMutableArray *array = [NSMutableArray array];
+    for (NSInteger i = 0; i &lt; 10000; i++) {
+        dispatch_async(concurrentQueue, ^{
+            dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+            [array addObject:[NSNumber numberWithInteger:i]];
+            dispatch_semaphore_signal(semaphore);
+            NSLog(@"%zd", i);
+        });
+    }
+}
+</code></pre>
+
+<h3>9、dispatch_once</h3>
+
+<p>保证在应用程序中只执行一次指定的处理，一般应用场景就是单例了。</p>
+
+<h3>10、dispatch_source</h3>
+
+<p>与Dispatch Queue不同的是，dispatch_source是可以进行取消的，而且可以添加取消的block回调；dispatch_source可以做异步读取文件映像、定时器、监听文件目录变化等等，具体请见下表：</p>
+
+<table>
+<thead>
+<tr>
+<th style="text-align:left;"> 方法 </th>
+<th style="text-align:left;"> 说明 </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;"> DISPATCH_SOURCE_TYPE_DATA_ADD </td>
+<td style="text-align:left;"> 数据增加 </td>
+</tr>
+<tr>
+<td style="text-align:left;"> DISPATCH_SOURCE_TYPE_DATA_OR </td>
+<td style="text-align:left;"> 数据OR </td>
+</tr>
+<tr>
+<td style="text-align:left;"> DISPATCH_SOURCE_TYPE_MACH_SEND </td>
+<td style="text-align:left;"> Mach端口发送 </td>
+</tr>
+<tr>
+<td style="text-align:left;"> DISPATCH_SOURCE_TYPE_MACH_RECV </td>
+<td style="text-align:left;"> Mach端口接收 </td>
+</tr>
+<tr>
+<td style="text-align:left;"> DISPATCH_SOURCE_TYPE_MEMORYPRESSURE </td>
+<td style="text-align:left;"> 内存情况 </td>
+</tr>
+<tr>
+<td style="text-align:left;"> DISPATCH_SOURCE_TYPE_PROC </td>
+<td style="text-align:left;"> 进程事件 </td>
+</tr>
+<tr>
+<td style="text-align:left;"> DISPATCH_SOURCE_TYPE_READ </td>
+<td style="text-align:left;"> 读数据 </td>
+</tr>
+<tr>
+<td style="text-align:left;"> DISPATCH_SOURCE_TYPE_SIGNAL </td>
+<td style="text-align:left;"> 信号 </td>
+</tr>
+<tr>
+<td style="text-align:left;"> DISPATCH_SOURCE_TYPE_TIMER </td>
+<td style="text-align:left;"> 定时器 </td>
+</tr>
+<tr>
+<td style="text-align:left;"> DISPATCH_SOURCE_TYPE_VNODE </td>
+<td style="text-align:left;"> 文件系统变化 </td>
+</tr>
+<tr>
+<td style="text-align:left;"> DISPATCH_SOURCE_TYPE_WRITE </td>
+<td style="text-align:left;"> 文件写入 </td>
+</tr>
+</tbody>
+</table>
+
+
+<p>定时器代码：</p>
+
+<pre><code>- (void)testSourceTimer {
+    //定时器在主线程运行
+    dispatch_source_t timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_main_queue());
+    //设置定时器每隔2秒调用一次，允许延迟1秒
+    dispatch_source_set_timer(timer, DISPATCH_TIME_NOW, 2.0 * NSEC_PER_SEC, 1.0 * NSEC_PER_SEC);
+    //定时器执行的处理
+    dispatch_source_set_event_handler(timer, ^{
+        NSLog(@"timer work");
+//        dispatch_source_cancel(timer);
+    });
+    //定时器取消所做的处理
+    dispatch_source_set_cancel_handler(timer, ^{
+        NSLog(@"timer cancel!");
+    });
+    //需要将定时器设置为全局变量，否则就会被提前释放
+    self.timer = timer;
+    //启动定时器
+    dispatch_resume(timer);
+}
+</code></pre>
+
+<p>监听文件夹变化代码：</p>
+
+<pre><code>- (void)testSourceForObservFile {
+    //创建文件夹，写入文件，用来进行测试
+    NSString *cacheDirectory = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) firstObject];
+    NSString *directory = [NSString stringWithFormat:@"%@/test", cacheDirectory];
+    if(![[NSFileManager defaultManager] fileExistsAtPath:directory isDirectory:nil]) {
+        [[NSFileManager defaultManager] createDirectoryAtPath:directory withIntermediateDirectories:YES attributes:nil error:nil];
+    }
+    NSString *filePath = [NSString stringWithFormat:@"%@/test.txt", directory];
+    if(![[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
+        [@"hello" writeToFile:filePath atomically:YES encoding:NSUTF8StringEncoding error:nil];
+    }
+
+    NSURL *directoryURL = [NSURL URLWithString:directory]; // assume this is set to a directory
+    int const fd = open([[directoryURL path] fileSystemRepresentation], O_EVTONLY);
+    if (fd &lt; 0) {
+        char buffer[80];
+        strerror_r(errno, buffer, sizeof(buffer));
+        NSLog(@"Unable to open \"%@\": %s (%d)", [directoryURL path], buffer, errno);
+        return;
+    }
+    //设置源监听文件夹的变化，其中监听的是写入、删除、更改名字
+    dispatch_source_t source = dispatch_source_create(DISPATCH_SOURCE_TYPE_VNODE, fd,
+                                                      DISPATCH_VNODE_WRITE | DISPATCH_VNODE_DELETE | DISPATCH_VNODE_RENAME, DISPATCH_TARGET_QUEUE_DEFAULT);
+    dispatch_source_set_event_handler(source, ^(){
+        //获取源变化的具体标志
+        unsigned long const data = dispatch_source_get_data(source);
+        if (data &amp; DISPATCH_VNODE_WRITE) {
+            NSLog(@"The directory changed.");
+        }
+        if (data &amp; DISPATCH_VNODE_DELETE) {
+            NSLog(@"The directory has been deleted.");
+        }
+    });
+    dispatch_source_set_cancel_handler(source, ^(){
+        close(fd);
+    });
+    self.source = source;
+    dispatch_resume(self.source);
+}
+</code></pre>
+
+<p>参考：<a href="https://github.com/ming1016/study/wiki/%E7%BB%86%E8%AF%B4GCD%EF%BC%88Grand-Central-Dispatch%EF%BC%89%E5%A6%82%E4%BD%95%E7%94%A8">细说GCD如何使用</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Runtime之类与对象总结]]></title>
@@ -845,198 +1276,6 @@ override func finalLayoutAttributesForDisappearingItemAtIndexPath(itemIndexPath:
 <h2>参考</h2>
 
 <p><a href="https://developer.apple.com/library/prerelease/ios/documentation/WindowsViews/Conceptual/CollectionViewPGforIOS/Introduction/Introduction.html">Collection View Programming Guide for iOS</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[UICollectionView之介绍使用篇]]></title>
-    <link href="http://www.liuchungui.com/blog/2015/11/02/uicollectionviewzhi-jie-shao-shi-yong-pian/"/>
-    <updated>2015-11-02T00:29:12+08:00</updated>
-    <id>http://www.liuchungui.com/blog/2015/11/02/uicollectionviewzhi-jie-shao-shi-yong-pian</id>
-    <content type="html"><![CDATA[<p>实现垂直方向的单列表来说，使用UITableView足以；若是需要构建横向滑动列表、gridView等直线型布局，则使用UICollectionView+UICollectionViewFlowLayout搭建最合适；更复杂的布局，则可以使用UICollectionView+自定义Layout来实现。</p>
-
-<p>而这篇博客就来介绍一下UICollectionView。</p>
-
-<p>首先，来了解一下UICollectionView工作流程：</p>
-
-<p><img src="http://ww3.sinaimg.cn/large/7746cd07jw1exjnjqrju5j20x00qk76h.jpg" alt="" /></p>
-
-<p>当UICollectionView显示内容时，先从数据源获取cell，然后交给UICollectionView。再从UICollectionViewLayout获取对应的layout attributes(布局属性)。最后，根据每个cell对应的layout attributes(布局属性)来对cell进行布局，生成了最终的界面。而用户交互的时候，都是通过Delegate来进行交互。当然，上面只是布局cell，但是UICollectionView内部还有Supplementary View和Decoration View，也可以对其进行布局。</p>
-
-<p>上面，我们了解了UICollectionView的工作流程，我们将UICollectionView分成视图、数据源和代理方法、UICollectionViewLayout三块来介绍。</p>
-
-<!-- more -->
-
-
-<h2>一、视图</h2>
-
-<p>UICollectionView上面显示内容的视图有三种Cell视图、Supplementary View和Decoration View。</p>
-
-<h4>Cell视图</h4>
-
-<p>CollectionView中主要的内容都是由它展示的，它是从数据源对象获取的。</p>
-
-<h4>Supplementary View</h4>
-
-<p>它展示了每一组当中的信息，与cell类似，它是从数据源方法当中获取的，但是与cell不同的是，它并不是强制需要的。例如flow layout当中的headers和footers就是可选的Supplementary View。</p>
-
-<h4>Decoration View</h4>
-
-<p>这个视图是一个装饰视图，它没有什么功能性，它不跟数据源有任何关系，它完全属于layout对象。</p>
-
-<h2>二、数据源和代理方法</h2>
-
-<h4>1、注册cell或者Supplementary View使其重用</h4>
-
-<p>在使用数据源返回cell或者Supplementary View给collectionView之前，我们必须先要注册，用来进行重用。</p>
-
-<ul>
-<li>registerClass: forCellWithReuseIdentifier:</li>
-<li>registerNib: forCellWithReuseIdentifier:</li>
-<li>registerClass: forSupplementaryViewOfKind: withReuseIdentifier:</li>
-<li>registerNib: forSupplementaryViewOfKind: withReuseIdentifier:</li>
-</ul>
-
-
-<p> 显而易见，前面两个方法是注册cell，后两个方法注册Supplementary View。其中，注册的方式有两种，第一种是直接注册class，它重用的时候会调用[[UICollectionView alloc] init]这样的初始化方法创建cell；另外一种是注册nib，它会自动加载nib文件。</p>
-
-<p> 注册的之后，我们如何重用？       <br/>
- 在数据源方法当中返回<code>cell</code>或者<code>Supplementary view</code>的方法当中通过<code>dequeueReusableCellWithReuseIdentifier:forIndexPath:</code> 或者 <code>dequeueReusableSupplementaryViewOfKind:withReuseIdentifier:forIndexPath:</code>方法获取cell或者Supplementary View。</p>
-
-<p>示例代码：
-<code>objc
-- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
-    CollectionViewCell *cell = (CollectionViewCell *)[collectionView dequeueReusableCellWithReuseIdentifier:CellReuseIdentify forIndexPath:indexPath];
-    cell.backgroundColor = [UIColor lightGrayColor];
-    cell.textLabel.text = [NSString stringWithFormat:@"(%zd,%zd)", indexPath.section, indexPath.row];
-    return cell;
-}
-</code></p>
-
-<h4>2、数据源方法</h4>
-
-<p> 数据源方法与UITableView类似，主要有：</p>
-
-<ul>
-<li>numberOfSectionsInCollectionView:</li>
-<li>collectionView: numberOfItemsInSection:</li>
-<li>collectionView: cellForItemAtIndexPath:</li>
-<li>collectionView: viewForSupplementaryElementOfKind: atIndexPath:</li>
-</ul>
-
-
-<p>与UITableView不同的是多加了返回Supplementary view数据源方法。</p>
-
-<h4>3、代理方法</h4>
-
-<p>数据源为UICollectionView提供数据相关的内容，而代理则主要负责用户交互、与数据无关的视图外形。主要分成两部分：</p>
-
-<p>1、通过调用代理方法，管理视图的选中、高亮</p>
-
-<ul>
-<li>collectionView:shouldDeselectItemAtIndexPath:</li>
-<li>collectionView:didSelectItemAtIndexPath:</li>
-<li>collectionView:didDeselectItemAtIndexPath:</li>
-<li>collectionView:shouldHighlightItemAtIndexPath:</li>
-<li>collectionView:didHighlightItemAtIndexPath:</li>
-<li>collectionView:didUnhighlightItemAtIndexPath:</li>
-</ul>
-
-
-<p> 2、长按cell，显示编辑菜单
- 与UITableView不同，用户长按cell时，UICollectionView可以显示编辑菜单。这个编辑菜单可以用来剪切、复制和粘贴cell。不过，要显示这个编辑菜单需要满足下面几个条件：</p>
-
-<ul>
-<li>代理对象必须实现下面三个方法：     <br/>
-<code>collectionView:shouldShowMenuForItemAtIndexPath:</code>   <code>collectionView:canPerformAction:forItemAtIndexPath:withSender:</code>   <code>collectionView:performAction:forItemAtIndexPath:withSender:</code></li>
-<li>对于指定要编辑的cell，<code>collectionView:shouldShowMenuForItemAtIndexPath:</code>方法需要返回<code>YES</code></li>
-<li><p><code>collectionView:canPerformAction:forItemAtIndexPath:withSender:</code> 方法中，对于剪切、复制、粘贴三种action至少有一个返回YES。其实，编辑菜单是有很多种action的，但是对于UICollectionView来说，它仅仅支持的剪切、复制、粘贴三个，所以说这个代理方法至少支持这三种的一种。  <br/>
-剪切、复制、粘贴的方法名是：   <br/>
-<code>cut:</code>   <br/>
-<code>copy:</code>   <br/>
-<code>paste:</code></p>
-
-<p>当上面的条件都满足了，用户就可以长按cell显示出编辑菜单，然后选择对应的action，从而就会回调delegate的collectionView:performAction:forItemAtIndexPath:withSender: 方法去做对应的事情。</p></li>
-</ul>
-
-
-<p>当我们想控制编辑菜单仅仅显示复制和粘贴时，我们就可以在<code>collectionView:canPerformAction:forItemAtIndexPath:withSender:</code>方法中进行操作，具体请见下面代码：</p>
-
-<pre><code class="objc">- (BOOL)collectionView:(UICollectionView *)collectionView canPerformAction:(SEL)action forItemAtIndexPath:(NSIndexPath *)indexPath withSender:(id)sender{
-    if ([NSStringFromSelector(action) isEqualToString:@"copy:"]        || [NSStringFromSelector(action) isEqualToString:@"paste:"])        return YES;    return NO;
-}
-</code></pre>
-
-<h2>三、UICollectionViewLayout</h2>
-
-<p><code>UICollectionViewLayout</code>是通过<code>UICollectionViewLayoutAttributes</code>类来管理<code>cell</code>、<code>Supplementary View</code>和<code>Decoration View</code>的<code>位置</code>、<code>transform</code>、<code>alpha</code>、<code>hidden</code>等等。   <br/>
-UICollectionViewLayout这个类只是一个基类，我们给UICollectionView使用的都是它的<code>子类</code>。系统为我们提供了一个最常用的layout为<code>UICollectionViewFlowLayout</code>，我们可以使用它制作<code>grid view</code>。当UICollectionViewLayout满足不了我们的需求时，我们可以<code>子类化UICollectionViewLayout</code>或者<code>自定义layout</code>，这个内容放到我下一篇当中。</p>
-
-<h4>UICollectionViewFlowLayout</h4>
-
-<p>使用UICollectionViewFlowLayout之前，我们来了解它内部常用的属性：</p>
-
-<pre><code>//同一组当中，垂直方向：行与行之间的间距；水平方向：列与列之间的间距
-@property (nonatomic) CGFloat minimumLineSpacing; 
-//垂直方向：同一行中的cell之间的间距；水平方向：同一列中，cell与cell之间的间距
-@property (nonatomic) CGFloat minimumInteritemSpacing;
-//每个cell统一尺寸
-@property (nonatomic) CGSize itemSize;
-//滑动反向，默认滑动方向是垂直方向滑动
-@property (nonatomic) UICollectionViewScrollDirection scrollDirection; 
-//每一组头视图的尺寸。如果是垂直方向滑动，则只有高起作用；如果是水平方向滑动，则只有宽起作用。
-@property (nonatomic) CGSize headerReferenceSize;
-//每一组尾部视图的尺寸。如果是垂直方向滑动，则只有高起作用；如果是水平方向滑动，则只有宽起作用。
-@property (nonatomic) CGSize footerReferenceSize;
-//每一组的内容缩进
-@property (nonatomic) UIEdgeInsets sectionInset;
-</code></pre>
-
-<p>注意：UICollectionViewFlowLayout内部的属性都是用来统一设置，若是统一设置无法满足需求，可以实现<code>UICollectionViewDelegateFlowLayout</code>代理方法，进行对应的设置。而后面内容我都以UICollectionViewFlowLayout的属性来叙述，请自行参照修改。</p>
-
-<p>UICollectionViewFlowLayout在纵向滑动与横向滑动时，布局是不太一样的。</p>
-
-<p align="center" >
-  <img src="http://ww1.sinaimg.cn/large/7746cd07jw1exmpk8hs66j20ea0fcabe.jpg" width=257 height = 274>
-  <img src="http://ww3.sinaimg.cn/large/7746cd07jw1exmq7ebjo2j20es0cujsp.jpg" width=266 height = 231>
-</p>
-
-
-<p>由上图就可以看出来，UICollectionViewFlowLayout在布局时，会根据scrollDirection的值不同而产生不同的布局。</p>
-
-<ul>
-<li><p>垂直方向滑动：</p>
-
-<ul>
-<li>Cell布局：UICollectionView的内容宽度与本身视图的宽度相等，并且是固定的。会根据<code>sectionInset左右缩进</code>、<code>itemSize的宽度</code>、<code>minimumInteritemSpacing</code>三个值来计算每一行cell数量。   <br/>
-具体计算公式是:   <br/>
-<code>  
-cellCount = (CollectionViewContentWidth-sectionInset.left-sectionInset.right+minimumInteritemSpacing)/(itemSize.width+minimumInteritemSpacing)      
-</code>
-<code>CollectionViewContentWidth</code>是UICollectionView的内容宽度，计算出来的<code>cellCount</code>进行四舍五入成一个整数就是<code>每一行cell的数量</code>。  <br/>
-而每个cell之间实际的间隔值则是:  <br/>
-<code>realInteritemSpacing = (CollectionViewContentWidth-sectionInset.left-sectionInset.right-cellCount*itemSize.width)/(cellCount-1)</code>  <br/>
-当每个cell大小确定、每一行cell的个数确定、每个cell之间的间距确定之后，UICollectionViewFlowLayout就可以计算出每一行cell的frame了。  <br/>
-而如果同一组cell的个数，在水平方向的一行放不下去，则就会放入第二行，而这第二行的cell在垂直方向与第一行的cell相隔<code>minimumLineSpacing</code>。这样又确定了行与行之间的间距，那么这一组cell的布局就可以确定了。</li>
-<li>头视图与尾部视图：根据headerReferenceSize和footerReferenceSize中的高来确定头部和尾部视图的高，它其实就是两个不同类型的Supplementary View。</li>
-</ul>
-</li>
-<li><p>水平方向滑动：</p>
-
-<ul>
-<li>Cell布局：水平方向的滑动内容的高与本身视图的高是相等的，并且是固定的。它的cell是从<code>上到下进行布局</code>的。会根据<code>sectionInset上下缩进</code>、<code>itemSize的高度</code>、<code>minimumInteritemSpacing</code>三个值来计算每一列放多少个cell，具体计算公式可以参照垂直方向滑动的公式。之后的逻辑和垂直方向滑动时一样，只是minimumLineSpacing现在是代表列与列之间的间距。</li>
-<li>头视图与尾部视图：根据headerReferenceSize和footerReferenceSize中的宽来确定头部和尾部视图的宽。</li>
-</ul>
-</li>
-</ul>
-
-
-<p>相关使用UICollectionViewFlowLayout代码:<a href="https://github.com/liuchungui/UICollectionViewDemo">UICollectionViewDemo</a></p>
-
-<h2>参考</h2>
-
-<p><a href="https://developer.apple.com/library/prerelease/ios/documentation/WindowsViews/Conceptual/CollectionViewPGforIOS/Introduction/Introduction.html">Collection View Programming Guide for iOS</a>   <br/>
-<a href="http://www.onevcat.com/2012/06/introducing-collection-views/">WWDC 2012 Session笔记——205 Introducing Collection Views</a></p>
 ]]></content>
   </entry>
   

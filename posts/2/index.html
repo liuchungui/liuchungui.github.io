@@ -9,7 +9,8 @@
   <meta name="author" content="刘春桂">
 
   
-  <meta name="description" content="创建Pod私有源步骤： 1、创建两个git仓库，一个用来做私有的Spec Repo，一个是我们自己的公共组件 2、添加私有的repo到CocoaPods 3、制作Podspec，并且推送到你创建的私有repo 4、使用Pod，在Podfile添加私有源来搭建项目 ">
+  <meta name="description" content="1、安装 首先，我们需要搭建Nginx环境，我这里是通过homebrew一键式搭建，步骤如下： 1、安装homebrew 1
+$ ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/ &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -21,6 +22,7 @@
   <link rel="canonical" href="http://www.liuchungui.com/posts/2/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/stylesheets/data-table.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="liuchungui's Blog" type="application/atom+xml">
   <script src="/javascripts/modernizr-2.0.js"></script>
   <script src="http://cdn.staticfile.org/jquery/1.9.1/jquery.min.js"></script>
@@ -72,6 +74,93 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/10/21/mhuan-jing-xia-nginxshi-xian-fan-xiang-dai-li/">Mac环境下Nginx实现反向代理</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-10-21T10:16:01+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>21</span><span class='date-suffix'>st</span>, <span class='date-year'>2015</span></span> <span class='time'>10:16 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>1、安装</h2>
+
+<p>首先，我们需要搭建Nginx环境，我这里是通过homebrew一键式搭建，步骤如下：  <br/>
+1、安装homebrew</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"</span></code></pre></td></tr></table></div></figure>
+
+
+<p>以<a href="brew.sh">官网homebrew</a>为准</p>
+
+<p>2、安装nginx</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ brew install nginx</span></code></pre></td></tr></table></div></figure>
+
+
+<p>查看Nginx安装的版本</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ nginx -v</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Nginx常用的命令有</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>#查看版本，以及配置文件地址
+</span><span class='line'>nginx -V
+</span><span class='line'>#查看版本 
+</span><span class='line'>nginx -v
+</span><span class='line'>#指定配置文件
+</span><span class='line'>nginx -c filename
+</span><span class='line'>#帮助
+</span><span class='line'>nginx -h
+</span><span class='line'>#重新加载配置|重启|停止|退出 nginx
+</span><span class='line'>nginx -s reload|reopen|stop|quit
+</span><span class='line'>#打开 nginx
+</span><span class='line'>sudo nginx
+</span><span class='line'>#测试配置是否有语法错误
+</span><span class='line'>sudo nginx -t</span></code></pre></td></tr></table></div></figure>
+
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2015/10/21/mhuan-jing-xia-nginxshi-xian-fan-xiang-dai-li/">更多 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -295,6 +384,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2016/04/04/gcdzong-jie/">GCD总结</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2016/04/04/reactnativezhi-flexbu-ju-zong-jie/">ReactNative之Flex布局总结</a>
       </li>
     
@@ -310,10 +403,6 @@
         <a href="/blog/2016/01/01/2015nian-zong-jie/">2015年总结</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2015/12/26/gitbookan-zhuang-shi-yong/">Gitbook安装使用</a>
-      </li>
-    
   </ul>
 </section>
 <section>
@@ -321,7 +410,7 @@
  <ul id="categories">
   <li class='category'><a href='/blog/categories/git/'>git (1)</a></li>
 <li class='category'><a href='/blog/categories/gitbook/'>gitbook (1)</a></li>
-<li class='category'><a href='/blog/categories/ios/'>ios (8)</a></li>
+<li class='category'><a href='/blog/categories/ios/'>ios (9)</a></li>
 <li class='category'><a href='/blog/categories/octopress/'>octopress (1)</a></li>
 <li class='category'><a href='/blog/categories/reactnative/'>reactnative (1)</a></li>
 <li class='category'><a href='/blog/categories/web/'>web (2)</a></li>
