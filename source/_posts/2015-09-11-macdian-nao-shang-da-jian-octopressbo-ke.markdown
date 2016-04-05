@@ -109,11 +109,13 @@ $indented-lists: true
 
 **注意：当自定义了博客时，修改了头、侧边栏、底部栏、添加评论等配置文件后，使用rake generate生成一下。**
 
-####6、发布博客（2016.4.5新增）
+####6、新增
+1、发布博客（2016.4.5）
+
 添加这个，是因为某一天不小心使用命令行全删了，后来发现自己的博客只是`rake deploy`，却没有将源代码的样式和博客的markdown文件提交到github，当时心里挺难受的，难道要一个一个恢复？因为这件事情，中间还断过一段时间，好在后来一一在另外一个目录下找到了。但是，这种事情不允许再次发生，所以专门写了一个简单的blogPublish脚本。
 脚本的内容特别简单，就是deploy文章，然后将源代码push到github上。
 
-```sh
+```
 #!/bin/bash
 rake generate
 rake deploy
@@ -122,8 +124,9 @@ git commit -m 'update blog'
 git push origin source
 ```
 
-####其它新增
-* 2016.4.5 为表格添加边框，参考[为Octopress追加数据表格的CSS](http://programus.github.io/blog/2012/03/07/add-table-data-css-for-octopress/)
+2、表格添加边框（2016.4.5）
+
+2016.4.5 为表格添加边框，参考[为Octopress追加数据表格的CSS](http://programus.github.io/blog/2012/03/07/add-table-data-css-for-octopress/)
 
 
 ####参考
