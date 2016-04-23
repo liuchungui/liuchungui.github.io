@@ -1,0 +1,396 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Ubuntu下搭建vpn历程 - liuchungui's Blog</title>
+  <meta name="author" content="刘春桂">
+
+  
+  <meta name="description" content="去年四月份的时候，和同学一起买了一个香港的服务器，准备搭建一个vpn给自己翻墙用。当时，vpn搭建成功了，但是连上去之后，根本连不了google。后来，去咨询了一下盼哥，盼哥给我介绍了一款很出名的翻墙工具Shadowsocks。于是，到网上搜了一个教程，apt-get install安装， &hellip;">
+  <meta name="keywords" content="vpn, ubuntu搭建vpn, unbutn">
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://www.liuchungui.com/blog/2016/04/23/ubuntuxia-da-jian-vpn/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/stylesheets/data-table.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="liuchungui's Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="http://cdn.staticfile.org/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<script type="text/javascript">
+  function addBlankTargetForLinks () {
+      $('a[href^="http"]').each(function(){
+          $(this).attr('target', '_blank');
+      });
+  }
+  $(document).bind('DOMNodeInserted', function(event) {
+      addBlankTargetForLinks();
+  });
+</script>
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">liuchungui's Blog</a></h1>
+  
+    <h2>代码嗨起来</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="www.liuchungui.com">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Ubuntu下搭建vpn历程</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-04-23T16:27:39+08:00'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>23</span><span class='date-suffix'>rd</span>, <span class='date-year'>2016</span></span> <span class='time'>4:27 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>去年四月份的时候，和同学一起买了一个香港的服务器，准备搭建一个vpn给自己翻墙用。当时，vpn搭建成功了，但是连上去之后，根本连不了google。后来，去咨询了一下盼哥，盼哥给我介绍了一款很出名的翻墙工具Shadowsocks。于是，到网上搜了一个教程，apt-get install安装，稍微配置一下，在本地电脑下载一个客户端，填写服务器和密码，在浏览器中输入google.com立马就出现了心动的页面，顿时整个人感觉神清气爽，觉得Shadowsocks真是个好东西。于是，使用Shadowsocks翻墙，用到了现在，一直感觉不错。不过，在使用途中，它也存在一定的不足，那就是命令行下无法翻墙，手机上体验不太好（我使用一次就不再使用了）。前几天，由于使用ReactNative开发安卓，在命令行下一定需要翻墙下载google的东西。于是乎，重整了一下vpn，最终还是以失败告终。后来，准备曲线救国，使用Shadowsocks和一些辅助工具进行全局翻墙，查找了网上的教程，搭建后都失败了。最终，在网上下载了一个vpn翻墙工具<code>VPN Unlimited</code>，搞定了自己的问题，但是有时间限制。</p>
+
+<p>今天，按照同学发的一个链接教程重新整一下vpn，又以失败告终，而且VPN启动都启动不起来了，于是乎google到上面继续找教程，找到了一篇<a href="http://my.oschina.net/mn1127/blog/380941">vps ubuntu上搭建pptp服务</a>，按照上面搭建，没想到成功了。
+鉴于以上搭建的不容易，特此记录一下搭建步骤。</p>
+
+<!-- more -->
+
+
+<h2>1、卸载pptpd和iptables，重新安装pptpd</h2>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>#卸载pptpd
+</span><span class='line'>$ apt-get autoremove pptpd
+</span><span class='line'>$ apt-get purge pptpd
+</span><span class='line'>
+</span><span class='line'>#卸载iptables
+</span><span class='line'>$ apt-get autoremove iptables*
+</span><span class='line'>$ apt-get purge iptables*
+</span><span class='line'>
+</span><span class='line'>#安装pptpd
+</span><span class='line'>$ apt-get install pptpd</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>2、配置pptpd</h2>
+
+<h4>（1）首先，编辑pptpd.conf文件，设置localip和remoteip</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ vim /etc/pptpd.conf</span></code></pre></td></tr></table></div></figure>
+
+
+<p>查找到localip和remoteip，打开注释进行设置。将localip设置为你的vps的服务器公网ip，不知道可以通过ifconfig查看。remoteip是设置给VPN用户分配的IP段，我这里设置为10.100.0.2-100。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>localip VPS_IP
+</span><span class='line'>remoteip 10.100.0.2-100</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>（2）修改dns设置，设置为google的DNS</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ vim /etc/ppp/pptpd-options</span></code></pre></td></tr></table></div></figure>
+
+
+<p>查找到ms-dns，配置dns如下：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>ms-dns 8.8.8.8
+</span><span class='line'>ms-dns 8.8.4.4</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>（3）设置VPN的账号密码</h4>
+
+<p>编辑chap-secrets文件</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ vim /etc/ppp/chap-secrets</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在chap-secrets文件中添加一行配置</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>#client           server       secret      IP address
+</span><span class='line'> liuchungui       pptpd        123456          *</span></code></pre></td></tr></table></div></figure>
+
+
+<p>其中，liuchungui是VPN的用户名，使用的VPN服务类型是pptpd，密码是123456，*代表不限制IP</p>
+
+<h2>3、启动pptpd服务</h2>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ /etc/init.d/pptpd restart</span></code></pre></td></tr></table></div></figure>
+
+
+<p> 输入上面命令，如果提示<code>
+  * Restarting PoPToP Point to Point Tunneling Server pptpd               [ OK ]</code>
+  就说明启动成功了</p>
+
+<h2>4、设置系统的ipv4的转发开关</h2>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ vim /etc/sysctl.conf</span></code></pre></td></tr></table></div></figure>
+
+
+<p>编辑<code>/etc/sysctl.conf</code>文件，找到<code>net.ipv4.ip_forward=1</code>，把这行的注释打开并保存。  <br/>
+运行：<code>sysctl -p</code> 让上面的修改立即生效。</p>
+
+<h2>5、配置iptables</h2>
+
+<h4>（1）安装iptables</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ apt-get install iptables</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>（2）添加一个NAT，这里特别注意：<code>eth1</code>是vps的ip网卡接口，可以通过ifconfig查看</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ iptables -t nat -A POSTROUTING -s 10.100.0.0/24 -o eth1 -j MASQUERADE</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>（3）设置MTU，防止包过大</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ iptables -A FORWARD -s 10.100.0.0/24 -p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1200</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>（4）再添加一个NAT，<code>45.62.119.172</code>就是你的vps的公网ip</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ iptables -t nat -A POSTROUTING -s 10.100.0.0/24 -j SNAT --to-source 45.62.119.172</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>（5）将iptables规则保存，令重启后规则不丢失：</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ iptables-save &gt; /etc/iptables-rules</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>（6）编辑网卡文件，加载网卡时自动加载规则</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ vim /etc/network/interfaces</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在<code>interfaces</code>文件末尾加上：<code>pre-up iptables-restore &lt; /etc/iptables-rules</code></p>
+
+<h4>（7）安装iptables配置持久化</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ apt-get install iptables-persistent</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>（8）运行保存配置命令</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ service iptables-persistent start</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>参考</h2>
+
+<p><a href="http://my.oschina.net/mn1127/blog/380941">vps ubuntu上搭建pptp服务</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">刘春桂</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2016-04-23T16:27:39+08:00'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>23</span><span class='date-suffix'>rd</span>, <span class='date-year'>2016</span></span> <span class='time'>4:27 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/ios/'>ios</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+
+  
+    <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+	<span class="jiathis_txt">分享到：</span>
+	<a class="jiathis_button_tools_1"></a>
+	<a class="jiathis_button_tools_2"></a>
+	<a class="jiathis_button_tools_3"></a>
+	<a class="jiathis_button_tools_4"></a>
+	<a href="http://www.jiathis.com/share?uid=2059456" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+	<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config = {data_track_clickback:'true'};
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=2059456" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2059456"></script>
+<!-- UY END -->
+
+  
+
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2016/04/04/gcdzong-jie/" title="Previous Post: GCD总结">&laquo; GCD总结</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/04/23/ubuntuxia-da-jian-vpn/">Ubuntu下搭建vpn历程</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/04/04/gcdzong-jie/">GCD总结</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/04/04/reactnativezhi-flexbu-ju-zong-jie/">ReactNative之Flex布局总结</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/03/14/runtimezhi-lei-yu-dui-xiang-zong-jie/">Runtime之类与对象总结</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/03/04/bgsession/">BGSession一个基于NSUserDefaults实现的轻量级本地数据存储</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+ <h1>Categories</h1>
+ <ul id="categories">
+  <li class='category'><a href='/blog/categories/git/'>git (1)</a></li>
+<li class='category'><a href='/blog/categories/gitbook/'>gitbook (1)</a></li>
+<li class='category'><a href='/blog/categories/ios/'>ios (10)</a></li>
+<li class='category'><a href='/blog/categories/octopress/'>octopress (1)</a></li>
+<li class='category'><a href='/blog/categories/reactnative/'>reactnative (1)</a></li>
+<li class='category'><a href='/blog/categories/web/'>web (2)</a></li>
+<li class='category'><a href='/blog/categories/年度总结/'>年度总结 (1)</a></li>
+
+ </ul>
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?40391c9d11f57c2384e5811d517bef62";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+<p>
+  &copy; 2016 - 刘春桂 -
+  <span class="credit">基于 <a href="http://octopress.org" target="_blank">Octopress</a></span>
+  <span class="credit">, 感谢 <a href="http://gitcafe.com/signup?invited_by=tangqiaoboy" target="_blank">GitCafe</a> 为本站提供存储空间</span>
+</p>
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

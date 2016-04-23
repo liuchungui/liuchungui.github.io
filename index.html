@@ -9,9 +9,7 @@
   <meta name="author" content="刘春桂">
 
   
-  <meta name="description" content="GCD的知识点： queue分成两种，分别是串行队列(Serial Dispatch Queue)和并行队列（Concurrent Dispatch Queue)。
-串行队列只会创建一个线程，而各个串行队列之间是并行的。
-串行队列个数创建不受限制，也就是通过串行队列创建的线程可以有很多个， &hellip;">
+  <meta name="description" content="去年四月份的时候，和同学一起买了一个香港的服务器，准备搭建一个vpn给自己翻墙用。当时，vpn搭建成功了，但是连上去之后，根本连不了google。后来，去咨询了一下盼哥，盼哥给我介绍了一款很出名的翻墙工具Shadowsocks。于是，到网上搜了一个教程，apt-get install安装， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -75,6 +73,43 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/04/23/ubuntuxia-da-jian-vpn/">Ubuntu下搭建vpn历程</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-04-23T16:27:39+08:00'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>23</span><span class='date-suffix'>rd</span>, <span class='date-year'>2016</span></span> <span class='time'>4:27 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>去年四月份的时候，和同学一起买了一个香港的服务器，准备搭建一个vpn给自己翻墙用。当时，vpn搭建成功了，但是连上去之后，根本连不了google。后来，去咨询了一下盼哥，盼哥给我介绍了一款很出名的翻墙工具Shadowsocks。于是，到网上搜了一个教程，apt-get install安装，稍微配置一下，在本地电脑下载一个客户端，填写服务器和密码，在浏览器中输入google.com立马就出现了心动的页面，顿时整个人感觉神清气爽，觉得Shadowsocks真是个好东西。于是，使用Shadowsocks翻墙，用到了现在，一直感觉不错。不过，在使用途中，它也存在一定的不足，那就是命令行下无法翻墙，手机上体验不太好（我使用一次就不再使用了）。前几天，由于使用ReactNative开发安卓，在命令行下一定需要翻墙下载google的东西。于是乎，重整了一下vpn，最终还是以失败告终。后来，准备曲线救国，使用Shadowsocks和一些辅助工具进行全局翻墙，查找了网上的教程，搭建后都失败了。最终，在网上下载了一个vpn翻墙工具<code>VPN Unlimited</code>，搞定了自己的问题，但是有时间限制。</p>
+
+<p>今天，按照同学发的一个链接教程重新整一下vpn，又以失败告终，而且VPN启动都启动不起来了，于是乎google到上面继续找教程，找到了一篇<a href="http://my.oschina.net/mn1127/blog/380941">vps ubuntu上搭建pptp服务</a>，按照上面搭建，没想到成功了。
+鉴于以上搭建的不容易，特此记录一下搭建步骤。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2016/04/23/ubuntuxia-da-jian-vpn/">更多 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -442,75 +477,6 @@ api使用起来和UITableView类似，具体可以自己在代码中找，如果
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/10/23/gitzong-jie/">Git简单总结</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-10-23T14:45:46+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>23</span><span class='date-suffix'>rd</span>, <span class='date-year'>2015</span></span> <span class='time'>2:45 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>这篇文章分为两部分，一是搭建git服务器，二是git命令，主要是记录了一下我搭建git服务器流程和用到的相关命令。</p>
-
-<h2>一、Mac环境下搭建Git服务器</h2>
-
-<p>这里简单说一下Mac环境下通过git+ssh搭建服务器的流程。</p>
-
-<h4>1、打开远程登陆</h4>
-
-<p>系统偏好设置 -> 共享 -> 远程登陆</p>
-
-<h4>2、添加git用户</h4>
-
-<p>这一步不加上也可以，但是为了更好的管理和安全着想，最好加上一个git用户   <br/>
-系统偏好设置 -> 用户与群组 -> 添加名为git的用户</p>
-
-<h4>3、初始化一个空仓库</h4>
-
-<p>在git用户目录下创建一个repos文件夹专门用来管理仓库</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ mkdir repos
-</span><span class='line'>$ cd repos
-</span><span class='line'># 初始化一个空仓库
-</span><span class='line'>$ git init --bare test.git</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>4、添加密钥</h4>
-
-<p>在git服务端添加客户端的公钥后，以后git访问不需要密码了，下面是客户端与服务端的操作。    <br/>
-客户端：   <br/>
-使用<code>ssh-keygen</code>命令生成密钥，执行完后会生成<code>id_rsa</code>和<code>id_rsa.pub</code>两个文件，其中<code>id_rsa</code>是私钥，<code>id_rsa.pub</code>是公钥。客户端将<code>id_rsa.pub</code>文件交给git服务端就行了。       <br/>
-服务端：       <br/>
-将客户端的<code>id_rsa.pub</code>中的内容放到<code>/Users/git/.ssh/authorized_keys</code>文件中。主要，客户端每个公钥占用独立的一行，有时复制会出现问题，可以使用<code>cat id_rsa.pub &gt;&gt; /Users/git/.ssh/authorized_keys</code>命令。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/10/23/gitzong-jie/">更多 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -524,6 +490,10 @@ api使用起来和UITableView类似，具体可以自己在代码中找，如果
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/04/23/ubuntuxia-da-jian-vpn/">Ubuntu下搭建vpn历程</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2016/04/04/gcdzong-jie/">GCD总结</a>
@@ -541,10 +511,6 @@ api使用起来和UITableView类似，具体可以自己在代码中找，如果
         <a href="/blog/2016/03/04/bgsession/">BGSession一个基于NSUserDefaults实现的轻量级本地数据存储</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2016/01/01/2015nian-zong-jie/">2015年总结</a>
-      </li>
-    
   </ul>
 </section>
 <section>
@@ -552,7 +518,7 @@ api使用起来和UITableView类似，具体可以自己在代码中找，如果
  <ul id="categories">
   <li class='category'><a href='/blog/categories/git/'>git (1)</a></li>
 <li class='category'><a href='/blog/categories/gitbook/'>gitbook (1)</a></li>
-<li class='category'><a href='/blog/categories/ios/'>ios (9)</a></li>
+<li class='category'><a href='/blog/categories/ios/'>ios (10)</a></li>
 <li class='category'><a href='/blog/categories/octopress/'>octopress (1)</a></li>
 <li class='category'><a href='/blog/categories/reactnative/'>reactnative (1)</a></li>
 <li class='category'><a href='/blog/categories/web/'>web (2)</a></li>

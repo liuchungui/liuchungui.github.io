@@ -9,8 +9,7 @@
   <meta name="author" content="刘春桂">
 
   
-  <meta name="description" content="1、安装 首先，我们需要搭建Nginx环境，我这里是通过homebrew一键式搭建，步骤如下： 1、安装homebrew 1
-$ ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/ &hellip;">
+  <meta name="description" content="这篇文章分为两部分，一是搭建git服务器，二是git命令，主要是记录了一下我搭建git服务器流程和用到的相关命令。 一、Mac环境下搭建Git服务器 这里简单说一下Mac环境下通过git+ssh搭建服务器的流程。 1、打开远程登陆 系统偏好设置 -> 共享 -> 远程登陆 2、添加git用户 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -74,6 +73,75 @@ $ ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/maste
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/10/23/gitzong-jie/">Git简单总结</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-10-23T14:45:46+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>23</span><span class='date-suffix'>rd</span>, <span class='date-year'>2015</span></span> <span class='time'>2:45 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>这篇文章分为两部分，一是搭建git服务器，二是git命令，主要是记录了一下我搭建git服务器流程和用到的相关命令。</p>
+
+<h2>一、Mac环境下搭建Git服务器</h2>
+
+<p>这里简单说一下Mac环境下通过git+ssh搭建服务器的流程。</p>
+
+<h4>1、打开远程登陆</h4>
+
+<p>系统偏好设置 -> 共享 -> 远程登陆</p>
+
+<h4>2、添加git用户</h4>
+
+<p>这一步不加上也可以，但是为了更好的管理和安全着想，最好加上一个git用户   <br/>
+系统偏好设置 -> 用户与群组 -> 添加名为git的用户</p>
+
+<h4>3、初始化一个空仓库</h4>
+
+<p>在git用户目录下创建一个repos文件夹专门用来管理仓库</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ mkdir repos
+</span><span class='line'>$ cd repos
+</span><span class='line'># 初始化一个空仓库
+</span><span class='line'>$ git init --bare test.git</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>4、添加密钥</h4>
+
+<p>在git服务端添加客户端的公钥后，以后git访问不需要密码了，下面是客户端与服务端的操作。    <br/>
+客户端：   <br/>
+使用<code>ssh-keygen</code>命令生成密钥，执行完后会生成<code>id_rsa</code>和<code>id_rsa.pub</code>两个文件，其中<code>id_rsa</code>是私钥，<code>id_rsa.pub</code>是公钥。客户端将<code>id_rsa.pub</code>文件交给git服务端就行了。       <br/>
+服务端：       <br/>
+将客户端的<code>id_rsa.pub</code>中的内容放到<code>/Users/git/.ssh/authorized_keys</code>文件中。主要，客户端每个公钥占用独立的一行，有时复制会出现问题，可以使用<code>cat id_rsa.pub &gt;&gt; /Users/git/.ssh/authorized_keys</code>命令。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2015/10/23/gitzong-jie/">更多 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -384,6 +452,10 @@ $ ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/maste
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2016/04/23/ubuntuxia-da-jian-vpn/">Ubuntu下搭建vpn历程</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2016/04/04/gcdzong-jie/">GCD总结</a>
       </li>
     
@@ -399,10 +471,6 @@ $ ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/maste
         <a href="/blog/2016/03/04/bgsession/">BGSession一个基于NSUserDefaults实现的轻量级本地数据存储</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2016/01/01/2015nian-zong-jie/">2015年总结</a>
-      </li>
-    
   </ul>
 </section>
 <section>
@@ -410,7 +478,7 @@ $ ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/maste
  <ul id="categories">
   <li class='category'><a href='/blog/categories/git/'>git (1)</a></li>
 <li class='category'><a href='/blog/categories/gitbook/'>gitbook (1)</a></li>
-<li class='category'><a href='/blog/categories/ios/'>ios (9)</a></li>
+<li class='category'><a href='/blog/categories/ios/'>ios (10)</a></li>
 <li class='category'><a href='/blog/categories/octopress/'>octopress (1)</a></li>
 <li class='category'><a href='/blog/categories/reactnative/'>reactnative (1)</a></li>
 <li class='category'><a href='/blog/categories/web/'>web (2)</a></li>
