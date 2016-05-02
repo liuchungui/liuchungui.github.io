@@ -3,7 +3,7 @@ layout: post
 title: "ReactNative之原生模块开发并发布——iOS篇"
 date: 2016-05-02 19:48:27 +0800
 comments: true
-categories: React Native
+categories: ReactNative
 keywords: [ReactNative, 原生模块, react native, ReactNative原生模块, react native 原生模块, react native 原生模块发布]
 tags: ReactNative, 原生模块, react native, ReactNative原生模块, react native 原生模块, react native 原生模块发布
 ---
