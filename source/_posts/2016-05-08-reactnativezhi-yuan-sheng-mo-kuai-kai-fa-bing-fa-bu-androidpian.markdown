@@ -33,7 +33,7 @@ $ react native init TestProject
 
 最后，我们还需要让新创建的Library依赖`react native`，和上面差不多，只需要在我们新创建的`nativemoduleexample`下的`build.gradle`中的`dependencies`添加一行`compile "com.facebook.react:react-native:+"`就行了。
 
-##编写原生模块代码
+##一、编写原生模块代码
 ####1、创建原生模块，并进行注册
 我们首先点击打开前面创建的`nativemoduleexample`库，在`src/main/java/com/liuchungui/nativemoduleexample`目录下创建我们的原生模块类。当然，如果我们前面创建Library的包名不太一样，那`src/main/java/`后面跟上就是前面设置的包名。
 
