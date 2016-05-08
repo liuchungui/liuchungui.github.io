@@ -1,0 +1,753 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>ReactNative之原生模块开发并发布——android篇 - liuchungui's Blog</title>
+  <meta name="author" content="刘春桂">
+
+  
+  <meta name="description" content="前段时间做了个ReactNative的App，发现ReactNative中不少组件并不存在，所以还是需要自己对原生模块进行编写让JS调用，正是因为在这个编写过程中遇到不少问题，发觉了官网文档中许多的不足。所以产生了写一个实践教程的想法，最终有了这么一篇文章。 整篇文章主要以编写一个原生模块为例子， &hellip;">
+  <meta name="keywords" content="ReactNative原生模块react nativeReactNative原生模块react native 原生模块react native 原生模块发布reactNative原生模块android">
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://www.liuchungui.com/blog/2016/05/08/reactnativezhi-yuan-sheng-mo-kuai-kai-fa-bing-fa-bu-androidpian/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/stylesheets/data-table.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="liuchungui's Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="http://cdn.staticfile.org/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<script type="text/javascript">
+  function addBlankTargetForLinks () {
+      $('a[href^="http"]').each(function(){
+          $(this).attr('target', '_blank');
+      });
+  }
+  $(document).bind('DOMNodeInserted', function(event) {
+      addBlankTargetForLinks();
+  });
+</script>
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">liuchungui's Blog</a></h1>
+  
+    <h2>代码嗨起来</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="www.liuchungui.com">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">ReactNative之原生模块开发并发布——android篇</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-05-08T14:00:09+08:00'><span class='date'><span class='date-month'>May</span> <span class='date-day'>8</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>2:00 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>前段时间做了个ReactNative的App，发现ReactNative中不少组件并不存在，所以还是需要自己对原生模块进行编写让JS调用，正是因为在这个编写过程中遇到不少问题，发觉了官网文档中许多的不足。所以产生了写一个实践教程的想法，最终有了这么一篇文章。</p>
+
+<p>整篇文章主要以编写一个原生模块为例子，来讲述了我们在编写原生模块所用到的一些知识，并且在整个例子中，配有了完整的实践代码，方便大家理解并调试。除了这些内容，文章还讲述了我们如何将自己编写的原生模块发布到npm上分享给别人使用。希望能够给大家带来帮助，也希望大家将自己编写的原生模块分享出来。</p>
+
+<p>示例代码github地址：<a href="https://github.com/liuchungui/react-native-BGNativeModuleExample">https://github.com/liuchungui/react-native-BGNativeModuleExample</a></p>
+
+<!-- more -->
+
+
+<h2>准备工作</h2>
+
+<p>我们需要先创建一个ReactNative工程，使用如下命令创建。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>react native init TestProject
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>创建好工程之后，我们使用android studio打开<code>TestProject/android/</code>下的android工程。</p>
+
+<p>之后，点击android studio菜单上的File ——> New ——> New Module，之后选择<code>Android Library</code>，设置模块名和包名，我的设置如下：
+<img src="http://ww2.sinaimg.cn/large/7746cd07jw1f3ilkyhcuzj21kw10w42q.jpg" alt="" /></p>
+
+<p>点击完成之后，我们的安卓项目中就多了个名字为<code>nativemoduleexample</code>模块。
+<img src="http://ww1.sinaimg.cn/large/7746cd07jw1f3iluj6owuj20qy11mgt8.jpg" alt="" />
+之后，我们在<code>app</code>工程中的<code>build.gradle</code>文件中的<code>dependencies</code>添加一行<code>compile project(':nativemoduleexample')</code>，让主工程<code>app</code>依赖我们新创建的Library。</p>
+
+<p>最后，我们还需要让新创建的Library依赖<code>react native</code>，和上面差不多，只需要在我们新创建的<code>nativemoduleexample</code>下的<code>build.gradle</code>中的<code>dependencies</code>添加一行<code>compile "com.facebook.react:react-native:+"</code>就行了。</p>
+
+<h2>编写原生模块代码</h2>
+
+<h4>1、创建原生模块，并进行注册</h4>
+
+<p>我们首先点击打开前面创建的<code>nativemoduleexample</code>库，在<code>src/main/java/com/liuchungui/nativemoduleexample</code>目录下创建我们的原生模块类。当然，如果我们前面创建Library的包名不太一样，那<code>src/main/java/</code>后面跟上就是前面设置的包名。</p>
+
+<p>在这个目录下，我们首先创建一个原生模块<code>BGNativeExampleModule</code>，它继承于<code>ReactContextBaseJavaModule</code>。这个原生模块必须实现两个方法，一个是覆写<code>getName</code>方法，它返回一个字符串名字，在JS中我们就使用这个名字调用这个模块；另外一个是构造方法<code>BGNativeExampleModule</code>。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">liuchungui</span><span class="o">.</span><span class="na">nativemoduleexample</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">com.facebook.react.bridge.NativeModule</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">com.facebook.react.bridge.ReactApplicationContext</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">com.facebook.react.bridge.ReactContext</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">com.facebook.react.bridge.ReactContextBaseJavaModule</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">com.facebook.react.bridge.ReactMethod</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.lang.String</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">BGNativeExampleModule</span> <span class="kd">extends</span> <span class="n">ReactContextBaseJavaModule</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="nf">BGNativeExampleModule</span><span class="o">(</span><span class="n">ReactApplicationContext</span> <span class="n">reactContext</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="kd">super</span><span class="o">(</span><span class="n">reactContext</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getName</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="s">&quot;BGNativeModuleExample&quot;</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>其中需要注意的是，模块名前的RCT前缀会被自动移除。例如"RCTBGNativeModuleExample"，在JS中的模块名字仍然是BGNativeModuleExample。</p>
+
+<p>到这一步的时候，是不是就可以访问这个模块了？事实是现在还不能访问，因为我们还需要注册这个模块。</p>
+
+<p>为了注册原生模块，我们首先创建一个<code>BGNativeExamplePackage</code>类，这个类要求实现<code>ReactPackage</code>接口，这个接口有三个方法<code>createNativeModules</code>、<code>createJSModules</code>和<code>createViewManagers</code>。其中，<code>createNativeModules</code>是用来添加原生模块的；<code>createViewManagers</code>是用来添加原生的UI组件；<code>createJSModules</code>暂时没用过，但是看官方的注释，应该是注册我们原生模块中用到的JS模块。</p>
+
+<p>我们这里只需要在<code>createNativeModules</code>方法中添加原生模块，其他两个方法返回空数组就行了，整个package类的代码如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">liuchungui</span><span class="o">.</span><span class="na">nativemoduleexample</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">com.facebook.react.ReactPackage</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">com.facebook.react.bridge.JavaScriptModule</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">com.facebook.react.bridge.NativeModule</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">com.facebook.react.bridge.ReactApplicationContext</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">com.facebook.react.uimanager.ViewManager</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.util.Arrays</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.util.Collections</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">BGNativeExamplePackage</span> <span class="kd">implements</span> <span class="n">ReactPackage</span> <span class="o">{</span>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">NativeModule</span><span class="o">&gt;</span> <span class="nf">createNativeModules</span><span class="o">(</span><span class="n">ReactApplicationContext</span> <span class="n">reactContext</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="k">new</span> <span class="n">NativeModule</span><span class="o">[]{</span>
+</span><span class='line'>                <span class="k">new</span> <span class="nf">BGNativeExampleModule</span><span class="o">(</span><span class="n">reactContext</span><span class="o">),</span>
+</span><span class='line'>        <span class="o">});</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Class</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="n">JavaScriptModule</span><span class="o">&gt;&gt;</span> <span class="nf">createJSModules</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">Collections</span><span class="o">.</span><span class="na">emptyList</span><span class="o">();</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">ViewManager</span><span class="o">&gt;</span> <span class="nf">createViewManagers</span><span class="o">(</span><span class="n">ReactApplicationContext</span> <span class="n">reactContext</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">Collections</span><span class="o">.</span><span class="na">emptyList</span><span class="o">();</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>最后，这个package需要在<code>MainActivity.java</code>文件中的<code>getPackages</code>方法中提供。这个文件位于我们的reactNative应用文件夹的android目录中，路径是:<code>android/app/src/main/java/com/testproject/MainActivity.java</code>。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Override</span>
+</span><span class='line'><span class="kd">protected</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">ReactPackage</span><span class="o">&gt;</span> <span class="nf">getPackages</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">Arrays</span><span class="o">.&lt;</span><span class="n">ReactPackage</span><span class="o">&gt;</span><span class="n">asList</span><span class="o">(</span>
+</span><span class='line'>        <span class="k">new</span> <span class="nf">MainReactPackage</span><span class="o">(),</span>
+</span><span class='line'>            <span class="k">new</span> <span class="nf">BGNativeExamplePackage</span><span class="o">()</span>
+</span><span class='line'>    <span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>到这个时候，我们终于可以在js中访问我们的原生模块了</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">import</span> <span class="err">{ </span><span class="nn">NativeModules</span> <span class="o">}</span> <span class="n">from</span> <span class="err">&#39;</span><span class="n">react</span><span class="o">-</span><span class="kd">native</span><span class="err">&#39;</span><span class="o">;</span>
+</span><span class='line'><span class="n">var</span> <span class="n">BGNativeModuleExample</span> <span class="o">=</span> <span class="n">NativeModules</span><span class="o">.</span><span class="na">BGNativeModuleExample</span><span class="o">;</span>
+</span><span class='line'><span class="n">console</span><span class="o">.</span><span class="na">log</span><span class="o">(</span><span class="n">BGNativeModuleExample</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>2、为原生模块添加方法</h4>
+
+<p>要导出一个方法给JS使用，Java方法需要使用注解<code>@ReactMethod</code>。方法的返回类型必须为void。ReactNative跨语言访问是异步进行的，所以想要给JS返回一个值，唯一的办法是使用回调函数或者发送事件。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">import</span> <span class="nn">com.facebook.react.bridge.ReactMethod</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nd">@ReactMethod</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">testPrint</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">,</span> <span class="n">ReadableMap</span> <span class="n">info</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">Log</span><span class="o">.</span><span class="na">i</span><span class="o">(</span><span class="n">TAG</span><span class="o">,</span> <span class="n">name</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">Log</span><span class="o">.</span><span class="na">i</span><span class="o">(</span><span class="n">TAG</span><span class="o">,</span> <span class="n">info</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在JS中，我们如下调用这个方法：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">BGNativeModuleExample</span><span class="o">.</span><span class="na">testPrint</span><span class="o">(</span><span class="s">&quot;Jack&quot;</span><span class="o">,</span> <span class="o">{</span>
+</span><span class='line'>    <span class="nl">height:</span> <span class="err">&#39;</span><span class="mf">1.78</span><span class="n">m</span><span class="err">&#39;</span><span class="o">,</span>
+</span><span class='line'>    <span class="nl">weight:</span> <span class="err">&#39;</span><span class="mi">7</span><span class="n">kg</span><span class="err">&#39;</span>
+</span><span class='line'><span class="o">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>3、参数类型</h4>
+
+<p>在编写原生模块的时候，我们还需要知道原生Java数据类型和JS数据类型的映射关系：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Boolean</span> <span class="o">-&gt;</span> <span class="n">Bool</span>
+</span><span class='line'><span class="n">Integer</span> <span class="o">-&gt;</span> <span class="n">Number</span>
+</span><span class='line'><span class="n">Double</span> <span class="o">-&gt;</span> <span class="n">Number</span>
+</span><span class='line'><span class="n">Float</span> <span class="o">-&gt;</span> <span class="n">Number</span>
+</span><span class='line'><span class="n">String</span> <span class="o">-&gt;</span> <span class="n">String</span>
+</span><span class='line'><span class="n">Callback</span> <span class="o">-&gt;</span> <span class="n">function</span>
+</span><span class='line'><span class="n">ReadableMap</span> <span class="o">-&gt;</span> <span class="n">Object</span>
+</span><span class='line'><span class="n">ReadableArray</span> <span class="o">-&gt;</span> <span class="n">Array</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>详情参考：<a href="https://github.com/facebook/react-native/blob/master/ReactAndroid/src/main/java/com/facebook/react/bridge/ReadableMap.java">ReadableMap</a>和<a href="https://github.com/facebook/react-native/blob/master/ReactAndroid/src/main/java/com/facebook/react/bridge/ReadableArray.java">ReadableArray</a></p>
+
+<h4>4、回调函数</h4>
+
+<p>原生模块还支持一种特殊的参数——回调函数。它提供了一个函数来把返回值传回给JS。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">import</span> <span class="nn">com.facebook.react.bridge.Callback</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nd">@ReactMethod</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">getNativeClass</span><span class="o">(</span><span class="n">Callback</span> <span class="n">callback</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">callback</span><span class="o">.</span><span class="na">invoke</span><span class="o">(</span><span class="s">&quot;BGNativeExampleModule&quot;</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在JS中，我们可以通过以下方式获取到原生模块的类名：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">BGNativeModuleExample</span><span class="p">.</span><span class="nx">getNativeClass</span><span class="p">(</span><span class="nx">name</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;nativeClass: &quot;</span><span class="p">,</span> <span class="nx">name</span><span class="p">);</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>5、Promises</h4>
+
+<blockquote><p>原生模块还可以使用promise来简化代码，搭配ES2016(ES7)标准的async/await语法则效果更佳。如果桥接原生方法的最后一个参数是一个Promise，则对应的JS方法就会返回一个Promise对象。</p></blockquote>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">import</span> <span class="nn">com.facebook.react.bridge.Promise</span><span class="o">;</span>
+</span><span class='line'><span class="nd">@ReactMethod</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">testPromises</span><span class="o">(</span><span class="n">Boolean</span> <span class="n">isResolve</span><span class="o">,</span> <span class="n">Promise</span> <span class="n">promise</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">if</span><span class="o">(</span><span class="n">isResolve</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">promise</span><span class="o">.</span><span class="na">resolve</span><span class="o">(</span><span class="n">isResolve</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="k">else</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">promise</span><span class="o">.</span><span class="na">reject</span><span class="o">(</span><span class="n">isResolve</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>JS中如下调用</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">BGNativeModuleExample</span><span class="p">.</span><span class="nx">testPromises</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span>
+</span><span class='line'><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">result</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;result is &quot;</span><span class="p">,</span> <span class="nx">result</span><span class="p">);</span>
+</span><span class='line'><span class="p">})</span>
+</span><span class='line'><span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="nx">result</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;result = &quot;</span><span class="p">,</span> <span class="nx">result</span><span class="p">);</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>6、导出常量</h4>
+
+<p>  我们在<code>getContants</code>方法中导出js所需要使用的常量。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Override</span>
+</span><span class='line'><span class="kd">public</span>  <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="nf">getConstants</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">final</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">constants</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">&lt;&gt;();</span>
+</span><span class='line'>    <span class="n">constants</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;BGModuleName&quot;</span><span class="o">,</span> <span class="s">&quot;BGNativeModuleExample&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">constants</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">TestEventName</span><span class="o">,</span> <span class="n">TestEventName</span><span class="o">);</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">constants</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p> 我们在JS中打印<code>BGModuleName</code>这个常量的值：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;BGModuleName const value = &quot;</span><span class="p">,</span> <span class="nx">BGNativeModuleExample</span><span class="p">.</span><span class="nx">BGModuleName</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>7、给JS发送事件</h4>
+
+<blockquote><p>原生模块可以在没有被调用的情况下往JS发送事件通知，最简单的办法是通过<code>RCTDeviceEventEmitter</code>，这可以通过<code>ReactContext</code>获得对应的引用。</p></blockquote>
+
+<p>在这里，我们为了能够接收到事件，开启了一个定时器，每一秒发送一次事件：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">BGNativeExampleModule</span> <span class="kd">extends</span> <span class="n">ReactContextBaseJavaModule</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">protected</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">TAG</span> <span class="o">=</span> <span class="n">BGNativeExampleModule</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">getSimpleName</span><span class="o">();</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span>  <span class="n">String</span> <span class="n">TestEventName</span> <span class="o">=</span> <span class="s">&quot;TestEventName&quot;</span><span class="o">;</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">Timer</span> <span class="n">timer</span><span class="o">;</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="nf">BGNativeExampleModule</span><span class="o">(</span><span class="kd">final</span> <span class="n">ReactApplicationContext</span> <span class="n">reactContext</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="kd">super</span><span class="o">(</span><span class="n">reactContext</span><span class="o">);</span>
+</span><span class='line'>        <span class="c1">//开启定时器</span>
+</span><span class='line'>        <span class="n">TimerTask</span> <span class="n">task</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">TimerTask</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>            <span class="nd">@Override</span>
+</span><span class='line'>            <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>                <span class="c1">//发送事件</span>
+</span><span class='line'>                <span class="n">WritableMap</span> <span class="n">params</span> <span class="o">=</span> <span class="n">Arguments</span><span class="o">.</span><span class="na">createMap</span><span class="o">();</span>
+</span><span class='line'>                <span class="n">params</span><span class="o">.</span><span class="na">putString</span><span class="o">(</span><span class="s">&quot;name&quot;</span><span class="o">,</span> <span class="s">&quot;Jack&quot;</span><span class="o">);</span>
+</span><span class='line'>                <span class="n">reactContext</span>
+</span><span class='line'>                        <span class="o">.</span><span class="na">getJSModule</span><span class="o">(</span><span class="n">DeviceEventManagerModule</span><span class="o">.</span><span class="na">RCTDeviceEventEmitter</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+</span><span class='line'>                        <span class="o">.</span><span class="na">emit</span><span class="o">(</span><span class="n">TestEventName</span><span class="o">,</span> <span class="n">params</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="o">}</span>
+</span><span class='line'>        <span class="o">};</span>
+</span><span class='line'>        <span class="n">timer</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Timer</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">timer</span><span class="o">.</span><span class="na">schedule</span><span class="o">(</span><span class="n">task</span><span class="o">,</span> <span class="mi">1000</span><span class="o">,</span> <span class="mi">1000</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<p>在JS中，我们这里直接使用<code>DeviceEventEmitter</code>模块来监听事件。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">//接收事件</span>
+</span><span class='line'><span class="nx">DeviceEventEmitter</span><span class="p">.</span><span class="nx">addListener</span><span class="p">(</span><span class="nx">BGNativeModuleExample</span><span class="p">.</span><span class="nx">TestEventName</span><span class="p">,</span> <span class="nx">info</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">info</span><span class="p">);</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>官方文档中，说也可以使用<code>Subscribable mixin</code>的addListenerOn方法来接收事件，其实它就是对<code>DeviceEventEmitter</code>一种封装。而且，在<code>es6</code>之后，不再支持<code>mixins</code>，所以我们直接使用DeviceEventEmitter接收事件比较好。</p>
+
+<h4>8、生命周期</h4>
+
+<p>有时候，为了某些目的，我们需要监听ReactNative应用的生命周期。我们可以让原生模块实现<code>LifecycleEventListener</code>接口，然后使用<code>addLifecycleEventListener</code>注册一下监听。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="nf">BGNativeExampleModule</span><span class="o">(</span><span class="kd">final</span> <span class="n">ReactApplicationContext</span> <span class="n">reactContext</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">super</span><span class="o">(</span><span class="n">reactContext</span><span class="o">);</span>
+</span><span class='line'>    <span class="c1">//添加监听</span>
+</span><span class='line'>    <span class="n">reactContext</span><span class="o">.</span><span class="na">addLifecycleEventListener</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>实现<code>LifecycleEventListener</code>接口</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="err">@</span><span class="nx">Override</span>
+</span><span class='line'><span class="kr">public</span> <span class="k">void</span> <span class="nx">onHostResume</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">Log</span><span class="p">.</span><span class="nx">i</span><span class="p">(</span><span class="nx">TAG</span><span class="p">,</span> <span class="s2">&quot;onHostResume&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="err">@</span><span class="nx">Override</span>
+</span><span class='line'><span class="kr">public</span> <span class="k">void</span> <span class="nx">onHostPause</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">Log</span><span class="p">.</span><span class="nx">i</span><span class="p">(</span><span class="nx">TAG</span><span class="p">,</span> <span class="s2">&quot;onHostPause&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="nx">timer</span><span class="p">.</span><span class="nx">cancel</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="err">@</span><span class="nx">Override</span>
+</span><span class='line'><span class="kr">public</span> <span class="k">void</span> <span class="nx">onHostDestroy</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">Log</span><span class="p">.</span><span class="nx">i</span><span class="p">(</span><span class="nx">TAG</span><span class="p">,</span> <span class="s2">&quot;onHostDestroy&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="nx">timer</span><span class="p">.</span><span class="nx">cancel</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样，我们就可以监听ReactNative应用的生命周期了。</p>
+
+<p>上面原生代码就编写好了，主要以代码实践为主，弥补官方文档中的一些不足，如果要需要了解更多的原生模块封装的知识，可以参考<a href="http://reactnative.cn/docs/0.22/native-modules-ios.html#content">原生模块</a>，也可以参考官方的源代码。</p>
+
+<h2>二、发布上线</h2>
+
+<h4>建立一个github仓库</h4>
+
+<p>在github上创建一个仓库<code>react-native-BGNativeModuleExample</code>，克隆到本地，并且创建一个<code>android</code>文件夹。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>git clone https://github.com/liuchungui/react-native-BGNativeModuleExample.git
+</span><span class='line'><span class="nv">$ </span><span class="nb">cd </span>react-native-BGNativeModuleExample
+</span><span class='line'><span class="nv">$ </span>mkdir android
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>将Library复制到android文件夹下</h4>
+
+<p>我们首先进入前面创建的<code>nativemoduleexample</code>这个Library下，然后将这个文件目录下所有文件copy到<code>react-native-BGNativeModuleExample/android</code>目录下。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>cp -R android/nativemoduleexample/* ~/github/react-native-BGNativeModuleExample/android
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>发布到npm</h4>
+
+<p>这里请参考我前面写的<a href="http://www.liuchungui.com/blog/2016/05/02/reactnativezhi-yuan-sheng-mo-kuai-kai-fa-bing-fa-bu-iospian/">ReactNative之原生模块开发并发布——iOS篇</a>中的<code>发布到npm</code>那一节的内容，当然如果你和我一样前面已经发布了<code>1.0.0</code>，只需要将<code>package.json</code>修改一个版本就好了，我这里修改为<code>2.0.0</code>，然后使用下面命令发布。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>npm publish
+</span><span class='line'>+ react-native-nativemodule-example@2.0.0
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样，我们就成功发布到了<a href="npmjs.org">npmjs.org</a>。</p>
+
+<h2>三、添加Example，测试是否可用，添加README</h2>
+
+<p>请点击查看<a href="http://www.liuchungui.com/blog/2016/05/02/reactnativezhi-yuan-sheng-mo-kuai-kai-fa-bing-fa-bu-iospian/">ReactNative之原生模块开发并发布——iOS篇</a>中的<code>添加Example，测试是否可用，添加README</code>这一部分内容，基本上一样的。</p>
+
+<h2>参考：</h2>
+
+<p><a href="http://blog.csdn.net/dxpqxb/article/details/8659292">http://blog.csdn.net/dxpqxb/article/details/8659292</a>      <br/>
+<a href="http://reactnative.cn/docs/0.25/native-modules-android.html#content">原生模块</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">刘春桂</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2016-05-08T14:00:09+08:00'><span class='date'><span class='date-month'>May</span> <span class='date-day'>8</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>2:00 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/reactnative/'>reactnative</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+
+  
+    <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+	<span class="jiathis_txt">分享到：</span>
+	<a class="jiathis_button_tools_1"></a>
+	<a class="jiathis_button_tools_2"></a>
+	<a class="jiathis_button_tools_3"></a>
+	<a class="jiathis_button_tools_4"></a>
+	<a href="http://www.jiathis.com/share?uid=2059456" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+	<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config = {data_track_clickback:'true'};
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=2059456" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2059456"></script>
+<!-- UY END -->
+
+  
+
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2016/05/02/reactnativezhi-yuan-sheng-mo-kuai-kai-fa-bing-fa-bu-iospian/" title="Previous Post: ReactNative之原生模块开发并发布——iOS篇">&laquo; ReactNative之原生模块开发并发布——iOS篇</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/05/08/reactnativezhi-yuan-sheng-mo-kuai-kai-fa-bing-fa-bu-androidpian/">ReactNative之原生模块开发并发布——android篇</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/05/02/reactnativezhi-yuan-sheng-mo-kuai-kai-fa-bing-fa-bu-iospian/">ReactNative之原生模块开发并发布——iOS篇</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/04/23/ubuntuxia-da-jian-vpn/">Ubuntu下搭建vpn历程</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/04/04/gcdzong-jie/">GCD总结</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/04/04/reactnativezhi-flexbu-ju-zong-jie/">ReactNative之Flex布局总结</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+ <h1>Categories</h1>
+ <ul id="categories">
+  <li class='category'><a href='/blog/categories/git/'>git (1)</a></li>
+<li class='category'><a href='/blog/categories/gitbook/'>gitbook (1)</a></li>
+<li class='category'><a href='/blog/categories/ios/'>ios (10)</a></li>
+<li class='category'><a href='/blog/categories/octopress/'>octopress (1)</a></li>
+<li class='category'><a href='/blog/categories/reactnative/'>reactnative (3)</a></li>
+<li class='category'><a href='/blog/categories/web/'>web (2)</a></li>
+<li class='category'><a href='/blog/categories/年度总结/'>年度总结 (1)</a></li>
+
+ </ul>
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?40391c9d11f57c2384e5811d517bef62";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+<p>
+  &copy; 2016 - 刘春桂 -
+  <span class="credit">基于 <a href="http://octopress.org" target="_blank">Octopress</a></span>
+  <span class="credit">, 感谢 <a href="http://gitcafe.com/signup?invited_by=tangqiaoboy" target="_blank">GitCafe</a> 为本站提供存储空间</span>
+</p>
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

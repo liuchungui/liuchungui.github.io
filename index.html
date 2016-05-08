@@ -9,7 +9,7 @@
   <meta name="author" content="刘春桂">
 
   
-  <meta name="description" content="ReactNative正在高速发展中，而现阶段很多地方并没有相应的模块封装，所以需要更多的开发者去贡献自己的代码，分享自己编写ReactNative原生模块。本篇文章主要是通过编写一个简单的原生模块并发布到npm上，来告诉大家如何编写原生模块并分享给他人使用。 博客示例代码github地址： &hellip;">
+  <meta name="description" content="前段时间做了个ReactNative的App，发现ReactNative中不少组件并不存在，所以还是需要自己对原生模块进行编写让JS调用，正是因为在这个编写过程中遇到不少问题，发觉了官网文档中许多的不足。所以产生了写一个实践教程的想法，最终有了这么一篇文章。 整篇文章主要以编写一个原生模块为例子， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -79,6 +79,44 @@
       
   <header>
     
+      <h1 class="entry-title"><a href="/blog/2016/05/08/reactnativezhi-yuan-sheng-mo-kuai-kai-fa-bing-fa-bu-androidpian/">ReactNative之原生模块开发并发布——android篇</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-05-08T14:00:09+08:00'><span class='date'><span class='date-month'>May</span> <span class='date-day'>8</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>2:00 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>前段时间做了个ReactNative的App，发现ReactNative中不少组件并不存在，所以还是需要自己对原生模块进行编写让JS调用，正是因为在这个编写过程中遇到不少问题，发觉了官网文档中许多的不足。所以产生了写一个实践教程的想法，最终有了这么一篇文章。</p>
+
+<p>整篇文章主要以编写一个原生模块为例子，来讲述了我们在编写原生模块所用到的一些知识，并且在整个例子中，配有了完整的实践代码，方便大家理解并调试。除了这些内容，文章还讲述了我们如何将自己编写的原生模块发布到npm上分享给别人使用。希望能够给大家带来帮助，也希望大家将自己编写的原生模块分享出来。</p>
+
+<p>示例代码github地址：<a href="https://github.com/liuchungui/react-native-BGNativeModuleExample">https://github.com/liuchungui/react-native-BGNativeModuleExample</a></p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2016/05/08/reactnativezhi-yuan-sheng-mo-kuai-kai-fa-bing-fa-bu-androidpian/">更多 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/2016/05/02/reactnativezhi-yuan-sheng-mo-kuai-kai-fa-bing-fa-bu-iospian/">ReactNative之原生模块开发并发布——iOS篇</a></h1>
     
     
@@ -95,9 +133,13 @@
   </header>
 
 
-  <div class="entry-content"><p>ReactNative正在高速发展中，而现阶段很多地方并没有相应的模块封装，所以需要更多的开发者去贡献自己的代码，分享自己编写ReactNative原生模块。本篇文章主要是通过编写一个简单的原生模块并发布到npm上，来告诉大家如何编写原生模块并分享给他人使用。</p>
+  <div class="entry-content"><p>前段时间做了个ReactNative的App，发现ReactNative中不少组件并不存在，所以还是需要自己对原生模块进行编写让JS调用，正是因为在这个编写过程中遇到不少问题，发觉了官网文档中许多的不足。所以产生了写一个实践教程的想法，最终有了这么一篇文章。</p>
 
-<p>博客示例代码github地址：<a href="https://github.com/liuchungui/react-native-BGNativeModuleExample">https://github.com/liuchungui/react-native-BGNativeModuleExample</a></p>
+<p>整篇文章主要以编写一个原生模块为例子，来讲述了我们在编写原生模块所用到的一些知识，并且在整个例子中，配有了完整的实践代码，方便大家理解并调试。除了这些内容，文章还讲述了我们如何将自己编写的原生模块发布到npm上分享给别人使用。希望能够给大家带来帮助，也希望大家将自己编写的原生模块分享出来。</p>
+
+<p>示例代码github地址：<a href="https://github.com/liuchungui/react-native-BGNativeModuleExample">https://github.com/liuchungui/react-native-BGNativeModuleExample</a></p>
+
+<p>编写android原生模块，请看<a href="http://www.liuchungui.com/blog/2016/05/08/reactnativezhi-yuan-sheng-mo-kuai-kai-fa-bing-fa-bu-androidpian/">ReactNative之原生模块开发并发布——android篇</a></p>
 
 </div>
   
@@ -426,49 +468,6 @@ api使用起来和UITableView类似，具体可以自己在代码中找，如果
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/11/06/uicollectionviewzhi-zi-ding-yi-layout/">UICollectionView之自定义Layout</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-11-06T00:00:26+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>6</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>12:00 am</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>当我们使用系统自带的UICollectionViewFlowLayout无法实现我们的布局时，我们就可以考虑自定义layout。     <br/>
-所以，了解并学习一下自定义Layout是很有必要。    <br/>
-其实可以分三个步骤：</p>
-
-<ol>
-<li>覆写prepareLayout方法，并在里面事先就计算好必要的布局信息并存储起来。</li>
-<li>基于prepareLayout方法中的布局信息，使用collectionViewContentSize方法返回UICollectionView的内容尺寸。</li>
-<li>使用layoutAttributesForElementsInRect:方法返回指定区域cell、Supplementary View和Decoration View的布局属性。</li>
-</ol>
-
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/11/06/uicollectionviewzhi-zi-ding-yi-layout/">更多 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -482,6 +481,10 @@ api使用起来和UITableView类似，具体可以自己在代码中找，如果
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/05/08/reactnativezhi-yuan-sheng-mo-kuai-kai-fa-bing-fa-bu-androidpian/">ReactNative之原生模块开发并发布——android篇</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2016/05/02/reactnativezhi-yuan-sheng-mo-kuai-kai-fa-bing-fa-bu-iospian/">ReactNative之原生模块开发并发布——iOS篇</a>
@@ -499,10 +502,6 @@ api使用起来和UITableView类似，具体可以自己在代码中找，如果
         <a href="/blog/2016/04/04/reactnativezhi-flexbu-ju-zong-jie/">ReactNative之Flex布局总结</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2016/03/14/runtimezhi-lei-yu-dui-xiang-zong-jie/">Runtime之类与对象总结</a>
-      </li>
-    
   </ul>
 </section>
 <section>
@@ -512,7 +511,7 @@ api使用起来和UITableView类似，具体可以自己在代码中找，如果
 <li class='category'><a href='/blog/categories/gitbook/'>gitbook (1)</a></li>
 <li class='category'><a href='/blog/categories/ios/'>ios (10)</a></li>
 <li class='category'><a href='/blog/categories/octopress/'>octopress (1)</a></li>
-<li class='category'><a href='/blog/categories/reactnative/'>reactnative (2)</a></li>
+<li class='category'><a href='/blog/categories/reactnative/'>reactnative (3)</a></li>
 <li class='category'><a href='/blog/categories/web/'>web (2)</a></li>
 <li class='category'><a href='/blog/categories/年度总结/'>年度总结 (1)</a></li>
 
