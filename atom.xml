@@ -4,7 +4,7 @@
   <title><![CDATA[liuchungui's Blog]]></title>
   <link href="http://www.liuchungui.com/atom.xml" rel="self"/>
   <link href="http://www.liuchungui.com/"/>
-  <updated>2016-05-08T16:21:14+08:00</updated>
+  <updated>2016-05-08T17:57:32+08:00</updated>
   <id>http://www.liuchungui.com/</id>
   <author>
     <name><![CDATA[刘春桂]]></name>
@@ -550,6 +550,8 @@
 
 <h2>准备工作：</h2>
 
+<h4>创建ReactNative工程</h4>
+
 <p>我们需要先创建一个ReactNative工程，使用如下命令创建。</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -558,11 +560,52 @@
 
 <p>创建好工程之后，我们使用xcode打开<code>TestProject/ios/</code>下的iOS工程。</p>
 
+<h4>创建静态库，并将这个静态库手动链接到工程中</h4>
+
+<p>首先，我们在前面创建的ReactNative工程下的<code>node_modules</code>创建一个文件夹<code>react-native-BGNativeModuleExample</code>，然后我们在新创建的文件夹下再创建一个ios文件夹。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ cd TestProject/node_modules
+</span><span class='line'>$ mkdir react-native-BGNativeModuleExample
+</span><span class='line'>$ cd react-native-BGNativeModuleExample
+</span><span class='line'>$ mkdir ios</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后，由于ReactNative的组件都是一个个静态库，我们发布到npm给别人使用的话，也需要建立静态库。我们使用xcode建立静态库，取名为<code>BGNativeModuleExample</code>。建立之后，我们将创建的静态库中的文件全部copy到<code>node_modules/react-native-BGNativeModuleExample/ios</code>目录下。  <br/>
+ios文件目录如下：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>|____BGNativeModuleExample
+</span><span class='line'>| |____BGNativeModuleExample.h
+</span><span class='line'>| |____BGNativeModuleExample.m
+</span><span class='line'>|____BGNativeModuleExample.xcodeproj</span></code></pre></td></tr></table></div></figure>
+
+
+<p>最后，我们需要手动将这个静态库链接到工程中。</p>
+
+<p>1、使用xcode打开创建的静态库，添加一行<code>Header Search Paths</code>，值为<code>$(SRCROOT)/../../react-native/React</code>，并设置为<code>recursive</code>。</p>
+
+<p><img src="http://ww2.sinaimg.cn/large/7746cd07jw1f3h69rwj3oj212s0r7dm6.jpg" alt="" /></p>
+
+<p>2、将<code>BGNativeModuleExample</code>静态库工程拖动到工程中的Library中。
+<img src="http://ww1.sinaimg.cn/large/7746cd07jw1f3o30vl8wjj20xq0fawi3.jpg" alt="" /></p>
+
+<p>3、选中 TARGETS => TestProject => Build Settings => Link Binary With Libraries，添加<code>libBGNativeModuleExample.a</code>这个静态库
+<img src="http://ww3.sinaimg.cn/large/7746cd07jw1f3o2v5wrgyj212r0hgq72.jpg" alt="" /></p>
+
+<p>到此，我们准备工作完成了。我们这里这么准备是有用意的，那就是模拟npm链接的过程，建立好了环境，避免了发布到npm上后别人使用找不到静态库的问题。</p>
+
 <h2>一、编写原生模块代码</h2>
 
 <h4>1、创建原生模块</h4>
 
-<p>我们在当前的iOS工程下，创建一个类<code>BGNativeModuleExample</code>，然后在头文件导入RCTBridgeModule.h，让BGNativeModuleExample遵循RCTBridgeModule协议。</p>
+<p>选中我们创建的<code>BGNativeModuleExample</code>静态库，然后在<code>BGNativeModuleExample.h</code>文件中导入<code>RCTBridgeModule.h</code>，让<code>BGNativeModuleExample</code>类遵循<code>RCTBridgeModule</code>协议。</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -623,7 +666,25 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<h4>3、回调函数</h4>
+<h4>3、参数类型</h4>
+
+<p>RCT_EXPORT_METHOD()支持所有标准的JSON类型，包括：</p>
+
+<ul>
+<li>string (NSString)</li>
+<li>number (NSInteger, float, double, CGFloat, NSNumber)</li>
+<li>boolean (BOOL, NSNumber)</li>
+<li>array (NSArray) 包含本列表中任意类型</li>
+<li>map (NSDictionary) 包含string类型的键和本列表中任意类型的值</li>
+<li>function (RCTResponseSenderBlock)</li>
+</ul>
+
+
+<p>除此以外，任何RCTConvert类支持的的类型也都可以使用(参见<a href="https://github.com/facebook/react-native/blob/master/React/Base/RCTConvert.h">RCTConvert</a>了解更多信息)。RCTConvert还提供了一系列辅助函数，用来接收一个JSON值并转换到原生Objective-C类型或类。</p>
+
+<p>了解更多请点击<a href="http://reactnative.cn/docs/0.25/native-modules-ios.html#content">原生模块</a></p>
+
+<h4>4、回调函数</h4>
 
 <blockquote><p>警告  <br/>
 本章节内容目前还处在实验阶段，因为我们还并没有太多的实践经验来处理回调函数。</p></blockquote>
@@ -652,11 +713,11 @@
 
 <p><strong>原生模块通常只应调用回调函数一次。但是，它们可以保存callback并在将来调用。</strong>这在封装那些通过“委托函数”来获得返回值的iOS API时最常见。</p>
 
-<h4>4、Promises</h4>
+<h4>5、Promises</h4>
 
 <blockquote><p>原生模块还可以使用promise来简化代码，搭配ES2016(ES7)标准的async/await语法则效果更佳。如果桥接原生方法的最后两个参数是RCTPromiseResolveBlock和RCTPromiseRejectBlock，则对应的JS方法就会返回一个Promise对象。</p></blockquote>
 
-<p>我们通过Promiss来实现原生模块是否会响应方法，响应则返回YES，不响应则返回一个错误信息，代码如下：</p>
+<p>我们通过Promises来实现原生模块是否会响应方法，响应则返回YES，不响应则返回一个错误信息，代码如下：</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -729,7 +790,7 @@
 
 <p><strong>注意: 如果使用Promiss我们不需要参数，则在OC去掉name那一行就行了；如果需要多个参数，在name下面多加一行就行了，注意它们之间不需要添加逗号。</strong></p>
 
-<h4>5、多线程</h4>
+<h4>6、多线程</h4>
 
 <p>我们这里操作的模块没有涉及到UI，所以专门建立一个串行的队列给它使用，如下：</p>
 
@@ -743,7 +804,7 @@ methodQueue方法会在模块被初始化的时候被执行一次，然后会被
 
 <p>更多线程的操作细节可以参考<a href="http://reactnative.cn/docs/0.24/native-modules-ios.html#content">http://reactnative.cn/docs/0.24/native-modules-ios.html#content</a></p>
 
-<h4>6、导出常量</h4>
+<h4>7、导出常量</h4>
 
 <p>原生模块可以导出一些常量，这些常量在JavaScript端随时都可以访问。用这种方法来传递一些静态数据，可以避免通过bridge进行一次来回交互。</p>
 
@@ -771,7 +832,7 @@ methodQueue方法会在模块被初始化的时候被执行一次，然后会被
 
 <p>但是注意这个常量仅仅在初始化的时候导出了一次，所以即使你在运行期间改变constantToExport返回的值，也不会影响到JavaScript环境下所得到的结果。</p>
 
-<h4>7、给JS发送事件</h4>
+<h4>8、给JS发送事件</h4>
 
 <p>即使没有被JS调用，本地模块也可以给JS发送事件通知。最直接的方式是使用<code>eventDispatcher</code>。</p>
 
@@ -829,42 +890,22 @@ methodQueue方法会在模块被初始化的时候被执行一次，然后会被
 
 <p>我们按照上面步骤编写好原生模块之后，接下来将我们写的原生模块发布到npm。</p>
 
-<h4>建立一个github仓库</h4>
+<h4>1、我们需要创建github仓库</h4>
 
-<p>在github上创建一个仓库<code>react-native-BGNativeModuleExample</code>，克隆到本地，并且创建一个ios文件夹。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="n">git</span> <span class="n">clone</span> <span class="nl">https</span><span class="p">:</span><span class="c1">//github.com/liuchungui/react-native-BGNativeModuleExample.git</span>
-</span><span class='line'><span class="n">cd</span> <span class="n">react</span><span class="o">-</span><span class="n">native</span><span class="o">-</span><span class="n">BGNativeModuleExample</span>
-</span><span class='line'><span class="n">mkdir</span> <span class="n">ios</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>创建静态库，设置Header Search Paths</h4>
-
-<p>由于ReactNative的组件都是一个个静态库，我们发布上线给别人使用的话，也需要建立静态库。</p>
-
-<p>首先，我们使用xcode建立静态库，取名为<code>BGNativeModuleExample</code>。使用xcode打开创建的静态库，添加一行<code>Header Search Paths</code>，值为<code>$(SRCROOT)/../../react-native/React</code>，并设置为<code>recursive</code>。
-<img src="http://ww2.sinaimg.cn/large/7746cd07jw1f3h69rwj3oj212s0r7dm6.jpg" alt="" /></p>
-
-<p>然后，我们将前面编写原生模块代码的<code>BGNativeModuleExample.h</code>和<code>BGNativeModuleExample.m</code>文件替换静态库中的文件。当然，如果我们编写的原生模块依赖其它第三方包的话，我们也需要都copy过来并配置好。</p>
-
-<p>其后，我们将创建的静态库中的文件，全部copy到<code>react-native-BGNativeModuleExample</code>下的ios目录下。ios文件目录如下：</p>
+<p>在github上创建一个仓库<code>react-native-BGNativeModuleExample</code>，然后关联到我们前面创建的<code>react-native-BGNativeModuleExample</code>目录</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="o">|</span><span class="n">____BGNativeModuleExample</span>
-</span><span class='line'><span class="o">|</span> <span class="o">|</span><span class="n">____BGNativeModuleExample</span><span class="p">.</span><span class="n">h</span>
-</span><span class='line'><span class="o">|</span> <span class="o">|</span><span class="n">____BGNativeModuleExample</span><span class="p">.</span><span class="n">m</span>
-</span><span class='line'><span class="o">|</span><span class="n">____BGNativeModuleExample</span><span class="p">.</span><span class="n">xcodeproj</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="err">$</span> <span class="n">cd</span> <span class="n">TestProject</span><span class="o">/</span><span class="n">node_modules</span><span class="o">/</span><span class="n">react</span><span class="o">-</span><span class="n">native</span><span class="o">-</span><span class="n">BGNativeModuleExample</span>
+</span><span class='line'><span class="err">$</span> <span class="n">git</span> <span class="n">init</span> <span class="p">.</span>
+</span><span class='line'><span class="err">$</span> <span class="n">git</span> <span class="n">remote</span> <span class="n">add</span> <span class="n">origin</span> <span class="nl">https</span><span class="p">:</span><span class="c1">//github.com/liuchungui/react-native-BGNativeModuleExample.git</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>最后，我们需要在react-native-BGNativeModuleExample目录下创建一个index.js，它是整个原生模块的入口，我们这里只是将原生进行导出。</p>
+<h4>2、我们需要创建原生模块的入口文件</h4>
+
+<p>我们需要在react-native-BGNativeModuleExample目录下创建一个index.js，它是整个原生模块的入口，我们这里只是将原生进行导出。</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -875,10 +916,9 @@ methodQueue方法会在模块被初始化的时候被执行一次，然后会被
 </span></code></pre></td></tr></table></div></figure>
 
 
-<h4>发布到npm</h4>
+<h4>3、发布到npm</h4>
 
-<p>首先，初始化package.json
-在发布到npm时，我们需要创建一个<code>package.json</code>文件，这个文件包含了module的所有信息，比如名称、版本、描述、依赖、作者、license等。
+<p>在发布到npm之前，我们需要创建一个<code>package.json</code>文件，这个文件包含了module的所有信息，比如名称、版本、描述、依赖、作者、license等。
 我们在react-native-BGNativeModuleExample根目录下使用<code>npm init</code>命令来创建<code>package.json</code>，系统会提示我们输入所需的信息，不想输入的直接按下<code>Enter</code>跳过。</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -963,7 +1003,7 @@ methodQueue方法会在模块被初始化的时候被执行一次，然后会被
 
 <p><strong>初始化完package.json，我们就可以发布到npm上面了。</strong></p>
 
-<p>如果没有npm的账号，我们需要在注册一个账号，这个账号会被添加到npm本地的配置中，用来发布module用。</p>
+<p>如果没有npm的账号，我们需要注册一个账号，这个账号会被添加到npm本地的配置中，用来发布module用。</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -992,9 +1032,35 @@ methodQueue方法会在模块被初始化的时候被执行一次，然后会被
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>到这里，我们已经成功把module发布到了<a href="npmjs.org">npmjs.org</a>。</p>
+<p>到这里，我们已经成功把module发布到了<a href="npmjs.org">npmjs.org</a>。当然，我们也别忘记将我们的代码发布到github。</p>
 
-<h2>三、添加Example，测试是否可用，添加README</h2>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="err">$</span> <span class="n">git</span> <span class="n">pull</span> <span class="n">origin</span> <span class="n">master</span>
+</span><span class='line'><span class="err">$</span> <span class="n">git</span> <span class="n">add</span> <span class="p">.</span>
+</span><span class='line'><span class="err">$</span> <span class="n">git</span> <span class="n">commit</span> <span class="o">-</span><span class="n">m</span> <span class="err">&#39;</span><span class="n">add</span> <span class="n">Project</span><span class="err">&#39;</span>
+</span><span class='line'><span class="err">$</span> <span class="n">git</span> <span class="n">push</span> <span class="n">origin</span> <span class="n">master</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>有时候，有些文件没必要发布，例如Example文件，我们就可以通过<code>.npmignore</code>忽略它。例如我这里<code>.npmignore</code>文件内容如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="n">Example</span><span class="o">/</span>
+</span><span class='line'><span class="p">.</span><span class="n">git</span>
+</span><span class='line'><span class="p">.</span><span class="n">gitignore</span>
+</span><span class='line'><span class="p">.</span><span class="n">idea</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样的话，我们npm进行发布的时候，就不会将Example发布到npm上了。</p>
+
+<h4>4、添加Example，测试是否可用，添加README</h4>
 
 <p>我们在<code>react-native-BGNativeModuleExample</code>目录下创建一个Example的ReactNative工程，并且通过<code>rnpm install react-native-nativemodule-example</code>命令安装我们发布的<code>react-native-nativemodule-example</code>模块。</p>
 
@@ -1032,32 +1098,17 @@ methodQueue方法会在模块被初始化的时候被执行一次，然后会被
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>添加<code>.npmignore</code>文件，并且添加如下内容：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="n">Example</span><span class="o">/</span>
-</span><span class='line'><span class="p">.</span><span class="n">git</span>
-</span><span class='line'><span class="p">.</span><span class="n">gitignore</span>
-</span><span class='line'><span class="p">.</span><span class="n">idea</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这样的话，我们npm进行发布的时候，就不会将Example发布到npm上了。</p>
-
-<h4>最后，我们在发布上线之后还需要编写README文件。</h4>
+<h4>5、我们在发布上线之后还需要编写README文件。</h4>
 
 <p>README文件是非常重要的，如果没有README文件，别人看到我们的原生组件，根本就不知道我们这个组件是用来干啥的。所以，我们很有必要添加一个README文件，这个文件需要告诉别人我们这个原生组件是干什么的、如何安装、API、使用手册等等。</p>
 
-<h2>原生模块升级，发布新版本</h2>
+<h4>6、原生模块升级，发布新版本</h4>
 
 <p>当我们添加新代码或者修复bug后，需要发布新的版本，我们只需要修改package.json文件中的<code>version</code>的值就行了，然后使用<code>npm publish</code>进行发布。</p>
 
 <h2>总结</h2>
 
-<p>主要说了编写原生模块代码中常用的一些知识，并且通过代码实践和总结了编写过程的一些注意的地方，并总结了下如何发布上线到npm上。不足的地方是没有加上自动化测试，待后续研究。</p>
+<p>本篇文章主要分成两个部分，一是讲述了编写原生模块的知识，二是将我们编写的内容发布到npm上。</p>
 
 <h2>参考</h2>
 
