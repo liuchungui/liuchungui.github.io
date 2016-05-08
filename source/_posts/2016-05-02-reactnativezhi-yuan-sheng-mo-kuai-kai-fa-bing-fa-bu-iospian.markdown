@@ -4,12 +4,17 @@ title: "ReactNative之原生模块开发并发布——iOS篇"
 date: 2016-05-02 19:48:27 +0800
 comments: true
 categories: ReactNative
-keywords: [ReactNative, 原生模块, react native, ReactNative原生模块, react native 原生模块, react native 原生模块发布]
-tags: ReactNative, 原生模块, react native, ReactNative原生模块, react native 原生模块, react native 原生模块发布
----
-ReactNative正在高速发展中，而现阶段很多地方并没有相应的模块封装，所以需要更多的开发者去贡献自己的代码，分享自己编写ReactNative原生模块。本篇文章主要是通过编写一个简单的原生模块并发布到npm上，来告诉大家如何编写原生模块并分享给他人使用。
+keywords: [ReactNative, 原生模块, react native, ReactNative原生模块, react native 原生模块, react native 原生模块发布,reactNative原生模块ios]
+tags: ReactNative, 原生模块, react native, ReactNative原生模块, react native 原生模块, react native 原生模块发布,reactNative原生模块ios
 
-博客示例代码github地址：[https://github.com/liuchungui/react-native-BGNativeModuleExample](https://github.com/liuchungui/react-native-BGNativeModuleExample)
+---
+前段时间做了个ReactNative的App，发现ReactNative中不少组件并不存在，所以还是需要自己对原生模块进行编写让JS调用，正是因为在这个编写过程中遇到不少问题，发觉了官网文档中许多的不足。所以产生了写一个实践教程的想法，最终有了这么一篇文章。
+
+整篇文章主要以编写一个原生模块为例子，来讲述了我们在编写原生模块所用到的一些知识，并且在整个例子中，配有了完整的实践代码，方便大家理解并调试。除了这些内容，文章还讲述了我们如何将自己编写的原生模块发布到npm上分享给别人使用。希望能够给大家带来帮助，也希望大家将自己编写的原生模块分享出来。
+
+示例代码github地址：[https://github.com/liuchungui/react-native-BGNativeModuleExample](https://github.com/liuchungui/react-native-BGNativeModuleExample)
+
+编写android原生模块，请看[ReactNative之原生模块开发并发布——android篇](http://www.liuchungui.com/blog/2016/05/08/reactnativezhi-yuan-sheng-mo-kuai-kai-fa-bing-fa-bu-androidpian/)
 
 <!-- more -->
 
@@ -88,7 +93,7 @@ RCT_EXPORT_METHOD(getNativeClass:(RCTResponseSenderBlock)callback) {
 
 **原生模块通常只应调用回调函数一次。但是，它们可以保存callback并在将来调用。**这在封装那些通过“委托函数”来获得返回值的iOS API时最常见。
 
-####4、Promiss
+####4、Promises
 > 原生模块还可以使用promise来简化代码，搭配ES2016(ES7)标准的async/await语法则效果更佳。如果桥接原生方法的最后两个参数是RCTPromiseResolveBlock和RCTPromiseRejectBlock，则对应的JS方法就会返回一个Promise对象。
 
 我们通过Promiss来实现原生模块是否会响应方法，响应则返回YES，不响应则返回一个错误信息，代码如下：
