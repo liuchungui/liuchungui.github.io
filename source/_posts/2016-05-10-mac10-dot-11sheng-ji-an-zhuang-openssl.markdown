@@ -7,7 +7,7 @@ keywords: [Mac10.11, openssl, openssl 安装, Mac10.11 openssl, Mac10.11 openssl
 tags: Mac10.11, openssl, openssl 安装, Mac10.11 openssl, Mac10.11 openssl 安装, Mac10.11 openssl 安装升级, Mac openssl 安装, Mac openssl 升级, Mac10.11 openssl 升级, Mac openssl 安装升级
 categories: Mac
 ---
-一直想要升级Mac上的openssl，但是前面没弄成功，所以耽搁到现在。今天由于安装一个软件需要安装openssl到1.0.1版本以上，所以查了下资料，终于升级成功了，也算是还了前面[自建证书配置HTTPS服务器]（http://www.liuchungui.com/blog/2015/09/25/zi-jian-zheng-shu-pei-zhi-httpsfu-wu-qi/）这篇博客的债。
+一直想要升级Mac上的openssl，但是前面没弄成功，所以耽搁到现在。今天由于安装一个软件需要安装openssl到1.0.1版本以上，所以查了下资料，终于升级成功了，也算是还了前面[自建证书配置HTTPS服务器](http://www.liuchungui.com/blog/2015/09/25/zi-jian-zheng-shu-pei-zhi-httpsfu-wu-qi/)这篇博客的债。
 
 <!-- more -->
 
