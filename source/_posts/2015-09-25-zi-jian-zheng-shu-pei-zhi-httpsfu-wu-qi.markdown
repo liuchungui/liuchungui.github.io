@@ -210,7 +210,7 @@ SSLCACertificateFile "/alidata/server/httpd/conf/ssl/ca.crt"
 
 ###最后，与Mac和寻常Linux系统一些区别
 #####一、与MAC的几点不同
-1、首先安装openssl，因为本人还没有升级Mac系统上的openssl，所以暂时留着，以后升级了补上。    
+1、首先安装openssl，参考我的[Mac10.11升级安装openssl](http://www.liuchungui.com/blog/2016/05/10/mac10-dot-11sheng-ji-an-zhuang-openssl/)    
 2、Mac上对应的Openssl的路径是`/System/Library/OpenSSL/`    
 3、Mac上对应的Apache的路径是`/etc/apache2/`    
 4、Mac上重启服务器使用`/usr/sbin/apachectl restart`，阿里云服务器使用`/etc/init.d/httpd restart`或者`service httpd restart`     
