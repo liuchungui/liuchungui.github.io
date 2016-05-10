@@ -9,7 +9,8 @@
   <meta name="author" content="刘春桂">
 
   
-  <meta name="description" content="当我们使用系统自带的UICollectionViewFlowLayout无法实现我们的布局时，我们就可以考虑自定义layout。 所以，了解并学习一下自定义Layout是很有必要。 其实可以分三个步骤： 覆写prepareLayout方法，并在里面事先就计算好必要的布局信息并存储起来。 &hellip;">
+  <meta name="description" content="一、简单使用 UICollectionView更新事件有四种分别是插入、删除、刷新、移动，
+api使用起来和UITableView类似，具体可以自己在代码中找，如果需要执行多个更新事件，可以放到performBatchUpdates中的updates闭包中作为一组动画， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -73,6 +74,60 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/11/24/uicollectionviewdong-hua/">UICollectionView动画</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-11-24T00:00:26+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>24</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>12:00 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>一、简单使用</h2>
+
+<p>UICollectionView更新事件有四种分别是<code>插入</code>、<code>删除</code>、<code>刷新</code>、<code>移动</code>，
+api使用起来和UITableView类似，具体可以自己在代码中找，如果需要执行多个更新事件，可以放到performBatchUpdates中的updates闭包中作为一组动画，然后全部执行完之后通过completion调回。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='swift'><span class='line'><span class="n">collectionView</span><span class="p">.</span><span class="n">performBatchUpdates</span><span class="p">({</span> <span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Void</span> <span class="k">in</span>
+</span><span class='line'>            <span class="n">collectionView</span><span class="p">.</span><span class="n">insertItemsAtIndexPaths</span><span class="p">(</span><span class="n">insertIndexPaths</span><span class="p">)</span>
+</span><span class='line'>            <span class="n">collectionView</span><span class="p">.</span><span class="n">moveItemAtIndexPath</span><span class="p">(</span><span class="n">currentIndexPath</span><span class="p">,</span> <span class="nl">toIndexPath</span><span class="p">:</span> <span class="n">toIndexPath</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">},</span> <span class="nl">completion</span><span class="p">:</span> <span class="p">{</span> <span class="p">(</span><span class="n">isFinish</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Void</span> <span class="k">in</span>
+</span><span class='line'>        <span class="p">})</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>二、UICollectionView动画</h2>
+
+<p>四种不同的更新事件，系统默认会带有动画，不过是比较简单的。我们可以自定义layout或者继承flowLayout，在内部实现我们自己想要的动画。下面，我们来说说动画的流程，以及系统默认的四种动画内部是如何的，并且通过代码来修改达到自己想要的动画。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2015/11/24/uicollectionviewdong-hua/">更多 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -539,6 +594,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2016/05/10/mac10-dot-11sheng-ji-an-zhuang-openssl/">Mac10.11升级安装openssl</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2016/05/08/reactnativezhi-yuan-sheng-mo-kuai-kai-fa-bing-fa-bu-androidpian/">ReactNative之原生模块开发并发布——android篇</a>
       </li>
     
@@ -554,10 +613,6 @@
         <a href="/blog/2016/04/04/gcdzong-jie/">GCD总结</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2016/04/04/reactnativezhi-flexbu-ju-zong-jie/">ReactNative之Flex布局总结</a>
-      </li>
-    
   </ul>
 </section>
 <section>
@@ -566,6 +621,7 @@
   <li class='category'><a href='/blog/categories/git/'>git (1)</a></li>
 <li class='category'><a href='/blog/categories/gitbook/'>gitbook (1)</a></li>
 <li class='category'><a href='/blog/categories/ios/'>ios (10)</a></li>
+<li class='category'><a href='/blog/categories/mac/'>mac (1)</a></li>
 <li class='category'><a href='/blog/categories/octopress/'>octopress (1)</a></li>
 <li class='category'><a href='/blog/categories/reactnative/'>reactnative (3)</a></li>
 <li class='category'><a href='/blog/categories/web/'>web (2)</a></li>

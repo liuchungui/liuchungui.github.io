@@ -4,7 +4,7 @@
   <title><![CDATA[liuchungui's Blog]]></title>
   <link href="http://www.liuchungui.com/atom.xml" rel="self"/>
   <link href="http://www.liuchungui.com/"/>
-  <updated>2016-05-08T17:57:32+08:00</updated>
+  <updated>2016-05-10T20:48:56+08:00</updated>
   <id>http://www.liuchungui.com/</id>
   <author>
     <name><![CDATA[刘春桂]]></name>
@@ -12,6 +12,180 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Mac10.11升级安装openssl]]></title>
+    <link href="http://www.liuchungui.com/blog/2016/05/10/mac10-dot-11sheng-ji-an-zhuang-openssl/"/>
+    <updated>2016-05-10T20:46:18+08:00</updated>
+    <id>http://www.liuchungui.com/blog/2016/05/10/mac10-dot-11sheng-ji-an-zhuang-openssl</id>
+    <content type="html"><![CDATA[<p>一直想要升级Mac上的openssl，但是前面没弄成功，所以耽搁到现在。今天由于安装一个软件需要安装openssl到1.0.1版本以上，所以查了下资料，终于升级成功了，也算是还了前面一篇博客的债。</p>
+
+<!-- more -->
+
+
+<p>首先，来看看我们的openssl的版本和目录</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>openssl version
+</span><span class='line'>OpenSSL 0.9.8zh <span class="m">14</span> Jan 2016
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>which openssl
+</span><span class='line'>/usr/local/bin/openssl
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>通过上面的查看，明显我们的版本号太低了，于是google了下，找到了<a href="http://apple.stackexchange.com/questions/126830/how-to-upgrade-openssl-in-os-x">http://apple.stackexchange.com/questions/126830/how-to-upgrade-openssl-in-os-x</a>。</p>
+
+<p>按照上面的步骤，我们首先更新<code>homebrew</code></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>brew update
+</span><span class='line'>
+</span><span class='line'>Error: Cowardly refusing to <span class="sb">`</span>sudo brew update<span class="sb">`</span>
+</span><span class='line'>You can use brew with sudo, but only <span class="k">if</span> the brew executable is owned by root.
+</span><span class='line'>However, this is both not recommended and completely unsupported so <span class="k">do</span> so at
+</span><span class='line'>your own risk.
+</span><span class='line'>bogon:Downloads user<span class="nv">$ </span>brew update
+</span><span class='line'>Error: The /usr/local directory is not writable.
+</span><span class='line'>Even <span class="k">if</span> this directory was writable when you installed Homebrew, other
+</span><span class='line'>software may change permissions on this directory. Some versions of the
+</span><span class='line'><span class="s2">&quot;InstantOn&quot;</span> component of Airfoil or running Cocktail cleanup/optimizations
+</span><span class='line'>are known to <span class="k">do</span> this.
+</span><span class='line'>
+</span><span class='line'>You should probably change the ownership and permissions of /usr/local
+</span><span class='line'>back to your user account.
+</span><span class='line'>  sudo chown -R <span class="k">$(</span>whoami<span class="k">)</span>:admin /usr/local
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>很不幸，我们在更新的时候遇到了一个错误，好在homebrew有错误提醒，我们按照提醒执行下面命令，继续安装。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>sudo chown -R <span class="k">$(</span>whoami<span class="k">)</span>:admin /usr/local
+</span><span class='line'><span class="nv">$ </span>brew update
+</span><span class='line'>Updated Homebrew from e3986e9 to 21ce7a5.
+</span><span class='line'><span class="o">==</span>&gt; Migrating Homebrew to v0.9.9
+</span><span class='line'>...
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>看到这个信息，就是成功的在更新了，这个过程可能比较久点。更新完之后，我们开始通过homebrew安装openssl。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>brew install <span class="nv">openssl</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">==</span>&gt; Downloading https://homebrew.bintray.com/bottles/openssl-1.0.2h.el_capitan.b
+</span><span class='line'><span class="c">######################################################################## 100.0%</span>
+</span><span class='line'>...
+</span><span class='line'><span class="o">==</span>&gt; Summary
+</span><span class='line'>🍺  /usr/local/Cellar/openssl/1.0.2h: 1,691 files, 12M
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>当最后显示🍺那个标志，说明我们成功的将openssl安装到<code>/usr/local/Cellar/openssl/1.0.2h</code>。</p>
+
+<p>不过，我们还有最后一步，那就是当我们使用openssl时，使用的是我们用homebrew新下载的openssl。为了达到这个目的，我们有两种方法。</p>
+
+<p>第一种：</p>
+
+<p>将homebrew下载的openssl软链接到/usr/bin/openssl目录下。这里，我们先将它保存一份老的，然后再软链接新下载的。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>mv /usr/bin/openssl /usr/bin/openssl_old
+</span><span class='line'>mv: rename /usr/bin/openssl to /usr/bin/openssl_old: Operation not permitted
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>ln -s /usr/local/Cellar/openssl/1.0.2h/bin/openssl /usr/bin/openssl
+</span><span class='line'>ln: /usr/bin/openssl: Operation not permitted
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>Operation not permitted</code>提示没有权限操作，对<code>/usr/bin</code>目录下的东西，我已经遇到过几次这个问题了，于是继续google，在stackoverflow上找到了<a href="http://stackoverflow.com/questions/32659348/operation-not-permitted-when-on-root-el-capitan-rootless-disabled">Operation Not Permitted when on root El capitan (rootless disabled)</a>。</p>
+
+<p>重启系统，当启动的时候我们同时按下<code>cmd+r</code>进入Recovery模式，之后选择<code>实用工具</code> => <code>终端</code>，在终端输入如下命令，接口文件系统的锁定，并且重启电脑：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>csrutil disable
+</span><span class='line'><span class="nv">$ </span>reboot
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>最后，我们执行前面两个命令，查看版本。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>mv /usr/bin/openssl /usr/bin/openssl_old
+</span><span class='line'><span class="nv">$ </span>ln -s /usr/local/Cellar/openssl/1.0.2h/bin/openssl /usr/bin/openssl
+</span><span class='line'><span class="nv">$ </span>openssl version
+</span><span class='line'>OpenSSL 1.0.2h  <span class="m">3</span> May 2016
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样，我们的openssl升级成功了。不过，为了安全起见，我还是重新启动电脑，然后重新开启了<code>csrutil</code>。</p>
+
+<p>第二种：</p>
+
+<p>在操作完前面一种方法之后，我发现了一个更简单的方式，那就是直接将openssl软链接到<code>/usr/local/bin/openssl</code>。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="c">#如果/usr/local/bin/openssl下存在，则先删除 /usr/local/bin/openssl</span>
+</span><span class='line'><span class="nv">$ </span>rm /usr/local/bin/openssl
+</span><span class='line'>
+</span><span class='line'><span class="c">#将以前通过homebrew下载的1.0.2e版本的openssl链接到/usr/local/bin/openssl</span>
+</span><span class='line'><span class="nv">$ </span>ln -s /usr/local/Cellar/openssl/1.0.2e/bin/openssl /usr/local/bin/openssl
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>openssl
+</span><span class='line'>OpenSSL 1.0.2e <span class="m">3</span> Dec 2015
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>总结</h2>
+
+<p>主要记录了安装openssl过程中遇到的一些问题，同时也知道当如果对<code>/usr/bin</code>类似文件目录无操作权限的时候怎么解锁文件系统。当然，最好是将命令通过ln链接到<code>/usr/local/bin</code>，这个目录下的权限苹果还是开放给我的。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[ReactNative之原生模块开发并发布——android篇]]></title>

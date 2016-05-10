@@ -9,7 +9,7 @@
   <meta name="author" content="刘春桂">
 
   
-  <meta name="description" content="前段时间做了个ReactNative的App，发现ReactNative中不少组件并不存在，所以还是需要自己对原生模块进行编写让JS调用，正是因为在这个编写过程中遇到不少问题，发觉了官网文档中许多的不足。所以产生了写一个实践教程的想法，最终有了这么一篇文章。 整篇文章主要以编写一个原生模块为例子， &hellip;">
+  <meta name="description" content="一直想要升级Mac上的openssl，但是前面没弄成功，所以耽搁到现在。今天由于安装一个软件需要安装openssl到1.0.1版本以上，所以查了下资料，终于升级成功了，也算是还了前面一篇博客的债。 ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -73,6 +73,40 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/05/10/mac10-dot-11sheng-ji-an-zhuang-openssl/">Mac10.11升级安装openssl</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-05-10T20:46:18+08:00'><span class='date'><span class='date-month'>May</span> <span class='date-day'>10</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>8:46 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>一直想要升级Mac上的openssl，但是前面没弄成功，所以耽搁到现在。今天由于安装一个软件需要安装openssl到1.0.1版本以上，所以查了下资料，终于升级成功了，也算是还了前面一篇博客的债。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2016/05/10/mac10-dot-11sheng-ji-an-zhuang-openssl/">更多 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -414,60 +448,6 @@ github地址:<a href="https://github.com/GitbookIO/gitbook">https://github.com/G
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/11/24/uicollectionviewdong-hua/">UICollectionView动画</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-11-24T00:00:26+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>24</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>12:00 am</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>一、简单使用</h2>
-
-<p>UICollectionView更新事件有四种分别是<code>插入</code>、<code>删除</code>、<code>刷新</code>、<code>移动</code>，
-api使用起来和UITableView类似，具体可以自己在代码中找，如果需要执行多个更新事件，可以放到performBatchUpdates中的updates闭包中作为一组动画，然后全部执行完之后通过completion调回。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='swift'><span class='line'><span class="n">collectionView</span><span class="p">.</span><span class="n">performBatchUpdates</span><span class="p">({</span> <span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Void</span> <span class="k">in</span>
-</span><span class='line'>            <span class="n">collectionView</span><span class="p">.</span><span class="n">insertItemsAtIndexPaths</span><span class="p">(</span><span class="n">insertIndexPaths</span><span class="p">)</span>
-</span><span class='line'>            <span class="n">collectionView</span><span class="p">.</span><span class="n">moveItemAtIndexPath</span><span class="p">(</span><span class="n">currentIndexPath</span><span class="p">,</span> <span class="nl">toIndexPath</span><span class="p">:</span> <span class="n">toIndexPath</span><span class="p">)</span>
-</span><span class='line'>            <span class="p">},</span> <span class="nl">completion</span><span class="p">:</span> <span class="p">{</span> <span class="p">(</span><span class="n">isFinish</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Void</span> <span class="k">in</span>
-</span><span class='line'>        <span class="p">})</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>二、UICollectionView动画</h2>
-
-<p>四种不同的更新事件，系统默认会带有动画，不过是比较简单的。我们可以自定义layout或者继承flowLayout，在内部实现我们自己想要的动画。下面，我们来说说动画的流程，以及系统默认的四种动画内部是如何的，并且通过代码来修改达到自己想要的动画。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/11/24/uicollectionviewdong-hua/">更多 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -481,6 +461,10 @@ api使用起来和UITableView类似，具体可以自己在代码中找，如果
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/05/10/mac10-dot-11sheng-ji-an-zhuang-openssl/">Mac10.11升级安装openssl</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2016/05/08/reactnativezhi-yuan-sheng-mo-kuai-kai-fa-bing-fa-bu-androidpian/">ReactNative之原生模块开发并发布——android篇</a>
@@ -498,10 +482,6 @@ api使用起来和UITableView类似，具体可以自己在代码中找，如果
         <a href="/blog/2016/04/04/gcdzong-jie/">GCD总结</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2016/04/04/reactnativezhi-flexbu-ju-zong-jie/">ReactNative之Flex布局总结</a>
-      </li>
-    
   </ul>
 </section>
 <section>
@@ -510,6 +490,7 @@ api使用起来和UITableView类似，具体可以自己在代码中找，如果
   <li class='category'><a href='/blog/categories/git/'>git (1)</a></li>
 <li class='category'><a href='/blog/categories/gitbook/'>gitbook (1)</a></li>
 <li class='category'><a href='/blog/categories/ios/'>ios (10)</a></li>
+<li class='category'><a href='/blog/categories/mac/'>mac (1)</a></li>
 <li class='category'><a href='/blog/categories/octopress/'>octopress (1)</a></li>
 <li class='category'><a href='/blog/categories/reactnative/'>reactnative (3)</a></li>
 <li class='category'><a href='/blog/categories/web/'>web (2)</a></li>

@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>http://www.liuchungui.com/blog/2016/05/10/mac10-dot-11sheng-ji-an-zhuang-openssl/</loc>
+<lastmod>2016-05-10T20:46:18+08:00</lastmod>
+</url>
+<url>
 <loc>http://www.liuchungui.com/blog/2016/05/08/reactnativezhi-yuan-sheng-mo-kuai-kai-fa-bing-fa-bu-androidpian/</loc>
 <lastmod>2016-05-08T14:00:09+08:00</lastmod>
 </url>
@@ -107,6 +111,6 @@
 <loc>http://www.liuchungui.com/blog/categories/reactnative/</loc>
 </url>
 <url>
-<loc>http://www.liuchungui.com/posts/2/</loc>
+<loc>http://www.liuchungui.com/blog/categories/mac/</loc>
 </url>
 </urlset>
