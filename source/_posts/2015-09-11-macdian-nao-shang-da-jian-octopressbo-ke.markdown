@@ -112,7 +112,7 @@ $indented-lists: true
 ####6、新增
 1、发布博客（2016.4.5）
 
-添加这个，是因为某一天不小心使用命令行全删了，后来发现自己的博客只是`rake deploy`，却没有将源代码的样式和博客的markdown文件提交到github，当时心里挺难受的，难道要一个一个恢复？因为这件事情，中间还断过一段时间，好在后来一一在另外一个目录下找到了。但是，这种事情不允许再次发生，所以专门写了一个简单的blogPublish脚本。
+添加这个，是因为某一天不小心使用命令行全删了，后来发现自己的博客只是`rake deploy`，却没有将源代码的样式和博客的markdown文件提交到github，当时瞬间懵逼，难道要一个一个恢复？因为这件事情，中间还断过一段时间，好在后来一一在另外一个目录下找到了。但是，这种事情不允许再次发生，所以专门写了一个简单的blogPublish脚本。
 脚本的内容特别简单，就是deploy文章，然后将源代码push到github上。
 
 ```
@@ -127,6 +127,26 @@ git push origin source
 2、表格添加边框（2016.4.5）
 
 2016.4.5 为表格添加边框，参考[为Octopress追加数据表格的CSS](http://programus.github.io/blog/2012/03/07/add-table-data-css-for-octopress/)
+
+3、删除博客后，重新搭建（2016.8.1）
+
+前段时间，系统出现问题，硬盘被锁，只能格盘重装，博客自然没了。因为博客已经搭建过，源代码存在我们的`source`分支下，所以我们只需要执行以下命令就行了。
+
+```
+#clone下代码
+git clone https://github.com/liuchungui/liuchungui.github.io.git
+#切换到source分之
+git checkout source
+#安装
+sudo gem install bundler
+bundle install
+rake install
+#预览
+rake preview
+#发布
+git clone https://github.com/liuchungui/liuchungui.github.io.git _deploy
+rake deploy
+```
 
 
 ####参考
