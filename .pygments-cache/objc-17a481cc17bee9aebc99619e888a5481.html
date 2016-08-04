@@ -1,0 +1,27 @@
+<div class="highlight"><pre><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span> <span class="n">kBGGCDTestIdentifier</span> <span class="o">=</span> <span class="s">&quot;kBGGCDTestIdentifier&quot;</span><span class="p">;</span>
+<span class="kt">void</span> <span class="nf">testTargetQueue</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kt">dispatch_queue_t</span> <span class="n">targetQueue</span> <span class="o">=</span> <span class="n">dispatch_queue_create</span><span class="p">(</span><span class="n">kBGGCDTestIdentifier</span><span class="p">,</span> <span class="n">DISPATCH_QUEUE_SERIAL</span><span class="p">);</span>
+    
+    <span class="kt">dispatch_queue_t</span> <span class="n">queue1</span> <span class="o">=</span> <span class="n">dispatch_queue_create</span><span class="p">(</span><span class="n">kBGGCDTestIdentifier</span><span class="p">,</span> <span class="n">DISPATCH_QUEUE_SERIAL</span><span class="p">);</span>
+    <span class="kt">dispatch_queue_t</span> <span class="n">queue2</span> <span class="o">=</span> <span class="n">dispatch_queue_create</span><span class="p">(</span><span class="n">kBGGCDTestIdentifier</span><span class="p">,</span> <span class="n">DISPATCH_QUEUE_CONCURRENT</span><span class="p">);</span>
+    
+    <span class="n">dispatch_set_target_queue</span><span class="p">(</span><span class="n">queue1</span><span class="p">,</span> <span class="n">targetQueue</span><span class="p">);</span>
+    <span class="n">dispatch_set_target_queue</span><span class="p">(</span><span class="n">queue2</span><span class="p">,</span> <span class="n">targetQueue</span><span class="p">);</span>
+    
+    <span class="n">dispatch_async</span><span class="p">(</span><span class="n">queue1</span><span class="p">,</span> <span class="o">^</span><span class="p">{</span>
+        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;queue1 1&quot;</span><span class="p">);</span>
+    <span class="p">});</span>
+    <span class="n">dispatch_async</span><span class="p">(</span><span class="n">queue1</span><span class="p">,</span> <span class="o">^</span><span class="p">{</span>
+        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;queue1 2&quot;</span><span class="p">);</span>
+    <span class="p">});</span>
+    <span class="n">dispatch_async</span><span class="p">(</span><span class="n">queue2</span><span class="p">,</span> <span class="o">^</span><span class="p">{</span>
+        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;queue2 1&quot;</span><span class="p">);</span>
+    <span class="p">});</span>
+    <span class="n">dispatch_async</span><span class="p">(</span><span class="n">queue2</span><span class="p">,</span> <span class="o">^</span><span class="p">{</span>
+        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;queue2 2&quot;</span><span class="p">);</span>
+    <span class="p">});</span>
+    <span class="n">dispatch_async</span><span class="p">(</span><span class="n">targetQueue</span><span class="p">,</span> <span class="o">^</span><span class="p">{</span>
+        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;target queue&quot;</span><span class="p">);</span>
+    <span class="p">});</span>
+<span class="p">}</span>
+</pre></div>

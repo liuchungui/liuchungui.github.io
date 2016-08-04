@@ -1,0 +1,12 @@
+<div class="highlight"><pre><span class="kt">void</span> <span class="nf">testSync</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kt">dispatch_queue_t</span> <span class="n">serialQueue</span> <span class="o">=</span> <span class="n">dispatch_queue_create</span><span class="p">(</span><span class="s">&quot;BG.serailQueue.com&quot;</span><span class="p">,</span> <span class="n">DISPATCH_QUEUE_SERIAL</span><span class="p">);</span>
+    <span class="kt">dispatch_queue_t</span> <span class="n">concurrentQueue</span> <span class="o">=</span> <span class="n">dispatch_queue_create</span><span class="p">(</span><span class="s">&quot;BG.concurrent.com&quot;</span><span class="p">,</span> <span class="n">DISPATCH_QUEUE_CONCURRENT</span><span class="p">);</span>
+    <span class="n">dispatch_sync</span><span class="p">(</span><span class="n">serialQueue</span><span class="p">,</span> <span class="o">^</span><span class="p">{</span>
+        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;test&quot;</span><span class="p">);</span>
+    <span class="p">});</span>
+    <span class="n">dispatch_sync</span><span class="p">(</span><span class="n">concurrentQueue</span><span class="p">,</span> <span class="o">^</span><span class="p">{</span>
+        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;test2&quot;</span><span class="p">);</span>
+    <span class="p">});</span>
+    <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;finish&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>

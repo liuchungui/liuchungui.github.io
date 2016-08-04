@@ -1,0 +1,9 @@
+<div class="highlight"><pre><span class="c1">// 添加协议</span>
+<span class="kt">BOOL</span> <span class="nf">class_addProtocol</span> <span class="p">(</span> <span class="kt">Class</span> <span class="n">cls</span><span class="p">,</span> <span class="n">Protocol</span> <span class="o">*</span><span class="n">protocol</span> <span class="p">);</span>
+ 
+<span class="c1">// 返回类是否实现指定的协议</span>
+<span class="kt">BOOL</span> <span class="nf">class_conformsToProtocol</span> <span class="p">(</span> <span class="kt">Class</span> <span class="n">cls</span><span class="p">,</span> <span class="n">Protocol</span> <span class="o">*</span><span class="n">protocol</span> <span class="p">);</span>
+ 
+<span class="c1">// 返回类实现的协议列表</span>
+<span class="n">Protocol</span> <span class="o">*</span> <span class="nf">class_copyProtocolList</span> <span class="p">(</span> <span class="kt">Class</span> <span class="n">cls</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="o">*</span><span class="n">outCount</span> <span class="p">);</span>
+</pre></div>

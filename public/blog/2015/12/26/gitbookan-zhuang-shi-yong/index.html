@@ -1,0 +1,384 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Gitbook安装使用 - liuchungui's Blog</title>
+  <meta name="author" content="刘春桂">
+
+  
+  <meta name="description" content="GitBook 是一个基于 Node.js 的命令行工具，可使用 Github/Git 和 Markdown 来制作精美的电子书。 在这篇博客中，记录了一下gitbook的安装使用，更详细的使用请查看下面内容：
+gitbook详细使用文档：help.gitbook.com gitbook官网: &hellip;">
+  <meta name="keywords" content="Gitbook, Gitbook安装使用">
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://www.liuchungui.com/blog/2015/12/26/gitbookan-zhuang-shi-yong/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="liuchungui's Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">liuchungui's Blog</a></h1>
+  
+    <h2>代码嗨起来</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="www.liuchungui.com">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Gitbook安装使用</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-12-26T17:15:07+08:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>26</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>5:15 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><blockquote><p>GitBook 是一个基于 Node.js 的命令行工具，可使用 Github/Git 和 Markdown 来制作精美的电子书。</p></blockquote>
+
+<p>在这篇博客中，记录了一下gitbook的安装使用，更详细的使用请查看下面内容：
+gitbook详细使用文档：<a href="help.gitbook.com">help.gitbook.com</a>      <br/>
+gitbook官网:<a href="https://www.gitbook.com">https://www.gitbook.com</a>  <br/>
+github地址:<a href="https://github.com/GitbookIO/gitbook">https://github.com/GitbookIO/gitbook</a></p>
+
+<h3>1、安装</h3>
+
+<p>首先到<a href="http://nodejs.cn/">nodejs</a>下载，安装Node.js的包管理器npm。
+然后，通过<code>sudo npm install -g gitbook-cli</code>命令安装gitbook</p>
+
+<!-- more -->
+
+
+<h3>2、初始化gitbook</h3>
+
+<p>创建一个文件夹，然后初始化</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>mkdir test
+</span><span class='line'>gitbook init</span></code></pre></td></tr></table></div></figure>
+
+
+<p>初始化之后会有两个文件README.md和SUMMARY.md,README.md 是作品的介绍，SUMMARY.md 是作品的目录结构，里面要包含一个章节标题和文件索引的列表。</p>
+
+<p>下面是一个SUMMARY.md文件的内容：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'># Summary
+</span><span class='line'>
+</span><span class='line'>This is the summary of my book.
+</span><span class='line'>
+</span><span class='line'>* [section 1](section1/README.md)
+</span><span class='line'>    * [example 1](section1/example1.md)
+</span><span class='line'>    * [example 2](section1/example2.md)
+</span><span class='line'>* [section 2](section2/README.md)
+</span><span class='line'>    * [example 1](section2/example1.md)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在这里，我们可以先创建对应的文件夹，然后在里面编辑对应的内容，之后更新SUMMARY.md这个目录文件；如果在编辑之前我们已经确定好了内容标题和目录，也可以先编辑SUMMARY.md文件，然后通过<code>gitbook init</code>来初始化一遍，它会自动创建文件目录和对应的md文件。</p>
+
+<h3>3、编辑内容，并查看</h3>
+
+<p>初始化书以后，我们就可以对我们的内容进行编辑了。
+例如：
+我要将本篇博客放入目录为gitbook下，首先在test目录建立一个gitbook文件夹，然后建立一个<code>gitbook安装使用.md</code>文件，目录如下：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>|____gitbook
+</span><span class='line'>| |____gitbook安装使用.md
+</span><span class='line'>|____README.md
+</span><span class='line'>|____section1
+</span><span class='line'>| |____example1.md
+</span><span class='line'>| |____example2.md
+</span><span class='line'>| |____README.md
+</span><span class='line'>| |____test.md
+</span><span class='line'>|____section2
+</span><span class='line'>| |____example1.md
+</span><span class='line'>| |____README.md
+</span><span class='line'>|____SUMMARY.md</span></code></pre></td></tr></table></div></figure>
+
+
+<p>之后，我们像写博客一样，使用markdown语言编辑<code>gitbook安装使用.md</code>中的内容。
+编辑完之后，需要将<code>gitbook安装使用.md</code>这篇文章放入SUMMARY.md目录中。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'># Summary
+</span><span class='line'>* [gitbook]
+</span><span class='line'>    * [gitbook安装使用](gitbook/gitbook安装使用.md)
+</span><span class='line'>* [section 1](section1/README.md)
+</span><span class='line'>    * [example 1](section1/example1.md)
+</span><span class='line'>    * [example 2](section1/example2.md)
+</span><span class='line'>* [section 2](section2/README.md)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样，就加入了<code>gitbook安装使用.md</code>这篇文章。之后，可以使用下面命令启动一个本地web服务，来预览本地的内容。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>gitbook serve</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这个时候，简洁、优雅的界面就出来了。
+<img src="http://ww1.sinaimg.cn/large/7746cd07gw1eynt17tm6yj20zh0ey0ua.jpg" alt="" /></p>
+
+<p>注意：</p>
+
+<ul>
+<li>在查看的时候没有看到刚刚加入的文章，查看一下<code>SUMMARY.md</code>是否添加</li>
+<li>在预览的时候能看到文章，但是点击不起作用，查看是否目录正确</li>
+</ul>
+
+
+<p><strong>如果想将gitbook放到web服务器作为网站浏览，先使用gitbook build命令，之后会生成静态网页到<em>book目录下，只要将</em>book目录copy到web服务器上就行了。</strong></p>
+
+<h3>4、发布电子书gitbook官网</h3>
+
+<p>到<a href="https://www.gitbook.com/">gitbook官网</a>创建一个账号，创建一本<code>test</code>电子书，创建电子书的时候，gitbook会创建git仓库<a href="https://git.gitbook.liuchungui/test.git%E3%80%82">https://git.gitbook.liuchungui/test.git%E3%80%82</a></p>
+
+<p>然后下载<a href="https://www.gitbook.com/editor">gitbook editor</a>，登陆账号，将电子书clone一份下来，将前面新建电子书将前面编辑的内容拖到这个电子书下，然后同步到官网就可以看到内容了，例如我的<a href="https://liuchungui.gitbooks.io/test/content/">test</a>。</p>
+
+<p>上面的操作我们也可以用命令行进行操作。先在官网建立一个电子书，然后clone下来，之后编写我们的电子书内容和目录，然后使用<a href="http://www.liuchungui.com/blog/2015/10/23/gitzong-jie/">git命令</a>将内容Push到git仓库就行了。</p>
+
+<h3>5、导出电子书</h3>
+
+<p>其实，上面建立的<code>test</code>已经在官网上可以进行电子书下载了，有三种格式<code>PDF</code>、<code>EPUB</code>、<code>MOBI</code>。
+而在本地，使用下面命令导出</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>pdf [options] [source_dir] 构建 pdf 格式的电子书
+</span><span class='line'>epub [options] [source_dir] 构建 ePub 格式的电子书
+</span><span class='line'>mobi [options] [source_dir] 构建 mobi 格式的电子书</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果导出失败，需要我们下载<a href="http://calibre-ebook.com/">Calibre</a>进行电子书转换。</p>
+
+<h3>gitbook的相关命令</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>build [options] [source_dir] 根据文档目录构建书籍
+</span><span class='line'>serve [options] [source_dir] 构建并且提供书籍的 web 托管
+</span><span class='line'>install [options] [source_dir] 安装 GitBook 插件
+</span><span class='line'>pdf [options] [source_dir] 构建 pdf 格式的电子书
+</span><span class='line'>epub [options] [source_dir] 构建 ePub 格式的电子书
+</span><span class='line'>mobi [options] [source_dir] 构建 mobi 格式的电子书
+</span><span class='line'>init [source_dir]      根据 SUMARRY.md 文件的内容生成相应的目录和文件
+</span><span class='line'>publish [source_dir]   如果已绑定 GitBook.io，该命令可以直接发布书籍
+</span><span class='line'>
+</span><span class='line'>-h, --help     输出命令的使用说明
+</span><span class='line'>-V, --version  输出程序的版本号</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>总结</h3>
+
+<p>gitbook操作其实就分为两个方面内容，一个是建立git仓库对内容进行管理，另外一个就是使用markdown对内容进行编辑，然后使用SUMARRY.md生成书的目录。  <br/>
+而gitbook这么优雅大方的页面，我们喜欢的话，完全可以将它做成我们的技术博客。而它还具有简单标题检索功能，我甚至想过将它做成一个api接口管理页面。</p>
+
+<h3>参考：</h3>
+
+<p><a href="http://zhaoda.net/2015/11/09/gitbook-plugins/">Gitbook 的使用和常用插件</a> <br/>
+<a href="http://liaoer.net/2015/04/30/Mac%E4%B8%8BGitBook%E5%88%B6%E4%BD%9C%E7%94%B5%E5%AD%90%E4%B9%A6/">Mac下GitBook制作电子书</a><br/>
+<a href="http://blog.windrunner.info/app/gitbook-tutorial.html">使用GitBook</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">刘春桂</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2015-12-26T17:15:07+08:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>26</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>5:15 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/gitbook/'>gitbook</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2015/11/24/uicollectionviewdong-hua/" title="Previous Post: UICollectionView动画">&laquo; UICollectionView动画</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2016/01/01/2015nian-zong-jie/" title="Next Post: 2015年总结">2015年总结 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/08/01/wei-xin-gong-zhong-hao-kai-fa-zong-jie/">微信公众号开发总结</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/05/10/mac10-dot-11sheng-ji-an-zhuang-openssl/">Mac10.11升级安装openssl</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/05/08/reactnativezhi-yuan-sheng-mo-kuai-kai-fa-bing-fa-bu-androidpian/">ReactNative之原生模块开发并发布——android篇</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/05/02/reactnativezhi-yuan-sheng-mo-kuai-kai-fa-bing-fa-bu-iospian/">ReactNative之原生模块开发并发布——iOS篇</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/04/23/ubuntuxia-da-jian-vpn/">Ubuntu下搭建vpn历程</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+ <h1>Categories</h1>
+ <ul id="categories">
+  <li class='category'><a href='/blog/categories/git/'>git (1)</a></li>
+<li class='category'><a href='/blog/categories/gitbook/'>gitbook (1)</a></li>
+<li class='category'><a href='/blog/categories/ios/'>ios (10)</a></li>
+<li class='category'><a href='/blog/categories/mac/'>mac (1)</a></li>
+<li class='category'><a href='/blog/categories/octopress/'>octopress (1)</a></li>
+<li class='category'><a href='/blog/categories/reactnative/'>reactnative (3)</a></li>
+<li class='category'><a href='/blog/categories/web/'>web (3)</a></li>
+<li class='category'><a href='/blog/categories/年度总结/'>年度总结 (1)</a></li>
+
+ </ul>
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - 刘春桂 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,7 @@
+<div class="highlight"><pre><span class="c1">//写入</span>
+<span class="p">[[</span><span class="bp">NSUserDefaults</span> <span class="n">standardUserDefaults</span><span class="p">]</span> <span class="nl">setValue</span><span class="p">:</span><span class="s">@&quot;Jack&quot;</span> <span class="nl">forKey</span><span class="p">:</span><span class="s">@&quot;UserDefaults_userName&quot;</span><span class="p">];</span>
+<span class="p">[[</span><span class="bp">NSUserDefaults</span> <span class="n">standardUserDefaults</span><span class="p">]</span> <span class="n">synchronize</span><span class="p">];</span>
+
+<span class="c1">//读取</span>
+<span class="bp">NSString</span> <span class="o">*</span><span class="n">userName</span> <span class="o">=</span> <span class="p">[[</span><span class="bp">NSUserDefaults</span> <span class="n">standardUserDefaults</span><span class="p">]</span> <span class="nl">valueForKey</span><span class="p">:</span><span class="s">@&quot;UserDefaults_userName&quot;</span><span class="p">];</span>
+</pre></div>

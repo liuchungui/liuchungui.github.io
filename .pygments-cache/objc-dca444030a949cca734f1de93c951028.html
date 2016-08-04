@@ -1,0 +1,8 @@
+<div class="highlight"><pre><span class="kt">void</span> <span class="nf">testApply</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kt">dispatch_queue_t</span> <span class="n">concurrentQueue</span> <span class="o">=</span> <span class="n">dispatch_queue_create</span><span class="p">(</span><span class="s">&quot;BG.concurrent.com&quot;</span><span class="p">,</span> <span class="n">DISPATCH_QUEUE_CONCURRENT</span><span class="p">);</span>
+    <span class="n">dispatch_apply</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">concurrentQueue</span><span class="p">,</span> <span class="o">^</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">index</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%zd&quot;</span><span class="p">,</span> <span class="n">index</span><span class="p">);</span>
+    <span class="p">});</span>
+    <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;done!&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>

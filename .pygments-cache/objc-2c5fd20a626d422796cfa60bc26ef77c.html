@@ -1,0 +1,8 @@
+<div class="highlight"><pre><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">testVersion</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">version</span> <span class="o">=</span> <span class="n">class_getVersion</span><span class="p">([</span><span class="n">Student</span> <span class="k">class</span><span class="p">]);</span>
+    <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%d&quot;</span><span class="p">,</span> <span class="n">version</span><span class="p">);</span>
+    <span class="n">class_setVersion</span><span class="p">([</span><span class="n">Student</span> <span class="k">class</span><span class="p">],</span> <span class="mi">100</span><span class="p">);</span>
+    <span class="n">version</span> <span class="o">=</span> <span class="n">class_getVersion</span><span class="p">([</span><span class="n">Student</span> <span class="k">class</span><span class="p">]);</span>
+    <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%d&quot;</span><span class="p">,</span> <span class="n">version</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>

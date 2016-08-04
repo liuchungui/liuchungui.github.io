@@ -1,0 +1,20 @@
+<div class="highlight"><pre><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">testSourceTimer</span> <span class="p">{</span>
+    <span class="c1">//定时器在主线程运行</span>
+    <span class="kt">dispatch_source_t</span> <span class="n">timer</span> <span class="o">=</span> <span class="n">dispatch_source_create</span><span class="p">(</span><span class="n">DISPATCH_SOURCE_TYPE_TIMER</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">dispatch_get_main_queue</span><span class="p">());</span>
+    <span class="c1">//设置定时器每隔2秒调用一次，允许延迟1秒</span>
+    <span class="n">dispatch_source_set_timer</span><span class="p">(</span><span class="n">timer</span><span class="p">,</span> <span class="n">DISPATCH_TIME_NOW</span><span class="p">,</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">NSEC_PER_SEC</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="n">NSEC_PER_SEC</span><span class="p">);</span>
+    <span class="c1">//定时器执行的处理</span>
+    <span class="n">dispatch_source_set_event_handler</span><span class="p">(</span><span class="n">timer</span><span class="p">,</span> <span class="o">^</span><span class="p">{</span>
+        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;timer work&quot;</span><span class="p">);</span>
+<span class="c1">//        dispatch_source_cancel(timer);</span>
+    <span class="p">});</span>
+    <span class="c1">//定时器取消所做的处理</span>
+    <span class="n">dispatch_source_set_cancel_handler</span><span class="p">(</span><span class="n">timer</span><span class="p">,</span> <span class="o">^</span><span class="p">{</span>
+        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;timer cancel!&quot;</span><span class="p">);</span>
+    <span class="p">});</span>
+    <span class="c1">//需要将定时器设置为全局变量，否则就会被提前释放</span>
+    <span class="nb">self</span><span class="p">.</span><span class="n">timer</span> <span class="o">=</span> <span class="n">timer</span><span class="p">;</span>
+    <span class="c1">//启动定时器</span>
+    <span class="n">dispatch_resume</span><span class="p">(</span><span class="n">timer</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>

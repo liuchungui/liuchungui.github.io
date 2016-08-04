@@ -1,0 +1,10 @@
+<div class="highlight"><pre> <span class="c1">//1、定义一个常量来作为NSUserDefaults的key</span>
+ <span class="k">static</span> <span class="bp">NSString</span> <span class="o">*</span><span class="k">const</span> <span class="n">kSessionUserName</span> <span class="o">=</span> <span class="s">@&quot;kSessionUserName&quot;</span><span class="p">;</span>
+ <span class="c1">//2、在全局单例内部实现getter和setter方法</span>
+ <span class="o">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nl">setUserName</span><span class="p">:(</span><span class="bp">NSString</span> <span class="o">*</span><span class="p">)</span><span class="n">userName</span><span class="p">{</span>
+    <span class="p">[</span><span class="nb">self</span> <span class="nl">setValue</span><span class="p">:</span><span class="n">userName</span> <span class="nl">forKey</span><span class="p">:</span><span class="n">kSessionUserName</span><span class="p">];</span>
+ <span class="p">}</span>
+ <span class="o">-</span> <span class="p">(</span><span class="bp">NSString</span> <span class="o">*</span><span class="p">)</span><span class="n">userName</span><span class="p">{</span>
+    <span class="k">return</span> <span class="p">[</span><span class="nb">self</span> <span class="nl">getValueForKey</span><span class="p">:</span><span class="n">kSessionUserName</span><span class="p">];</span>
+ <span class="p">}</span>
+</pre></div>

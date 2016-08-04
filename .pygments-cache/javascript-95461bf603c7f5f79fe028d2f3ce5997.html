@@ -1,0 +1,60 @@
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">server_url</span> <span class="o">=</span> <span class="s2">&quot;http://192.168.30.249/by/wx_api/index.php/share/wx_config&quot;</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">url</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">href</span><span class="p">;</span>
+
+<span class="c1">//配置微信</span>
+<span class="nx">$</span><span class="p">.</span><span class="nx">ajax</span><span class="p">({</span>
+    <span class="nx">type</span><span class="o">:</span> <span class="s2">&quot;GET&quot;</span><span class="p">,</span>
+    <span class="nx">url</span><span class="o">:</span> <span class="nx">server_url</span><span class="p">,</span>
+    <span class="nx">data</span><span class="o">:</span> <span class="p">{</span>
+        <span class="nx">url</span><span class="o">:</span> <span class="nb">encodeURI</span><span class="p">(</span><span class="nx">url</span><span class="p">)</span>
+    <span class="p">},</span>
+    <span class="nx">dataType</span><span class="o">:</span> <span class="s2">&quot;json&quot;</span><span class="p">,</span>
+    <span class="nx">success</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">){</span>
+        <span class="c1">// alert(&#39;请求分享配置数据成功&#39;);</span>
+        <span class="nx">wx</span><span class="p">.</span><span class="nx">config</span><span class="p">({</span>
+            <span class="nx">debug</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span> <span class="c1">// 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。</span>
+            <span class="nx">appId</span><span class="o">:</span> <span class="nx">data</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">appId</span><span class="p">,</span> <span class="c1">// 必填，公众号的唯一标识</span>
+            <span class="nx">timestamp</span><span class="o">:</span> <span class="nx">data</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">timestamp</span><span class="p">,</span> <span class="c1">// 必填，生成签名的时间戳</span>
+            <span class="nx">nonceStr</span><span class="o">:</span> <span class="nx">data</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">nonceStr</span><span class="p">,</span> <span class="c1">// 必填，生成签名的随机串</span>
+            <span class="nx">signature</span><span class="o">:</span> <span class="nx">data</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">signature</span><span class="p">,</span><span class="c1">// 必填，签名，见附录1</span>
+            <span class="nx">jsApiList</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;onMenuShareAppMessage&#39;</span><span class="p">,</span> <span class="s1">&#39;onMenuShareTimeline&#39;</span><span class="p">]</span> <span class="c1">// 必填，需要使用的JS接口列表，所有JS接口列表见附录2</span>
+        <span class="p">});</span>
+        <span class="nx">wx</span><span class="p">.</span><span class="nx">ready</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+            <span class="c1">// alert(&quot;分享验证完毕&quot;);</span>
+        <span class="p">});</span>
+        <span class="nx">wx</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+            <span class="c1">// alert(&quot;分享验证失败&quot;);</span>
+        <span class="p">});</span>
+
+        <span class="c1">//获取uid和link_id</span>
+        <span class="kd">var</span> <span class="nx">uid</span> <span class="o">=</span> <span class="nx">localStorage</span><span class="p">.</span><span class="nx">getItem</span><span class="p">(</span><span class="s2">&quot;uid&quot;</span><span class="p">);</span>
+        <span class="kd">var</span> <span class="nx">linkId</span> <span class="o">=</span> <span class="nx">localStorage</span><span class="p">.</span><span class="nx">getItem</span><span class="p">(</span><span class="s2">&quot;link_id&quot;</span><span class="p">);</span>
+        <span class="kd">var</span> <span class="nx">shareUrl</span> <span class="o">=</span> <span class="s2">&quot;http://www.baidu.com&quot;</span><span class="p">;</span>
+        <span class="c1">//存在linkId, 则分享带上link_id等参数</span>
+        <span class="k">if</span><span class="p">(</span><span class="nx">linkId</span> <span class="o">!=</span> <span class="kc">undefined</span> <span class="o">&amp;&amp;</span> <span class="nx">linkId</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span> <span class="o">&amp;&amp;</span> <span class="nx">linkId</span> <span class="o">!=</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">shareUrl</span> <span class="o">=</span> <span class="nx">shareUrl</span> <span class="o">+</span> <span class="s2">&quot;?super_id=&quot;</span> <span class="o">+</span> <span class="nx">uid</span> <span class="o">+</span> <span class="s2">&quot;&amp;link_id=&quot;</span> <span class="o">+</span> <span class="nx">linkId</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="c1">// alert(&quot;分享链接: &quot;+shareUrl);</span>
+
+        <span class="nx">wx</span><span class="p">.</span><span class="nx">onMenuShareAppMessage</span><span class="p">({</span>
+            <span class="nx">title</span><span class="o">:</span> <span class="s1">&#39;分享测试&#39;</span><span class="p">,</span> <span class="c1">// 分享标题</span>
+            <span class="nx">desc</span><span class="o">:</span> <span class="s1">&#39;测试一下&#39;</span><span class="p">,</span> <span class="c1">// 分享描述</span>
+            <span class="nx">link</span><span class="o">:</span> <span class="nx">shareUrl</span><span class="p">,</span> <span class="c1">// 分享链接</span>
+            <span class="nx">imgUrl</span><span class="o">:</span> <span class="s1">&#39;http://www.beyondwinlaw.com/gw4/images/zhongjie.jpg&#39;</span><span class="p">,</span> <span class="c1">// 分享图标</span>
+            <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;link&#39;</span><span class="p">,</span> <span class="c1">// 分享类型,music、video或link，不填默认为link</span>
+            <span class="nx">dataUrl</span><span class="o">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="c1">// 如果type是music或video，则要提供数据链接，默认为空</span>
+            <span class="nx">success</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+                <span class="c1">// 用户确认分享后执行的回调函数</span>
+                <span class="c1">// alert(&quot;分享成功&quot;);</span>
+            <span class="p">},</span>
+            <span class="nx">cancel</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+                <span class="c1">// 用户取消分享后执行的回调函数</span>
+                <span class="c1">// alert(&quot;取消分享&quot;);</span>
+            <span class="p">}</span>
+        <span class="p">});</span>
+    <span class="p">},</span>
+    <span class="nx">error</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">alert</span><span class="p">(</span><span class="s1">&#39;请求分享配置数据失败&#39;</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">});</span>
+</pre></div>

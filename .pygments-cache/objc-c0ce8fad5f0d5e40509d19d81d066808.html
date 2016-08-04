@@ -1,0 +1,30 @@
+<div class="highlight"><pre><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">testGetClass</span> <span class="p">{</span>
+    <span class="cm">/**</span>
+<span class="cm">     *  第一种获取所有注册的类</span>
+<span class="cm">     */</span>
+    <span class="kt">Class</span> <span class="o">*</span><span class="n">bufferClass</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">numClasses</span><span class="p">;</span>
+    <span class="n">numClasses</span> <span class="o">=</span> <span class="n">objc_getClassList</span><span class="p">(</span><span class="nb">NULL</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">numClasses</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">bufferClass</span> <span class="o">=</span> <span class="p">(</span><span class="kt">Class</span> <span class="o">*</span><span class="p">)</span><span class="n">malloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="kt">Class</span><span class="p">)</span><span class="o">*</span><span class="n">numClasses</span><span class="p">);</span>
+        <span class="n">numClasses</span> <span class="o">=</span> <span class="n">objc_getClassList</span><span class="p">(</span><span class="n">bufferClass</span><span class="p">,</span> <span class="n">numClasses</span><span class="p">);</span>
+        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;numer of classes: %d&quot;</span><span class="p">,</span> <span class="n">numClasses</span><span class="p">);</span>
+        <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">numClasses</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+            <span class="kt">Class</span> <span class="n">cls</span> <span class="o">=</span> <span class="n">bufferClass</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+            <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;class name: %s&quot;</span><span class="p">,</span> <span class="n">class_getName</span><span class="p">(</span><span class="n">cls</span><span class="p">));</span>
+        <span class="p">}</span>
+        <span class="n">free</span><span class="p">(</span><span class="n">bufferClass</span><span class="p">);</span>
+    <span class="p">}</span>
+    
+    <span class="cm">/**</span>
+<span class="cm">     *  第二种获取所有注册的类</span>
+<span class="cm">     */</span>
+    <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">outCount</span><span class="p">;</span>
+    <span class="kt">Class</span> <span class="o">*</span><span class="n">classLiset</span> <span class="o">=</span> <span class="n">objc_copyClassList</span><span class="p">(</span><span class="o">&amp;</span><span class="n">outCount</span><span class="p">);</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">outCount</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kt">Class</span> <span class="n">cls</span> <span class="o">=</span> <span class="n">classLiset</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;class name: %s&quot;</span><span class="p">,</span> <span class="n">class_getName</span><span class="p">(</span><span class="n">cls</span><span class="p">));</span>
+    <span class="p">}</span>
+    <span class="n">free</span><span class="p">(</span><span class="n">classLiset</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>

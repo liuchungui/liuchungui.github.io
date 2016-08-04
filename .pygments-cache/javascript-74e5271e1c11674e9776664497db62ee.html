@@ -1,0 +1,81 @@
+<div class="highlight"><pre><span class="kr">class</span> <span class="nx">JSSDK</span> <span class="p">{</span>
+  <span class="kr">private</span> <span class="nx">$appId</span><span class="p">;</span>
+  <span class="kr">private</span> <span class="nx">$appSecret</span><span class="p">;</span>
+  <span class="kr">private</span> <span class="nx">$url</span><span class="p">;</span>
+
+  <span class="kr">public</span> <span class="kd">function</span> <span class="nx">__construct</span><span class="p">(</span><span class="nx">$appId</span><span class="p">,</span> <span class="nx">$appSecret</span><span class="p">,</span> <span class="nx">$url</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">$this</span><span class="o">-&gt;</span><span class="nx">appId</span> <span class="o">=</span> <span class="nx">$appId</span><span class="p">;</span>
+    <span class="nx">$this</span><span class="o">-&gt;</span><span class="nx">appSecret</span> <span class="o">=</span> <span class="nx">$appSecret</span><span class="p">;</span>
+    <span class="nx">$this</span><span class="o">-&gt;</span><span class="nx">url</span> <span class="o">=</span> <span class="nx">$url</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="kr">public</span> <span class="kd">function</span> <span class="nx">getSignPackage</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// 注意 URL 一定要动态获取，不能 hardcode.</span>
+<span class="c1">//    $protocol = (!empty($_SERVER[&#39;HTTPS&#39;]) &amp;&amp; $_SERVER[&#39;HTTPS&#39;] !== &#39;off&#39; || $_SERVER[&#39;SERVER_PORT&#39;] == 443) ? &quot;https://&quot; : &quot;http://&quot;;</span>
+<span class="c1">//    $url = &quot;$protocol$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]&quot;;</span>
+    <span class="nx">$url</span> <span class="o">=</span> <span class="nx">$this</span><span class="o">-&gt;</span><span class="nx">url</span><span class="p">;</span>
+
+    <span class="c1">//wx appid</span>
+    <span class="nx">$wx_app_id</span> <span class="o">=</span> <span class="nx">$this</span><span class="o">-&gt;</span><span class="nx">appId</span><span class="p">;</span>
+    <span class="nx">$wx_app_secret</span> <span class="o">=</span> <span class="nx">$this</span><span class="o">-&gt;</span><span class="nx">appSecret</span><span class="p">;</span>
+
+    <span class="c1">//get token</span>
+    <span class="nx">$token_info</span> <span class="o">=</span> <span class="nx">file_get_contents</span><span class="p">(</span><span class="s2">&quot;https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&amp;appid=$wx_app_id&amp;secret=$wx_app_secret&quot;</span><span class="p">);</span>
+    <span class="nx">$token_info</span> <span class="o">=</span> <span class="nx">json_decode</span><span class="p">(</span><span class="nx">$token_info</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+    <span class="nx">$access_token</span> <span class="o">=</span> <span class="nx">$token_info</span><span class="p">[</span><span class="s1">&#39;access_token&#39;</span><span class="p">];</span>
+
+    <span class="c1">//get ticket</span>
+    <span class="nx">$ticket_info</span> <span class="o">=</span> <span class="nx">file_get_contents</span><span class="p">(</span><span class="s2">&quot;https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=$access_token&amp;type=jsapi&quot;</span><span class="p">);</span>
+    <span class="nx">$ticket_info</span> <span class="o">=</span> <span class="nx">json_decode</span><span class="p">(</span><span class="nx">$ticket_info</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+    <span class="nx">$ticket</span> <span class="o">=</span> <span class="nx">$ticket_info</span><span class="p">[</span><span class="s1">&#39;ticket&#39;</span><span class="p">];</span>
+    
+    <span class="c1">//拼接字符串</span>
+    <span class="nx">$timestamp</span> <span class="o">=</span> <span class="nx">time</span><span class="p">();</span>
+    <span class="nx">$nonceStr</span> <span class="o">=</span> <span class="nx">$this</span><span class="o">-&gt;</span><span class="nx">createNonceStr</span><span class="p">();</span>
+    <span class="c1">// 这里参数的顺序要按照 key 值 ASCII 码升序排序</span>
+    <span class="nx">$string</span> <span class="o">=</span> <span class="s2">&quot;jsapi_ticket=$ticket&amp;noncestr=$nonceStr&amp;timestamp=$timestamp&amp;url=$url&quot;</span><span class="p">;</span>
+
+    <span class="c1">//使用sha1进行签名</span>
+    <span class="nx">$signature</span> <span class="o">=</span> <span class="nx">sha1</span><span class="p">(</span><span class="nx">$string</span><span class="p">);</span>
+
+    <span class="nx">$signPackage</span> <span class="o">=</span> <span class="nx">array</span><span class="p">(</span>
+      <span class="s2">&quot;appId&quot;</span>     <span class="o">=&gt;</span> <span class="nx">$this</span><span class="o">-&gt;</span><span class="nx">appId</span><span class="p">,</span>
+      <span class="s2">&quot;nonceStr&quot;</span>  <span class="o">=&gt;</span> <span class="nx">$nonceStr</span><span class="p">,</span>
+      <span class="s2">&quot;timestamp&quot;</span> <span class="o">=&gt;</span> <span class="nx">$timestamp</span><span class="p">,</span>
+      <span class="s2">&quot;url&quot;</span>       <span class="o">=&gt;</span> <span class="nx">$url</span><span class="p">,</span>
+      <span class="s2">&quot;signature&quot;</span> <span class="o">=&gt;</span> <span class="nx">$signature</span><span class="p">,</span>
+      <span class="s2">&quot;rawString&quot;</span> <span class="o">=&gt;</span> <span class="nx">$string</span>
+    <span class="p">);</span>
+    <span class="k">return</span> <span class="nx">$signPackage</span><span class="p">;</span> 
+  <span class="p">}</span>
+
+  <span class="kr">private</span> <span class="kd">function</span> <span class="nx">createNonceStr</span><span class="p">(</span><span class="nx">$length</span> <span class="o">=</span> <span class="mi">16</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">$chars</span> <span class="o">=</span> <span class="s2">&quot;abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789&quot;</span><span class="p">;</span>
+    <span class="nx">$str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span><span class="nx">$i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">$i</span> <span class="o">&lt;</span> <span class="nx">$length</span><span class="p">;</span> <span class="nx">$i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">$str</span> <span class="p">.</span><span class="o">=</span> <span class="nx">substr</span><span class="p">(</span><span class="nx">$chars</span><span class="p">,</span> <span class="nx">mt_rand</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nx">strlen</span><span class="p">(</span><span class="nx">$chars</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span> <span class="mi">1</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nx">$str</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="kr">private</span> <span class="kd">function</span> <span class="nx">httpGet</span><span class="p">(</span><span class="nx">$url</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">$curl</span> <span class="o">=</span> <span class="nx">curl_init</span><span class="p">();</span>
+    <span class="nx">curl_setopt</span><span class="p">(</span><span class="nx">$curl</span><span class="p">,</span> <span class="nx">CURLOPT_RETURNTRANSFER</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+    <span class="nx">curl_setopt</span><span class="p">(</span><span class="nx">$curl</span><span class="p">,</span> <span class="nx">CURLOPT_TIMEOUT</span><span class="p">,</span> <span class="mi">500</span><span class="p">);</span>
+    <span class="c1">// 为保证第三方服务器与微信服务器之间数据传输的安全性，所有微信接口采用https方式调用，必须使用下面2行代码打开ssl安全校验。</span>
+    <span class="c1">// 如果在部署过程中代码在此处验证失败，请到 http://curl.haxx.se/ca/cacert.pem 下载新的证书判别文件。</span>
+    <span class="nx">curl_setopt</span><span class="p">(</span><span class="nx">$curl</span><span class="p">,</span> <span class="nx">CURLOPT_SSL_VERIFYPEER</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+    <span class="nx">curl_setopt</span><span class="p">(</span><span class="nx">$curl</span><span class="p">,</span> <span class="nx">CURLOPT_SSL_VERIFYHOST</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+    <span class="nx">curl_setopt</span><span class="p">(</span><span class="nx">$curl</span><span class="p">,</span> <span class="nx">CURLOPT_URL</span><span class="p">,</span> <span class="nx">$url</span><span class="p">);</span>
+
+    <span class="nx">$res</span> <span class="o">=</span> <span class="nx">curl_exec</span><span class="p">(</span><span class="nx">$curl</span><span class="p">);</span>
+    <span class="nx">curl_close</span><span class="p">(</span><span class="nx">$curl</span><span class="p">);</span>
+
+    <span class="k">return</span> <span class="nx">$res</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="kr">private</span> <span class="kd">function</span> <span class="nx">get_php_file</span><span class="p">(</span><span class="nx">$filename</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">trim</span><span class="p">(</span><span class="nx">substr</span><span class="p">(</span><span class="nx">file_get_contents</span><span class="p">(</span><span class="nx">$filename</span><span class="p">),</span> <span class="mi">15</span><span class="p">));</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>

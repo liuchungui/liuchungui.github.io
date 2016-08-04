@@ -1,0 +1,1300 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Ios | liuchungui's Blog]]></title>
+  <link href="http://www.liuchungui.com/blog/categories/ios/atom.xml" rel="self"/>
+  <link href="http://www.liuchungui.com/"/>
+  <updated>2016-08-01T14:44:55+08:00</updated>
+  <id>http://www.liuchungui.com/</id>
+  <author>
+    <name><![CDATA[刘春桂]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Ubuntu下搭建vpn历程]]></title>
+    <link href="http://www.liuchungui.com/blog/2016/04/23/ubuntuxia-da-jian-vpn/"/>
+    <updated>2016-04-23T16:27:39+08:00</updated>
+    <id>http://www.liuchungui.com/blog/2016/04/23/ubuntuxia-da-jian-vpn</id>
+    <content type="html"><![CDATA[<p>去年四月份的时候，和同学一起买了一个香港的服务器，准备搭建一个vpn给自己翻墙用。当时，vpn搭建成功了，但是连上去之后，根本连不了google。后来，去咨询了一下盼哥，盼哥给我介绍了一款很出名的翻墙工具Shadowsocks。于是，到网上搜了一个教程，apt-get install安装，稍微配置一下，在本地电脑下载一个客户端，填写服务器和密码，在浏览器中输入google.com立马就出现了心动的页面，顿时整个人感觉神清气爽，觉得Shadowsocks真是个好东西。于是，使用Shadowsocks翻墙，用到了现在，一直感觉不错。不过，在使用途中，它也存在一定的不足，那就是命令行下无法翻墙，手机上体验不太好（我使用一次就不再使用了）。前几天，由于使用ReactNative开发安卓，在命令行下一定需要翻墙下载google的东西。于是乎，重整了一下vpn，最终还是以失败告终。后来，准备曲线救国，使用Shadowsocks和一些辅助工具进行全局翻墙，查找了网上的教程，搭建后都失败了。最终，在网上下载了一个vpn翻墙工具<code>VPN Unlimited</code>，搞定了自己的问题，但是有时间限制。</p>
+
+<p>今天，按照同学发的一个链接教程重新整一下vpn，又以失败告终，而且VPN启动都启动不起来了，于是乎google到上面继续找教程，找到了一篇<a href="http://my.oschina.net/mn1127/blog/380941">vps ubuntu上搭建pptp服务</a>，按照上面搭建，没想到成功了。
+鉴于以上搭建的不容易，特此记录一下搭建步骤。</p>
+
+<!-- more -->
+
+
+<h2>1、卸载pptpd和iptables，重新安装pptpd</h2>
+
+<pre><code>#卸载pptpd
+$ apt-get autoremove pptpd
+$ apt-get purge pptpd
+
+#卸载iptables
+$ apt-get autoremove iptables*
+$ apt-get purge iptables*
+
+#安装pptpd
+$ apt-get install pptpd
+</code></pre>
+
+<h2>2、配置pptpd</h2>
+
+<h4>（1）首先，编辑pptpd.conf文件，设置localip和remoteip</h4>
+
+<pre><code>$ vim /etc/pptpd.conf
+</code></pre>
+
+<p>查找到localip和remoteip，打开注释进行设置。将localip设置为你的vps的服务器公网ip，不知道可以通过ifconfig查看。remoteip是设置给VPN用户分配的IP段，我这里设置为10.100.0.2-100。</p>
+
+<pre><code>localip VPS_IP
+remoteip 10.100.0.2-100
+</code></pre>
+
+<h4>（2）修改dns设置，设置为google的DNS</h4>
+
+<pre><code>$ vim /etc/ppp/pptpd-options
+</code></pre>
+
+<p>查找到ms-dns，配置dns如下：</p>
+
+<pre><code>ms-dns 8.8.8.8
+ms-dns 8.8.4.4
+</code></pre>
+
+<h4>（3）设置VPN的账号密码</h4>
+
+<p>编辑chap-secrets文件</p>
+
+<pre><code>$ vim /etc/ppp/chap-secrets
+</code></pre>
+
+<p>在chap-secrets文件中添加一行配置</p>
+
+<pre><code>#client           server       secret      IP address
+ liuchungui       pptpd        123456          *
+</code></pre>
+
+<p>其中，liuchungui是VPN的用户名，使用的VPN服务类型是pptpd，密码是123456，*代表不限制IP</p>
+
+<h2>3、启动pptpd服务</h2>
+
+<pre><code>$ /etc/init.d/pptpd restart
+</code></pre>
+
+<p> 输入上面命令，如果提示<code>
+  * Restarting PoPToP Point to Point Tunneling Server pptpd               [ OK ]</code>
+  就说明启动成功了</p>
+
+<h2>4、设置系统的ipv4的转发开关</h2>
+
+<pre><code>$ vim /etc/sysctl.conf
+</code></pre>
+
+<p>编辑<code>/etc/sysctl.conf</code>文件，找到<code>net.ipv4.ip_forward=1</code>，把这行的注释打开并保存。  <br/>
+运行：<code>sysctl -p</code> 让上面的修改立即生效。</p>
+
+<h2>5、配置iptables</h2>
+
+<h4>（1）安装iptables</h4>
+
+<pre><code>$ apt-get install iptables
+</code></pre>
+
+<h4>（2）添加一个NAT，这里特别注意：<code>eth1</code>是vps的ip网卡接口，可以通过ifconfig查看</h4>
+
+<pre><code>$ iptables -t nat -A POSTROUTING -s 10.100.0.0/24 -o eth1 -j MASQUERADE
+</code></pre>
+
+<h4>（3）设置MTU，防止包过大</h4>
+
+<pre><code>$ iptables -A FORWARD -s 10.100.0.0/24 -p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1200
+</code></pre>
+
+<h4>（4）再添加一个NAT，<code>45.62.119.172</code>就是你的vps的公网ip</h4>
+
+<pre><code>$ iptables -t nat -A POSTROUTING -s 10.100.0.0/24 -j SNAT --to-source 45.62.119.172
+</code></pre>
+
+<h4>（5）将iptables规则保存，令重启后规则不丢失：</h4>
+
+<pre><code>$ iptables-save &gt; /etc/iptables-rules
+</code></pre>
+
+<h4>（6）编辑网卡文件，加载网卡时自动加载规则</h4>
+
+<pre><code>$ vim /etc/network/interfaces
+</code></pre>
+
+<p>在<code>interfaces</code>文件末尾加上：<code>pre-up iptables-restore &lt; /etc/iptables-rules</code></p>
+
+<h4>（7）安装iptables配置持久化</h4>
+
+<pre><code>$ apt-get install iptables-persistent
+</code></pre>
+
+<h4>（8）运行保存配置命令</h4>
+
+<pre><code>$ service iptables-persistent start
+</code></pre>
+
+<h2>参考</h2>
+
+<p><a href="http://my.oschina.net/mn1127/blog/380941">vps ubuntu上搭建pptp服务</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[GCD总结]]></title>
+    <link href="http://www.liuchungui.com/blog/2016/04/04/gcdzong-jie/"/>
+    <updated>2016-04-04T19:13:33+08:00</updated>
+    <id>http://www.liuchungui.com/blog/2016/04/04/gcdzong-jie</id>
+    <content type="html"><![CDATA[<h3>GCD的知识点：</h3>
+
+<ol>
+<li>queue分成两种，分别是串行队列(Serial Dispatch Queue)和并行队列（Concurrent Dispatch Queue)。</li>
+<li>串行队列只会创建一个线程，而各个串行队列之间是并行的。</li>
+<li>串行队列个数创建不受限制，也就是通过串行队列创建的线程可以有很多个，但是这样会存在消耗大量内存的问题；而并行队列不会，不管创建多少个并行队列，XNU内核只使用有效管理的线程。</li>
+<li>在iOS6以后，ARC已经实现了GCD的内存管理，所以不用我们去管理它的内存了。</li>
+<li>系统已经为我们提供了两个queue，分别是main queue和global queue，其中main queue是串行队列，global queue是并行队列。</li>
+</ol>
+
+
+<!-- more -->
+
+
+<h2>GCD的API：</h2>
+
+<h3>1、dispatch_set_target_queue</h3>
+
+<p>这个api有两个功能，一是设置dispatch_queue_create创建队列的优先级，二是建立队列的执行阶层。</p>
+
+<p>（1）当使用dispatch_queue_create创建队列的时候，不管是串行还是并行，它们的优先级都是<code>DISPATCH_QUEUE_PRIORITY_DEFAULT</code>级别，而这个API就是可以设置队列的优先级。</p>
+
+<p>如下，将serailQueue设置成<code>DISPATCH_QUEUE_PRIORITY_HIGH</code></p>
+
+<pre><code class="objc">dispatch_queue_t serialQueue = dispatch_queue_create(kBGGCDTestIdentifier, DISPATCH_QUEUE_SERIAL);
+    dispatch_queue_t globalQueue = 
+dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0);
+//注意：被设置优先级的队列是第一个参数。
+dispatch_set_target_queue(serialQueue, globalQueue);
+</code></pre>
+
+<p>（2）使用这个API可以设置队列执行阶层，例如<code>dispatch_set_target_queue(queue1, targetQueue);</code>这样设置时，相当于将queue1指派给targetQueue，如果targetQueue是串行队列，则queue1是串行执行的；如果targetQueue是并行队列，那么queue1是并行的。</p>
+
+<p>当targetQueue为串行队列时，代码：</p>
+
+<pre><code>const char * kBGGCDTestIdentifier = "kBGGCDTestIdentifier";
+void testTargetQueue() {
+    dispatch_queue_t targetQueue = dispatch_queue_create(kBGGCDTestIdentifier, DISPATCH_QUEUE_SERIAL);
+
+    dispatch_queue_t queue1 = dispatch_queue_create(kBGGCDTestIdentifier, DISPATCH_QUEUE_SERIAL);
+    dispatch_queue_t queue2 = dispatch_queue_create(kBGGCDTestIdentifier, DISPATCH_QUEUE_CONCURRENT);
+
+    dispatch_set_target_queue(queue1, targetQueue);
+    dispatch_set_target_queue(queue2, targetQueue);
+
+    dispatch_async(queue1, ^{
+        NSLog(@"queue1 1");
+    });
+    dispatch_async(queue1, ^{
+        NSLog(@"queue1 2");
+    });
+    dispatch_async(queue2, ^{
+        NSLog(@"queue2 1");
+    });
+    dispatch_async(queue2, ^{
+        NSLog(@"queue2 2");
+    });
+    dispatch_async(targetQueue, ^{
+        NSLog(@"target queue");
+    });
+}
+</code></pre>
+
+<p>输出：</p>
+
+<pre><code>2016-03-11 00:03:31.015 BGGCDDemo[23237:6187006] queue1 1
+2016-03-11 00:03:31.015 BGGCDDemo[23237:6187006] queue1 2
+2016-03-11 00:03:31.016 BGGCDDemo[23237:6187006] queue2 1
+2016-03-11 00:03:31.017 BGGCDDemo[23237:6187006] queue2 2
+2016-03-11 00:03:31.018 BGGCDDemo[23237:6187006] target queue
+</code></pre>
+
+<p>当上面代码中targetQueue是并行队列时</p>
+
+<p>输出：</p>
+
+<pre><code>2016-03-11 00:04:48.234 BGGCDDemo[23331:6188776] queue2 1
+2016-03-11 00:04:48.234 BGGCDDemo[23331:6188777] queue1 1
+2016-03-11 00:04:48.234 BGGCDDemo[23331:6188780] queue2 2
+2016-03-11 00:04:48.234 BGGCDDemo[23331:6188786] target queue
+2016-03-11 00:04:48.235 BGGCDDemo[23331:6188777] queue1 2
+</code></pre>
+
+<p>参考：<a href="http://justsee.iteye.com/blog/2233252">http://justsee.iteye.com/blog/2233252</a></p>
+
+<h3>2、dispatch_after</h3>
+
+<p>指定时间执行某些内容，例如，下面一秒后执行打印信息.</p>
+
+<pre><code>  dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        NSLog(@"test");
+    });
+</code></pre>
+
+<h3>3、dispatch_group</h3>
+
+<p>经常会有这么个需求，就是多个queue中所有操作执行完之后，想再执行结束处理，而dispatch_group正是干这个的。它有两种操作可以做到，一种是使用dispatch_group_notify，另外一种是使用dispatch_group_wait。</p>
+
+<p>它们区别是dispatch_group_notify是可以将结束追加到某个队列当中，不会阻塞当前执行的线程；而dispatch_group_wait会阻塞当前执行线程，直到group中所有处理全部执行结束或超过等待的指定时间。当然，可以使用<code>DISPATCH_TIME_NOW</code>就不用等待，然后在主线程的Runloop每次循环中，检查执行是否结束，这样就不会堵塞当前执行的线程了，不过这样实现起来就会麻烦很多。所以，推荐使用dispatch_group_notify。</p>
+
+<p>使用dispatch_group_notify时，代码如下：</p>
+
+<pre><code>void testGroupNotification() {
+    dispatch_queue_t serialQueue = dispatch_queue_create("BG.serailQueue.com", DISPATCH_QUEUE_SERIAL);
+    dispatch_queue_t concurrentQueue = dispatch_queue_create("BG.concurrentQueue.com", DISPATCH_QUEUE_CONCURRENT);
+    dispatch_group_t group = dispatch_group_create();
+
+    dispatch_group_async(group, serialQueue, ^{
+        NSLog(@"serailQueue 1");
+    });
+    dispatch_group_async(group, serialQueue, ^{
+        NSLog(@"serailQueue 2");
+    });
+    dispatch_group_async(group, concurrentQueue, ^{
+        NSLog(@"concurrentQueue 1");
+    });
+    dispatch_group_async(group, concurrentQueue, ^{
+        NSLog(@"concurrentQueue 2");
+    });
+    dispatch_group_notify(group, dispatch_get_main_queue(), ^{
+        NSLog(@"finish!");
+    });
+    NSLog(@"testGroupNotification");
+}
+</code></pre>
+
+<p>使用dispatch_group_wait时，代码如下：</p>
+
+<pre><code>void testGroupWait() {
+    dispatch_queue_t serialQueue = dispatch_queue_create("BG.serailQueue.com", DISPATCH_QUEUE_SERIAL);
+    dispatch_queue_t concurrentQueue = dispatch_queue_create("BG.concurrentQueue.com", DISPATCH_QUEUE_CONCURRENT);
+    dispatch_group_t group = dispatch_group_create();
+
+    dispatch_group_async(group, serialQueue, ^{
+        NSLog(@"serailQueue 1");
+    });
+    dispatch_group_async(group, serialQueue, ^{
+        NSLog(@"serailQueue 2");
+        sleep(1);
+    });
+    dispatch_group_async(group, concurrentQueue, ^{
+        NSLog(@"concurrentQueue 1");
+    });
+    dispatch_group_async(group, concurrentQueue, ^{
+        NSLog(@"concurrentQueue 2");
+    });
+    dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+    NSLog(@"testGroupNotification");
+}
+</code></pre>
+
+<h3>4、dispatch_barrier_async</h3>
+
+<p>dispatch_barrier_async加入的处理，会等待队列中所有的处理结束后才执行barrier当中的处理，而且只有等待barrier执行完之后，才会继续执行后续处理。<strong>使用并行队列和dispatch_barrier_async可以做到很高效的数据库或文件访问</strong>。</p>
+
+<p>测试代码如下：</p>
+
+<pre><code>void testBarrier() {
+    dispatch_queue_t concurrentQueue = dispatch_queue_create("BG.concurrent.com", DISPATCH_QUEUE_CONCURRENT);
+    dispatch_async(concurrentQueue, ^{
+        NSLog(@"reading 1");
+    });
+    dispatch_async(concurrentQueue, ^{
+        NSLog(@"reading 2");
+    });
+    dispatch_async(concurrentQueue, ^{
+        NSLog(@"reading 3");
+    });
+    dispatch_barrier_async(concurrentQueue, ^{
+        NSLog(@"writing");
+    });
+    dispatch_async(concurrentQueue, ^{
+        NSLog(@"reading 4");
+    });
+    dispatch_async(concurrentQueue, ^{
+        NSLog(@"reading 5");
+    });
+}
+</code></pre>
+
+<p>输出结果：</p>
+
+<pre><code>2016-03-11 10:31:47.980 BGGCDDemo[28694:6276100] reading 2
+2016-03-11 10:31:47.980 BGGCDDemo[28694:6276099] reading 1
+2016-03-11 10:31:47.981 BGGCDDemo[28694:6276102] reading 3
+2016-03-11 10:31:47.981 BGGCDDemo[28694:6276102] writing
+2016-03-11 10:31:47.982 BGGCDDemo[28694:6276102] reading 4
+2016-03-11 10:31:47.982 BGGCDDemo[28694:6276099] reading 5
+</code></pre>
+
+<h3>5、dispatch_sync</h3>
+
+<p>与dispatch_async异步不同的是dispatch_sync会等待当前处理结束之后有返回结果时才会继续往下走。与dispatch_group_wait有点类似，当使用dispatch_sync时，当前线程会被阻塞，直到它有返回结果为止。</p>
+
+<p>代码：</p>
+
+<pre><code>void testSync() {
+    dispatch_queue_t serialQueue = dispatch_queue_create("BG.serailQueue.com", DISPATCH_QUEUE_SERIAL);
+    dispatch_queue_t concurrentQueue = dispatch_queue_create("BG.concurrent.com", DISPATCH_QUEUE_CONCURRENT);
+    dispatch_sync(serialQueue, ^{
+        NSLog(@"test");
+    });
+    dispatch_sync(concurrentQueue, ^{
+        NSLog(@"test2");
+    });
+    NSLog(@"finish");
+}
+</code></pre>
+
+<p>输出：</p>
+
+<pre><code>2016-03-11 10:35:43.166 BGGCDDemo[28912:6278490] test
+2016-03-11 10:35:43.167 BGGCDDemo[28912:6278490] test2
+2016-03-11 10:35:43.167 BGGCDDemo[28912:6278490] finish
+</code></pre>
+
+<p>使用dispatch_sync很容易造成死锁，如下代码在主线程中运行就会造成死锁：</p>
+
+<pre><code>    dispatch_sync(dispatch_get_main_queue(), ^{
+        NSLog(@"test");
+    });
+</code></pre>
+
+<p>分析：主线程会等待dispatch_sync函数返回，而dispatch_sync要等block执行完才会返回。而主线程是串行队列，采用FIFO队列执行任务，dispatch_sync加入的block是后加入的，这样的话这个block是得不到执行的，从而产生了死锁。</p>
+
+<p><strong>官方文档指出：dispatch_sync的当前执行队列与提交block执行的目标队列相同时并且是串行队列时将造成死锁。</strong></p>
+
+<p>参考：
+<a href="http://www.jianshu.com/p/44369c02b62a">dispatch_sync死锁问题研究</a>
+<a href="http://www.cnblogs.com/tangbinblog/p/4133481.html">GCD 之线程死锁</a></p>
+
+<h3>6、dispatch_apply</h3>
+
+<p>dispatch_apply函数是dispatch_sync和DISPATCH Group的关联API。该函数按指定的次数将指定的Block追加到指定的队列当中，并等待全部处理执行结束。</p>
+
+<p>代码：</p>
+
+<pre><code>void testApply() {
+    dispatch_queue_t concurrentQueue = dispatch_queue_create("BG.concurrent.com", DISPATCH_QUEUE_CONCURRENT);
+    dispatch_apply(5, concurrentQueue, ^(size_t index) {
+        NSLog(@"%zd", index);
+    });
+    NSLog(@"done!");
+}
+</code></pre>
+
+<p>输出：</p>
+
+<pre><code>2016-03-11 12:08:35.524 BGGCDDemo[32542:6331022] 0
+2016-03-11 12:08:35.524 BGGCDDemo[32542:6331025] 2
+2016-03-11 12:08:35.524 BGGCDDemo[32542:6330953] 1
+2016-03-11 12:08:35.524 BGGCDDemo[32542:6331023] 3
+2016-03-11 12:08:35.525 BGGCDDemo[32542:6331022] 4
+2016-03-11 12:08:35.525 BGGCDDemo[32542:6330953] done!
+</code></pre>
+
+<p><strong>注意：因为dispatch_apply会让当前执行的线程等待，阻塞线程，因此最好将它放在dispatch_async中执行。</strong></p>
+
+<h3>7、dispatch_suspend/dispatch_resume</h3>
+
+<p>dispatch_suspend可以暂停当前队列的执行，dispatch_resume恢复当前队列的执行。
+这两个函数都已经执行的处理没有影响。挂起后，追加到queue中但尚未执行的处理在此之后停止执行。而恢复则使得这些处理能够继续执行。</p>
+
+<h3>8、Dispatch Semaphore</h3>
+
+<p>信号量，更细粒度的处理资源竞争的方案。  <br/>
+主要用到三个方法dispatch_semaphore_create、dispatch_semaphore_wait、dispatch_semaphore_signal。</p>
+
+<ul>
+<li>dispatch_semaphore_create：创建一个dispatch_semaphore_t，并且初始化Dispatch Semaphore的计数值；</li>
+<li>dispatch_semaphore_wait：等待Dispatch Semaphore的计数值大于等于1，如果大于等于1，则计数值减1并且往下继续执行；如果等于0，则一直等待计数值增加。</li>
+<li>dispatch_semaphore_sigal：将Dispatch Semaphore的计数值加1</li>
+</ul>
+
+
+<p>这三个方法配合使用，如下：</p>
+
+<pre><code>void testSemaphore() {
+    dispatch_queue_t concurrentQueue = dispatch_queue_create("BG.concurrentQueue.com", DISPATCH_QUEUE_CONCURRENT);
+    dispatch_semaphore_t semaphore = dispatch_semaphore_create(1);
+    NSMutableArray *array = [NSMutableArray array];
+    for (NSInteger i = 0; i &lt; 10000; i++) {
+        dispatch_async(concurrentQueue, ^{
+            dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+            [array addObject:[NSNumber numberWithInteger:i]];
+            dispatch_semaphore_signal(semaphore);
+            NSLog(@"%zd", i);
+        });
+    }
+}
+</code></pre>
+
+<h3>9、dispatch_once</h3>
+
+<p>保证在应用程序中只执行一次指定的处理，一般应用场景就是单例了。</p>
+
+<h3>10、dispatch_source</h3>
+
+<p>与Dispatch Queue不同的是，dispatch_source是可以进行取消的，而且可以添加取消的block回调；dispatch_source可以做异步读取文件映像、定时器、监听文件目录变化等等，具体请见下表：</p>
+
+<table>
+<thead>
+<tr>
+<th style="text-align:left;"> 方法 </th>
+<th style="text-align:left;"> 说明 </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;"> DISPATCH_SOURCE_TYPE_DATA_ADD </td>
+<td style="text-align:left;"> 数据增加 </td>
+</tr>
+<tr>
+<td style="text-align:left;"> DISPATCH_SOURCE_TYPE_DATA_OR </td>
+<td style="text-align:left;"> 数据OR </td>
+</tr>
+<tr>
+<td style="text-align:left;"> DISPATCH_SOURCE_TYPE_MACH_SEND </td>
+<td style="text-align:left;"> Mach端口发送 </td>
+</tr>
+<tr>
+<td style="text-align:left;"> DISPATCH_SOURCE_TYPE_MACH_RECV </td>
+<td style="text-align:left;"> Mach端口接收 </td>
+</tr>
+<tr>
+<td style="text-align:left;"> DISPATCH_SOURCE_TYPE_MEMORYPRESSURE </td>
+<td style="text-align:left;"> 内存情况 </td>
+</tr>
+<tr>
+<td style="text-align:left;"> DISPATCH_SOURCE_TYPE_PROC </td>
+<td style="text-align:left;"> 进程事件 </td>
+</tr>
+<tr>
+<td style="text-align:left;"> DISPATCH_SOURCE_TYPE_READ </td>
+<td style="text-align:left;"> 读数据 </td>
+</tr>
+<tr>
+<td style="text-align:left;"> DISPATCH_SOURCE_TYPE_SIGNAL </td>
+<td style="text-align:left;"> 信号 </td>
+</tr>
+<tr>
+<td style="text-align:left;"> DISPATCH_SOURCE_TYPE_TIMER </td>
+<td style="text-align:left;"> 定时器 </td>
+</tr>
+<tr>
+<td style="text-align:left;"> DISPATCH_SOURCE_TYPE_VNODE </td>
+<td style="text-align:left;"> 文件系统变化 </td>
+</tr>
+<tr>
+<td style="text-align:left;"> DISPATCH_SOURCE_TYPE_WRITE </td>
+<td style="text-align:left;"> 文件写入 </td>
+</tr>
+</tbody>
+</table>
+
+
+<p>定时器代码：</p>
+
+<pre><code>- (void)testSourceTimer {
+    //定时器在主线程运行
+    dispatch_source_t timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_main_queue());
+    //设置定时器每隔2秒调用一次，允许延迟1秒
+    dispatch_source_set_timer(timer, DISPATCH_TIME_NOW, 2.0 * NSEC_PER_SEC, 1.0 * NSEC_PER_SEC);
+    //定时器执行的处理
+    dispatch_source_set_event_handler(timer, ^{
+        NSLog(@"timer work");
+//        dispatch_source_cancel(timer);
+    });
+    //定时器取消所做的处理
+    dispatch_source_set_cancel_handler(timer, ^{
+        NSLog(@"timer cancel!");
+    });
+    //需要将定时器设置为全局变量，否则就会被提前释放
+    self.timer = timer;
+    //启动定时器
+    dispatch_resume(timer);
+}
+</code></pre>
+
+<p>监听文件夹变化代码：</p>
+
+<pre><code>- (void)testSourceForObservFile {
+    //创建文件夹，写入文件，用来进行测试
+    NSString *cacheDirectory = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) firstObject];
+    NSString *directory = [NSString stringWithFormat:@"%@/test", cacheDirectory];
+    if(![[NSFileManager defaultManager] fileExistsAtPath:directory isDirectory:nil]) {
+        [[NSFileManager defaultManager] createDirectoryAtPath:directory withIntermediateDirectories:YES attributes:nil error:nil];
+    }
+    NSString *filePath = [NSString stringWithFormat:@"%@/test.txt", directory];
+    if(![[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
+        [@"hello" writeToFile:filePath atomically:YES encoding:NSUTF8StringEncoding error:nil];
+    }
+
+    NSURL *directoryURL = [NSURL URLWithString:directory]; // assume this is set to a directory
+    int const fd = open([[directoryURL path] fileSystemRepresentation], O_EVTONLY);
+    if (fd &lt; 0) {
+        char buffer[80];
+        strerror_r(errno, buffer, sizeof(buffer));
+        NSLog(@"Unable to open \"%@\": %s (%d)", [directoryURL path], buffer, errno);
+        return;
+    }
+    //设置源监听文件夹的变化，其中监听的是写入、删除、更改名字
+    dispatch_source_t source = dispatch_source_create(DISPATCH_SOURCE_TYPE_VNODE, fd,
+                                                      DISPATCH_VNODE_WRITE | DISPATCH_VNODE_DELETE | DISPATCH_VNODE_RENAME, DISPATCH_TARGET_QUEUE_DEFAULT);
+    dispatch_source_set_event_handler(source, ^(){
+        //获取源变化的具体标志
+        unsigned long const data = dispatch_source_get_data(source);
+        if (data &amp; DISPATCH_VNODE_WRITE) {
+            NSLog(@"The directory changed.");
+        }
+        if (data &amp; DISPATCH_VNODE_DELETE) {
+            NSLog(@"The directory has been deleted.");
+        }
+    });
+    dispatch_source_set_cancel_handler(source, ^(){
+        close(fd);
+    });
+    self.source = source;
+    dispatch_resume(self.source);
+}
+</code></pre>
+
+<p>参考：<a href="https://github.com/ming1016/study/wiki/%E7%BB%86%E8%AF%B4GCD%EF%BC%88Grand-Central-Dispatch%EF%BC%89%E5%A6%82%E4%BD%95%E7%94%A8">细说GCD如何使用</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Runtime之类与对象总结]]></title>
+    <link href="http://www.liuchungui.com/blog/2016/03/14/runtimezhi-lei-yu-dui-xiang-zong-jie/"/>
+    <updated>2016-03-14T23:30:27+08:00</updated>
+    <id>http://www.liuchungui.com/blog/2016/03/14/runtimezhi-lei-yu-dui-xiang-zong-jie</id>
+    <content type="html"><![CDATA[<p>以前在使用<a href="https://github.com/elado/jastor">jastor</a>解析Json成model的时候里面涉及到了Runtime里面的知识，所以专门看了<a href="http://blog.jobbole.com/79566/">Objective-C Runtime 运行时之一到六</a>这一系列的文章，整个Jastor也就懂了，现在非常出名的框架<a href="https://github.com/Mantle/Mantle">Mantle</a>，<a href="https://github.com/icanzilb/JSONModel">JSONModel</a>也都是差不多的原理。但是，一年之后的今天重新再看的时候，发现大概思路知道，但是具体的一些细节实现需要写的时候，却一时上不了手，所以重新看了<a href="http://blog.jobbole.com/79566/">Objective-C Runtime 运行时</a>一系列，然后整理了一下，细节部分附上一些代码，方便以后查找。</p>
+
+<!-- more -->
+
+
+<h2>一、对象、类、元类之间的关系</h2>
+
+<ul>
+<li>每个对象是一个objc_object结构体，此结构体只有一个元素即指向其类的isa指针，isa指针的类型为Class。(Class的结构体后面有）</li>
+<li>每个类也是一个对象，它的isa指针指向它的元类(meta class)，一般元类都是唯一的。</li>
+<li>每个元类也是一个对象，它的isa指针指向NSObject的元类，而NSObject的元类指向它本身（即NSObject元类）</li>
+<li>而每个类的super class都指向它的父类，直至NSObject，NSObject的super class为null。</li>
+<li>每个元类的super class都指向它的父元类，直至NSObject元类。NSObject元类的父元类是NSObject，NSObject的父类是nil。</li>
+</ul>
+
+
+<p>注：上面使用代码测试过，主要使用object_getClass、class_getSuperClass和objc_getMetaClass来获取类、父类、元类，然后打印指针进行查看。</p>
+
+<h2>二、类与对象基础数据结构</h2>
+
+<p>Objective-C类是由Class类型来表示的，它实际上是一个指向objc_class结构体的指针，它的定义如下：</p>
+
+<pre><code class="objc">typedef struct objc_class *Class;
+</code></pre>
+
+<p>查看objc/runtime.h中objc_class结构体的定义如下：</p>
+
+<pre><code>struct objc_class {
+    Class isa  OBJC_ISA_AVAILABILITY;
+
+#if !__OBJC2__
+    Class super_class                       OBJC2_UNAVAILABLE;  // 父类
+    const char *name                        OBJC2_UNAVAILABLE;  // 类名
+    long version                            OBJC2_UNAVAILABLE;  // 类的版本信息，默认为0
+    long info                               OBJC2_UNAVAILABLE;  // 类信息，供运行期使用的一些位标识
+    long instance_size                      OBJC2_UNAVAILABLE;  // 该类的实例变量大小
+    struct objc_ivar_list *ivars            OBJC2_UNAVAILABLE;  // 该类的成员变量链表
+    struct objc_method_list **methodLists   OBJC2_UNAVAILABLE;  // 方法定义的链表
+    struct objc_cache *cache                OBJC2_UNAVAILABLE;  // 方法缓存
+    struct objc_protocol_list *protocols    OBJC2_UNAVAILABLE;  // 协议链表
+#endif
+
+} OBJC2_UNAVAILABLE;
+</code></pre>
+
+<h2>三、调用方法时的流程</h2>
+
+<p>首先到当前对象所属的类中的方法缓存列表中查找这个方法，如果没有则到该类的方法定义链表中查找方法，如果查找到，则执行这个方法将返回值返回给原调用对象，并且将这个方法加入缓存cache当中；如果没有查找到则通过super_class找到它的父类，到它的父类中查找。</p>
+
+<p>想了解更多Runtime方法调用知识，请看<a href="http://blog.jobbole.com/79574/">Objective-C Runtime 运行时之三：方法与消息</a></p>
+
+<h2>四、类与对象的操作函数</h2>
+
+<p>runtime提供了大量的函数来操作类与对象，操作类的函数一般前缀是class，而操作对象的函数一般前缀是objc。</p>
+
+<h4>1、类相关操作函数</h4>
+
+<pre><code>// 获取类的类名
+const char * class_getName ( Class cls );
+// 获取类的父类
+Class class_getSuperclass ( Class cls );
+
+// 判断给定的Class是否是一个元类
+BOOL class_isMetaClass ( Class cls );
+// 获取实例大小
+size_t class_getInstanceSize ( Class cls );
+</code></pre>
+
+<h4>2、成员变量相关操作函数</h4>
+
+<pre><code>// 获取类中指定名称实例成员变量的信息
+Ivar class_getInstanceVariable ( Class cls, const char *name );
+
+// 获取类成员变量的信息
+Ivar class_getClassVariable ( Class cls, const char *name );
+
+// 添加成员变量
+BOOL class_addIvar ( Class cls, const char *name, size_t size, uint8_t alignment, const char *types );
+
+// 获取整个成员变量列表
+Ivar * class_copyIvarList ( Class cls, unsigned int *outCount );
+</code></pre>
+
+<p>需要注意：</p>
+
+<ul>
+<li>class_copyIvarList：获取的是所有成员实例属性，与property获取不一样。</li>
+<li>class_addIvar: <strong>OC不支持往已存在的类中添加实例变量</strong>，因此不管是系统库提供的类，还是我们自定义的类，都无法动态给它添加成员变量。<strong>但，如果是我们通过运行时来创建的类，我们可以使用class_addIvar来添加。不过，需要注意的是，这个方法只能在objc_allocateClassPair函数与objc_registerClassPair之间调用。</strong>另外，<strong>这个类也不能是元类</strong>。</li>
+</ul>
+
+
+<p>代码测试：</p>
+
+<pre><code>/**
+ *  测试成员变量
+ */
+- (void)testIvar {
+    unsigned int outCount;
+    if(class_addIvar([Student class], "_hell", sizeof(id), log2(sizeof(id)), "@")) {
+        NSLog(@"Add Ivar Success!");
+    }
+    else {
+        NSLog(@"Add Ivar failed!");
+    }
+    Ivar *ivarList = class_copyIvarList([Student class], &amp;outCount);
+    for (unsigned int i = 0; i &lt; outCount; i++) {
+        Ivar ivar = ivarList[i];
+        const char *ivarName = ivar_getName(ivar);
+        ptrdiff_t offset = ivar_getOffset(ivar);
+        const char *types = ivar_getTypeEncoding(ivar);
+        NSLog(@"ivar:%s, offset:%zd, type:%s", ivarName, offset, types);
+    }
+    free(ivarList);
+}
+</code></pre>
+
+<p>注意：class_addIvar中第三个参数设置类型的大小，第四个参数设置对齐，对齐传递log2(size)，具体原因参考：<a href="http://stackoverflow.com/questions/33184826/what-does-class-addivars-alignment-do-in-objective-c">http://stackoverflow.com/questions/33184826/what-does-class-addivars-alignment-do-in-objective-c</a></p>
+
+<h4>3、属性操作函数</h4>
+
+<pre><code>// 获取指定的属性
+objc_property_t class_getProperty ( Class cls, const char *name );
+
+// 获取属性列表
+objc_property_t * class_copyPropertyList ( Class cls, unsigned int *outCount );
+
+// 为类添加属性
+BOOL class_addProperty ( Class cls, const char *name, const objc_property_attribute_t *attributes, unsigned int attributeCount );
+
+// 替换类的属性
+void class_replaceProperty ( Class cls, const char *name, const objc_property_attribute_t *attributes, unsigned int attributeCount );
+</code></pre>
+
+<p>这一种方法也是针对ivar来操作的，不过它只操作那些property的值，包括扩展中的property。</p>
+
+<p>代码实践：</p>
+
+<pre><code>- (void)testProperty {
+    /**
+     *  添加property
+     */
+    objc_property_attribute_t attribute1 = {"T", "@\"NSString\""};
+    objc_property_attribute_t attribute2 = {"C", ""};
+    objc_property_attribute_t attribute3 = {"N", ""};
+    objc_property_attribute_t attribute4 = {"V", "_lcg"};
+    objc_property_attribute_t attributesList[] = {attribute1, attribute2, attribute3, attribute4};
+    if(class_addProperty([Student class], "lcg", attributesList, 4)) {
+        NSLog(@"add property success!");
+    }
+    else {
+        NSLog(@"add property failure!");
+    }
+
+    /**
+     *  打印property的name和property_attribute_t
+     */
+    unsigned int outCount;
+    objc_property_t *propertyList = class_copyPropertyList([Student class], &amp;outCount);
+    for (unsigned int i = 0; i &lt; outCount; i++) {
+        objc_property_t property = propertyList[i];
+        const char *propertyName = property_getName(property);
+        const char *attribute = property_getAttributes(property);
+        NSLog(@"propertyName: %s, attribute: %s", propertyName, attribute);
+
+        unsigned int attributeCount;
+        objc_property_attribute_t *attributeList = property_copyAttributeList(property, &amp;attributeCount);
+        for (unsigned int j = 0; j &lt; attributeCount; j++) {
+            objc_property_attribute_t attribute = attributeList[j];
+            const char *name = attribute.name;
+            const char *value = attribute.value;
+            NSLog(@"attribute name: %s, value: %s", name, value);
+        }
+    }
+}
+</code></pre>
+
+<p>上面代码有几个知识点需要说一下：</p>
+
+<p>(1) 其中property_attribute的相关内容需要说明下。</p>
+
+<p>   property_attribute为<strong>T@&ldquo;NSString&rdquo;,&amp;,N,V_exprice</strong>时：</p>
+
+<ul>
+<li><strong>T</strong> 是固定的，放在第一个</li>
+<li><strong>@&ldquo;NSString&rdquo;</strong> 代表这个property是一个字符串对象</li>
+<li><strong>&amp;</strong> 代表强引用，其中与之并列的是：'C'代表Copy，'&amp;&lsquo;代表强引用，'W'表示weak，assign为空，默认为assign。</li>
+<li><strong>N</strong> 区分的nonatomic和atomic，默认为atomic，atomic为空，'N'代表是nonatomic</li>
+<li><strong>V_exprice</strong> V代表变量，后面紧跟着的是成员变量名，代表这个property的成员变量名为_exprice。</li>
+</ul>
+
+
+<p> property_attribute为<strong>T@&ldquo;NSNumber&rdquo;,R,N,V_yearsOld</strong>时：</p>
+
+<ul>
+<li><strong>T</strong> 是固定的，放在第一个</li>
+<li><strong>@&ldquo;NSNumber&rdquo;</strong> 代表这个property是一个NSNumber对象</li>
+<li><strong>R</strong> 代表readOnly属性，readwrite时为空</li>
+<li><strong>N</strong> 区分的nonatomic和atomic，默认为atomic，atomic为空，'N'代表是nonatomic</li>
+<li><strong>V_yearsOld</strong> V代表变量，后面紧跟着的是成员变量名，代表这个property的成员变量名为_yearsOld。</li>
+</ul>
+
+
+<p>使用例子参考：<a href="http://www.tuicool.com/articles/aY3Ujii">http://www.tuicool.com/articles/aY3Ujii</a>  <br/>
+官方参考：<a href="https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Articles/ocrtPropertyIntrospection.html#//apple_ref/doc/uid/TP40008048-CH101-SW6">Property Type</a></p>
+
+<p>（2） 添加property，property_attribute_t是一个结构体，没有具体创建的方法，我们就只能使用{}这样结构体直接赋值过去。而且，添加property成功之后，它并不会生成<strong>实例属性、setter方法和getter方法</strong>。如果要真正调用的话，还需要我们自己添加对应的setter和getter方法。  <br/>
+详情使用请见：<a href="http://blog.csdn.net/meegomeego/article/details/18356169">http://blog.csdn.net/meegomeego/article/details/18356169</a></p>
+
+<h4>4、协议相关函数</h4>
+
+<pre><code>// 添加协议
+BOOL class_addProtocol ( Class cls, Protocol *protocol );
+
+// 返回类是否实现指定的协议
+BOOL class_conformsToProtocol ( Class cls, Protocol *protocol );
+
+// 返回类实现的协议列表
+Protocol * class_copyProtocolList ( Class cls, unsigned int *outCount );
+</code></pre>
+
+<p>代码实践：</p>
+
+<pre><code>- (void)testProtocolList {
+    //添加协议
+    Protocol *p = @protocol(StudentDataSource);
+    if(class_addProtocol([Student class], p)) {
+        NSLog(@"添加协议成功!");
+    }
+    else {
+        NSLog(@"添加协议失败!");
+    }
+
+    //判断是否实现了指定的协议
+    if(class_conformsToProtocol([Student class], p)) {
+        NSLog(@"遵循 %s协议", protocol_getName(p));
+    }
+    else {
+        NSLog(@"不遵循 %s协议", protocol_getName(p));
+    }
+
+    //获取类的协议列表
+    unsigned int outCount;
+    Protocol * __unsafe_unretained *protocolList = class_copyProtocolList([Student class], &amp;outCount);
+    for (unsigned int i = 0; i &lt; outCount; i++) {
+        Protocol *protocol = protocolList[i];
+        const char *name = protocol_getName(protocol);
+        NSLog(@"%s", name);
+    }
+    free(protocolList);
+}
+</code></pre>
+
+<p><strong>注意：可以使用runtime添加协议</strong></p>
+
+<h4>6、版本号（Version)</h4>
+
+<p>版本的使用两个方法，获取版本和设置版本，请看代码：</p>
+
+<pre><code>- (void)testVersion {
+    int version = class_getVersion([Student class]);
+    NSLog(@"%d", version);
+    class_setVersion([Student class], 100);
+    version = class_getVersion([Student class]);
+    NSLog(@"%d", version);
+}
+</code></pre>
+
+<h2>五、动态创建类和对象</h2>
+
+<h4>1、动态创建类</h4>
+
+<p>涉及以下函数</p>
+
+<pre><code>// 创建一个新类和元类
+Class objc_allocateClassPair ( Class superclass, const char *name, size_t extraBytes );
+
+// 销毁一个类及其相关联的类
+void objc_disposeClassPair ( Class cls );
+
+// 在应用中注册由objc_allocateClassPair创建的类
+void objc_registerClassPair ( Class cls );
+</code></pre>
+
+<p>注意：objc_disposeClassPair只能销毁由objc_allocateClassPair创建的类，当有实例存在或者它的子类存在时，调用这个函数会抛出异常。</p>
+
+<p>代码实践：</p>
+
+<pre><code>- (void)testCreateClass {
+    Class cls = objc_allocateClassPair([Person class], "Teacher", 0);
+    //添加成员变量，只能在运行时创建类添加，并且是在objc_allocateClassPair与objc_registerClassPair之间
+    if(class_addIvar(cls, "_level", sizeof(id), log2(sizeof(id)), "@\"NSString\"")) {
+        NSLog(@"添加_level成员变量成功");
+    }
+    else {
+        NSLog(@"添加_level成员变量失败");
+    }
+    objc_registerClassPair(cls);
+
+    /**
+     *  当有实例存在不能销毁类，所以讲代码放到里面
+     */
+    {
+        //创建对象
+        Person *p = [[cls alloc] init];
+        NSLog(@"%@", [p class]);
+        [p printInfo];
+        //设置值
+        [p setValue:@"高级讲师" forKey:@"level"];
+        NSString *level = [p valueForKey:@"level"];
+        NSLog(@"level: %@", level);
+    }
+
+    //销毁类，当有实例存在的时候是不能销毁类
+    objc_disposeClassPair(cls);
+}
+</code></pre>
+
+<h2>六、实例操作函数</h2>
+
+<pre><code>// 返回指定对象的一份拷贝
+id object_copy ( id obj, size_t size );
+
+// 释放指定对象占用的内存
+id object_dispose ( id obj );
+// 修改类实例的实例变量的值
+Ivar object_setInstanceVariable ( id obj, const char *name, void *value );
+
+// 获取对象实例变量的值
+Ivar object_getInstanceVariable ( id obj, const char *name, void **outValue );
+
+// 返回指向给定对象分配的任何额外字节的指针
+void * object_getIndexedIvars ( id obj );
+
+// 返回对象中实例变量的值
+id object_getIvar ( id obj, Ivar ivar );
+
+// 设置对象中实例变量的值
+void object_setIvar ( id obj, Ivar ivar, id value );
+// 返回给定对象的类名
+const char * object_getClassName ( id obj );
+
+// 返回对象的类
+Class object_getClass ( id obj );
+
+// 设置对象的类
+Class object_setClass ( id obj, Class cls );
+</code></pre>
+
+<p>实践代码：</p>
+
+<pre><code>- (void)testInstance {
+    Person *p = [Person new];
+    //object_copy在ARC下不能使用
+//    p = object_copy(p, class_getInstanceSize([Student class]));
+    //将p的isa指向Student
+    object_setClass(p, [Student class]);
+    [(Student *)p setName:@"Jack"];
+}
+</code></pre>
+
+<p>这里只是简单的将p这个对象的class设置为Student类，其实就是将p对象的isa指针指向Student类，KVO中的isa-swizzling其实就是这样干的。当调用setName:的方法的时候，就调用到了Student类中的setName。不过，这里调用Person类没有，而Student类有的方法会崩溃，报错Heap buffer overflow，就算是在非ARC下使用object_copy也是一样。</p>
+
+<h2>七、获取类的定义</h2>
+
+<pre><code>// 获取已注册的类定义的列表
+int objc_getClassList ( Class *buffer, int bufferCount );
+
+// 创建并返回一个指向所有已注册类的指针列表
+Class * objc_copyClassList ( unsigned int *outCount );
+
+// 返回指定类的类定义
+Class objc_lookUpClass ( const char *name );
+Class objc_getClass ( const char *name );
+Class objc_getRequiredClass ( const char *name );
+
+// 返回指定类的元类
+Class objc_getMetaClass ( const char *name );
+</code></pre>
+
+<p>objc_getClassList和objc_copyClassList都是获取所有已注册的类；而objc_lookUpClass获取指定的类，如果没有注册则返回nil；objc_getRequiredClass也是获取指定的类，不过如果这个类不存则，则会崩溃；objc_getMetaClass专门用来获取类的元类，每个类都有一个有效并且唯一的元类，如果这个类没有注册则返回nil。</p>
+
+<p>代码实践：</p>
+
+<pre><code>- (void)testGetClass {
+    /**
+     *  第一种获取所有注册的类
+     */
+    Class *bufferClass;
+    int numClasses;
+    numClasses = objc_getClassList(NULL, 0);
+    if(numClasses &gt; 0) {
+        bufferClass = (Class *)malloc(sizeof(Class)*numClasses);
+        numClasses = objc_getClassList(bufferClass, numClasses);
+        NSLog(@"numer of classes: %d", numClasses);
+        for (int i = 0; i &lt; numClasses; i++) {
+            Class cls = bufferClass[i];
+            NSLog(@"class name: %s", class_getName(cls));
+        }
+        free(bufferClass);
+    }
+
+    /**
+     *  第二种获取所有注册的类
+     */
+    unsigned int outCount;
+    Class *classLiset = objc_copyClassList(&amp;outCount);
+    for (unsigned int i = 0; i &lt; outCount; i++) {
+        Class cls = classLiset[i];
+        NSLog(@"class name: %s", class_getName(cls));
+    }
+    free(classLiset);
+}
+</code></pre>
+
+<p>第二种获取所有注册的类比第一种简单多了，建议使用第二种。</p>
+
+<h2>参考</h2>
+
+<p><a href="http://blog.jobbole.com/79566/">Objective-C Runtime 运行时之一：类与对象</a></p>
+
+<p><a href="https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Articles/ocrtTypeEncodings.html#//apple_ref/doc/uid/TP40008048-CH100">Type Encodings</a></p>
+
+<p><a href="https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Articles/ocrtPropertyIntrospection.html#//apple_ref/doc/uid/TP40008048-CH101-SW6">Property Type</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[BGSession一个基于NSUserDefaults实现的轻量级本地数据存储]]></title>
+    <link href="http://www.liuchungui.com/blog/2016/03/04/bgsession/"/>
+    <updated>2016-03-04T16:35:38+08:00</updated>
+    <id>http://www.liuchungui.com/blog/2016/03/04/bgsession</id>
+    <content type="html"><![CDATA[<p><a href="https://github.com/liuchungui/BGSession">BGSession</a>是一个基于NSUserDefaults实现的轻量级数据存储，你只需要简单的继承它，给它添加属性，设置属性的值，就能通过NSUserDefaults同步到本地。</p>
+
+<!-- more -->
+
+
+<h2>BGSession的由来</h2>
+
+<p>在昨天以前，对于一些轻量级数据，我一共使用过三种方案。</p>
+
+<p>第一种，直接使用NSUserDefaults进行读取，代码如下：</p>
+
+<pre><code class="objc">    //写入
+    [[NSUserDefaults standardUserDefaults] setValue:@"Jack" forKey:@"UserDefaults_userName"];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+
+    //读取
+    NSString *userName = [[NSUserDefaults standardUserDefaults] valueForKey:@"UserDefaults_userName"];
+</code></pre>
+
+<p>第二种，数据归档，代码如下：</p>
+
+<pre><code>    //使用归档写入
+    NSString *userName = @"Jack";
+    NSString *filePath = [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:@"UserNameFile"];
+    [NSKeyedArchiver archiveRootObject:userName toFile:filePath];
+
+    //使用解归档读取
+    userName = [NSKeyedUnarchiver unarchiveObjectWithFile:filePath];
+</code></pre>
+
+<p>第三种，建立一个全局的单例，然后给定相应的属性值，存储时的代码如下：</p>
+
+<pre><code>    //写入
+    [BGGlobal sharedGlobal].userName = @"Jack";
+    //写入文件，我使用的是将整个对象归档到一个文件当中
+    [BGGlobal writeToFile];
+
+    //读取
+    NSString *userName = [BGGlobal sharedGlobal].userName;
+</code></pre>
+
+<p> 比较上面三种方案：  <br/>
+ 第一种我使用过之后就再也不怎么用了，有段时间几乎遗忘了它，因为使用它真的很麻烦，打出<code>[NSUserDefaults standardUserDefaults]</code>已经感觉很长了，后面还需要输入一个自己定义的key值，虽然可以全局定义常量，但是当常量够多的时候，也不能一时找到，而且设置值之后，如果要写入磁盘，还需要使用<code>[[NSUserDefaults standardUserDefaults] synchronize]</code>同步到本地；读取时和写入类似，需要一个key值。</p>
+
+<p> 第二种，数据归档和第一种一样，存取时比较麻烦，而且因为归档的时候需要不停的读取文件，性能也不好。</p>
+
+<p> 第三种，在全局单例实现<code>NSCoding</code>协议，只需要添加属性值，就可以使用点语法直接存取，存取非常的方便。存储本地时，和<code>[[NSUserDefaults standardUserDefaults] synchronize]</code>类似，使用<code>[BGGlobal writeToFile]</code>全局归档写入文件。</p>
+
+<p> 比较这三种方案，我选择了第三种。第二种，直接舍弃；第一种虽然在性能比第二种更优，但是使用不是很方便，况且我们这是存储轻量级数据，性能差异根本看不出来什么。</p>
+
+<p> 但，在使用过程中，我们遇到了一些问题，就是<code>[BGGlobal writeToFile]</code>会忘记写，从而造成了bug。而且，在整个工程项目中<code>[BGGlobal writeToFile]</code>出现的次数特别的多，这一步是否可以优化掉？</p>
+
+<p> 后来，一致商议，我们项目中将全局单例的global中归档写入文件的方式替换成NSUserDefaults的存储方式，然后在内部实现了同步本地的操作。这样只要我们在外面使用设置新的值时，它会自动同步到本地，而且性能方面更佳。</p>
+
+<p> 但是，在使用过一段时间之后，我发现并不是很方便，因为在使用的时候，##每添加一个字段都需要做如下两步##。</p>
+
+<pre><code> //1、定义一个常量来作为NSUserDefaults的key
+ static NSString *const kSessionUserName = @"kSessionUserName";
+ //2、在全局单例内部实现getter和setter方法
+ - (void)setUserName:(NSString *)userName{
+    [self setValue:userName forKey:kSessionUserName];
+ }
+ - (NSString *)userName{
+    return [self getValueForKey:kSessionUserName];
+ }
+</code></pre>
+
+<p> 这些步骤我们是否可以完全省略呢？</p>
+
+<p> 在一次我自己做项目的时候，我使用全局单例舍弃NSUserDefaults进行存储，仍然使用的是归档的形式，而且那个全局单例继承的是<a href="https://github.com/elado/jastor">jastor</a>，它内部自己实现了归档协议，我只需要每次使用的时候，多添加<code>[BGGlobal writeToFile]</code>同步到本地就行了，比前面使用NSUserDefaults方便很多。</p>
+
+<p> 但是，我一直都认为有更好的实现方案，终于在看runtime和KVO东西的时候想到了一种方案。于是，立马回家写了一个实现了<a href="https://github.com/liuchungui/BGSession">BGSession</a>。</p>
+
+<h2>BGSession实现原理</h2>
+
+<p> BGSession是一个全局单例，主要采用的是KVC/KVO和Runtime进行实现的。使用BGSession作为轻量级数据存储时，只需要继承BGSession，然后在BGSession的派生类添加相关的属性。当给这些属性设置新的值后，BGSession会监听到属性值的变化，然后使用KVC自动将它同步到NSUserDefaults。这样，存取时，我们就可以当做使用单例一样使用，简单方便。</p>
+
+<h2>Github地址</h2>
+
+<p><a href="https://github.com/liuchungui/BGSession">https://github.com/liuchungui/BGSession</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[UICollectionView动画]]></title>
+    <link href="http://www.liuchungui.com/blog/2015/11/24/uicollectionviewdong-hua/"/>
+    <updated>2015-11-24T00:00:26+08:00</updated>
+    <id>http://www.liuchungui.com/blog/2015/11/24/uicollectionviewdong-hua</id>
+    <content type="html"><![CDATA[<h2>一、简单使用</h2>
+
+<p>UICollectionView更新事件有四种分别是<code>插入</code>、<code>删除</code>、<code>刷新</code>、<code>移动</code>，
+api使用起来和UITableView类似，具体可以自己在代码中找，如果需要执行多个更新事件，可以放到performBatchUpdates中的updates闭包中作为一组动画，然后全部执行完之后通过completion调回。</p>
+
+<pre><code class="swift">    collectionView.performBatchUpdates({ () -&gt; Void in
+                collectionView.insertItemsAtIndexPaths(insertIndexPaths)
+                collectionView.moveItemAtIndexPath(currentIndexPath, toIndexPath: toIndexPath)
+                }, completion: { (isFinish) -&gt; Void in
+            })
+</code></pre>
+
+<h2>二、UICollectionView动画</h2>
+
+<p>四种不同的更新事件，系统默认会带有动画，不过是比较简单的。我们可以自定义layout或者继承flowLayout，在内部实现我们自己想要的动画。下面，我们来说说动画的流程，以及系统默认的四种动画内部是如何的，并且通过代码来修改达到自己想要的动画。</p>
+
+<!-- more -->
+
+
+<h4>CollectionView动画流程</h4>
+
+<p>当我们在外部调用CollectionView相关的api去<code>插入</code>、<code>删除</code>、<code>刷新</code>、<code>移动</code>cell时，首先会通过layout中的<code>layoutAttributesForElementsInRect</code>方法获取更新以后的布局信息，然后通过<code>prepareForCollectionViewUpdates</code>方法来通知layout哪些内容将会发生改变。之后，通过调用layout中的<code>initialLayoutAttributesForAppearingItemAtIndexPath</code>、<code>finalLayoutAttributesForDisappearingItemAtIndexPath</code>方法获取对应indexPath的<code>刚出现时最初布局属性</code>和<code>消失时最终布局属性</code>。而后形成两个动画过程分别是<code>刚出现时最初布局-&gt;更新后布局的出现动画</code>和<code>更新前布局-&gt;消失时最终布局的消失动画</code>，而collectionView中'插入'、'删除'、'刷新'和'移动'动画都是基于这两个动画组合形成的。最后，等这一系列动画执行完之后，最后会调用layout中<code>finalizeCollectionViewUpdates</code>方法，这个方法仍然放在动画块中，我们可以在这个方法当中添加额外的动画。</p>
+
+<p>从上面流程可以看出，在更新的时候，由于<code>更新前布局</code>和<code>更新后布局</code>都是在更新动画前已经设置好了，我们不能去胡乱更改布局，所以我们只能通过<code>initialLayoutAttributesForAppearingItemAtIndexPath</code>和<code>finalLayoutAttributesForDisappearingItemAtIndexPath</code>两个方法来更改<code>刚出现时最初布局属性</code>和<code>消失时最终布局属性</code>，即我们只能更改<code>出现动画的起点</code>和<code>消失动画的终点</code>。</p>
+
+<p>为了更方面的下面说明，引申出两个名词：</p>
+
+<ul>
+<li>出现动画：initialLayoutAttributesForAppearingItemAtIndexPath获取对应indexPath的<code>刚出现时最初布局</code>->更新后布局变化过程</li>
+<li>消失动画：更新之前的布局->finalLayoutAttributesForDisappearingItemAtIndexPath方法获取对应indexPath的<code>消失时最终布局</code>的变化过程</li>
+</ul>
+
+
+<p>注意，出现动画和消失动画针对的是一个cell单元。</p>
+
+<p>下面我们通过代码示例来实现插入、删除、刷新、移动动画。
+代码示例工程：<a href="https://github.com/liuchungui/UICollectionViewAnimationDemo">UICollectionViewAnimationDemo</a></p>
+
+<p>在这个Demo工程中有一个<code>BGSelectImageLayout</code>，它是CollectionView的layout，它的布局方式是水平横向滑动，并且只有一组，每一个普通的cell大小都是<code>itemSize</code>，而选中的cell则宽度是<code>itemSize*2</code>。</p>
+
+<h4>插入动画：</h4>
+
+<p>在当前的布局下，每插入一个cell时，都会影响它后面所有cell布局变化。      <br/>
+例如CollectionView有一行三个cell，为了更好的说明将indexPath是(0,0),(0,1),(0,2)标记为0，1，2。当在第1个位置插入一个cell时，如下图</p>
+
+<p><img src="http://ww2.sinaimg.cn/large/7746cd07jw1eyba1ih4nvj20re0fs75l.jpg" alt="" /></p>
+
+<p>而在这个插入过程中，视觉上会有三个动画过程。new插入到位置1为<code>过程1</code>，1移动一个单位到2为<code>过程2</code>，2移动一个单位到一个新的位置3为<code>过程3</code>，如下图：</p>
+
+<p><img src="http://ww3.sinaimg.cn/large/7746cd07jw1eyba58t45gj20yc0g6760.jpg" alt="" /></p>
+
+<p>虽然视觉上只有三个动画过程，但其实有五个动画。其中，过程1是1位置的<code>出现动画</code>；过程2是1位置的<code>消失动画</code>和2位置的<code>出现动画</code>重合而成；过程3是2位置的<code>消失动画</code>和3位置的<code>出现动画</code>。</p>
+
+<p>其中值得注意的三点，一是除了最后一个，前面的cell消失动画与它后面cell出现动画重合，这样看起来就是当前位置的cell向后平移了一个位置；二是最后一个cell只有出现动画，没有消失动画，整个过程<code>出现动画会多一个</code>；三是插入的cell的出现动画是默认是alpha从0到1的淡入效果。</p>
+
+<p>在代码中，想获得一个插入的cell从小变大的出现效果和其它cell整体向后移动一个位置的动画效果，可以如下实现：</p>
+
+<pre><code>    override func initialLayoutAttributesForAppearingItemAtIndexPath(itemIndexPath: NSIndexPath) -&gt; UICollectionViewLayoutAttributes? {
+        let attributes = super.initialLayoutAttributesForAppearingItemAtIndexPath(itemIndexPath)?.copy() as? UICollectionViewLayoutAttributes
+        if self.insertIndexPathArr.contains(itemIndexPath) {
+            attributes?.transform = CGAffineTransformMakeScale(0.0, 0.0)
+            attributes?.alpha = 0
+        }
+        else {
+            //设置为前一个item的frame
+            attributes?.frame = self.currentFrameWithIndexPath(NSIndexPath(forRow: itemIndexPath.row-1, inSection: itemIndexPath.section))
+        }
+        return attributes
+}
+override func finalLayoutAttributesForDisappearingItemAtIndexPath(itemIndexPath: NSIndexPath) -&gt; UICollectionViewLayoutAttributes? {
+         let attributes = super.finalLayoutAttributesForDisappearingItemAtIndexPath(itemIndexPath)?.copy() as? UICollectionViewLayoutAttributes
+         attributes?.frame = self.currentFrameWithIndexPath(NSIndexPath(forRow: itemIndexPath.row+1, inSection: itemIndexPath.section))
+         return attributes
+}
+</code></pre>
+
+<p>这里为了看到效果，我在模拟器的Debug模式下勾选了Slow Animations调慢了动画:
+<img src="http://ww3.sinaimg.cn/large/7746cd07jw1eyaa2ommv4g208j0frab5.gif" alt="" /></p>
+
+<h4>删除动画：</h4>
+
+<p>在上面的位置1插入一个cell后，cell的数量变成了4个，分别是0、1、2、3，它们对应的indexPath为(0,0)、(0,1)、(0,2)、(0,3)。当要删除位置1的cell时，与插入类似，系统默认也会有三个动画过程，如下图：</p>
+
+<p><img src="http://ww3.sinaimg.cn/large/7746cd07jw1eybbqnkm4cj20xo0dita5.jpg" alt="" /></p>
+
+<p>其中，动画过程1是在位置1执行一个消失动画；过程2是位置1的出现动画和位置2的消失动画重合而成；过程3是位置2的出现动画和位置3的消失动画重合而成。</p>
+
+<p><strong>需要注意的是</strong>，一是与插入不同，重合后的效果是cell向前平移了一个位置；二是最后一个位置只有消失动画没有出现动画，整个过程消失动画数会多一个；三是删除的cell的出现动画默认是从1到0的淡出效果。</p>
+
+<p>在代码中，实现一个与插入相对应的动画，即删除的cell从大到小的淡出效果和其它cell整体向前移动一个位置的效果，可以如下实现：</p>
+
+<pre><code>override func initialLayoutAttributesForAppearingItemAtIndexPath(itemIndexPath: NSIndexPath) -&gt; UICollectionViewLayoutAttributes? {
+    let attributes = super.initialLayoutAttributesForAppearingItemAtIndexPath(itemIndexPath)?.copy() as? UICollectionViewLayoutAttributes
+    attributes?.frame = self.currentFrameWithIndexPath(NSIndexPath(forRow: itemIndexPath.row+1, inSection: itemIndexPath.section))
+    return attributes
+}
+override func finalLayoutAttributesForDisappearingItemAtIndexPath(itemIndexPath: NSIndexPath) -&gt; UICollectionViewLayoutAttributes? {
+        let attributes = super.finalLayoutAttributesForDisappearingItemAtIndexPath(itemIndexPath)?.copy() as? UICollectionViewLayoutAttributes
+    if self.deleteIndexPathArr.contains(itemIndexPath) {
+        //这里写成缩放成(0，0)直接就不见了
+        attributes?.transform = CGAffineTransformMakeScale(0.1, 0.1)
+        attributes?.alpha = 0.0
+    }
+    else {
+        attributes?.frame = self.currentFrameWithIndexPath(NSIndexPath(forRow: itemIndexPath.row-1, inSection: itemIndexPath.section))
+    }
+    return attributes
+}
+</code></pre>
+
+<p>效果如下：</p>
+
+<p><img src="http://ww2.sinaimg.cn/large/7746cd07jw1eyaqorep4rg208j0g9wgw.gif" alt="" /></p>
+
+<h4>刷新动画：</h4>
+
+<p>在官方的解释中，刷新是先删除然后插入。其实它就是先执行所有cell的消失动画；在此之后，它又会执行所有cell的出现动画。
+在系统当中，需要注意的是默认出现动画是一个alpha从0到1的淡入效果，而消失动画则是alpha从1到0的淡入效果；与插入动画和删除动画不同的是，刷新动画会成对存在，即消失动画与出现动画数量相等。</p>
+
+<p>在这里，实现一个点击某个cell时，当前选中的cell变大的效果，而它旁边的cell被推开的动画效果。在这里我不需要淡入和淡出效果，所以修改了消失时alpha为1.0，代码如下：</p>
+
+<pre><code>override func initialLayoutAttributesForAppearingItemAtIndexPath(itemIndexPath: NSIndexPath) -&gt; UICollectionViewLayoutAttributes? {
+    let attributes = super.initialLayoutAttributesForAppearingItemAtIndexPath(itemIndexPath)?.copy() as? UICollectionViewLayoutAttributes
+    attributes?.frame = self.lastFrameWithIndexPath(itemIndexPath)
+    return attributes
+}
+override func finalLayoutAttributesForDisappearingItemAtIndexPath(itemIndexPath: NSIndexPath) -&gt; UICollectionViewLayoutAttributes? {
+    let attributes = super.finalLayoutAttributesForDisappearingItemAtIndexPath(itemIndexPath)?.copy() as? UICollectionViewLayoutAttributes
+    //注意，这里alpha设置为不透明，系统默认返回是0，即一个淡出的效果
+    attributes?.alpha = 1.0
+    attributes?.frame = self.currentFrameWithIndexPath(itemIndexPath)
+    return attributes
+}
+</code></pre>
+
+<p>效果如下：</p>
+
+<p><img src="http://ww2.sinaimg.cn/large/7746cd07jw1eyb04xye32g208j0g9755.gif" alt="" /></p>
+
+<h4>移动动画：</h4>
+
+<p>移动一个cell到另一个位置时，会引起当前cell到目标位置之间所有cell布局发生变化，从而形成一系列的动画。在这个动画过程中，每个indexPath都会有一个出现动画和一个消失动画。</p>
+
+<p>例如，在系统默认情况下，0位置cell移动到2位置cell的时候，我们会看到三个动画过程，如下图：</p>
+
+<p><img src="http://ww1.sinaimg.cn/large/7746cd07jw1eyazemzgkzj20qa0bqt9u.jpg" alt="" /></p>
+
+<p>但是，其实它内部执行了六个动画，只是其中两两之间动画重合了而已。其中动画过程1是1位置的消失动画和0位置出现动画重合；动画过程2是0位置的消失动画和2位置的出现动画重合；动画过程3是2位置的消失动画和1位置的出现动画重合。</p>
+
+<p><strong>其中值得注意的有两点：</strong>   <br/>
+1、消失动画和出现动画数量相等    <br/>
+2、动画的重合与刷新动画不同，与插入和删除动画类似，它们不同位置之间的消失动画与出现动画重合。</p>
+
+<p>在这里，实现一个移动cell时旋转180°到目标位置效果，实现如下：</p>
+
+<pre><code> override func initialLayoutAttributesForAppearingItemAtIndexPath(itemIndexPath: NSIndexPath) -&gt; UICollectionViewLayoutAttributes? {
+    let attributes = super.initialLayoutAttributesForAppearingItemAtIndexPath(itemIndexPath)?.copy() as? UICollectionViewLayoutAttributes
+    if itemIndexPath == self.afterMoveIndexPath {
+        //afterMoveIndexPath的消失动画和beforeMoveIndexPath的出现动画重合
+        //init是设置起点，而final设置终点，理论是不重合的
+        attributes?.transform3D = CATransform3DMakeRotation(-1*CGFloat(M_PI), 0, 0, -1)
+    }
+    return attributes
+}
+override func finalLayoutAttributesForDisappearingItemAtIndexPath(itemIndexPath: NSIndexPath) -&gt; UICollectionViewLayoutAttributes? {
+    let attributes = super.finalLayoutAttributesForDisappearingItemAtIndexPath(itemIndexPath)?.copy() as? UICollectionViewLayoutAttributes
+    if self.beforeMoveIndexPath == itemIndexPath {
+        //afterMoveIndexPath的消失动画和beforeMoveIndexPath的出现动画重合，设置他们旋转的角度一样，方向相反
+        attributes?.transform3D = CATransform3DMakeRotation(-1*CGFloat(M_PI), 0, 0, -1)
+    }
+    return attributes
+}
+</code></pre>
+
+<p>效果如下：</p>
+
+<p><img src="http://ww1.sinaimg.cn/large/7746cd07jw1eyb0375fz7g208j0g9go4.gif" alt="" /></p>
+
+<p>上面都是纯颜色，在示例工程<a href="https://github.com/liuchungui/UICollectionViewAnimationDemo">UICollectionViewAnimationDemo</a>中，我还添加了一个图片的<code>BGSimpleImageSelectCollectionViewDemo2</code>。布局基本上相同，唯一不同的是图片因为上下不可以倒转，没办法做到统一的旋转180°。</p>
+
+<p>效果如下：</p>
+
+<p><img src="http://ww3.sinaimg.cn/large/7746cd07jw1eybewu3qyxg208j0g9k2r.gif" alt="" /></p>
+
+<h2>总结：</h2>
+
+<p>1、CollectionView更新时，执行动画的时候会访问layout中哪些api，整个流程是如何形成的        <br/>
+2、修改CollectionView动画就是修改出现动画的起点和消失动画的终点，即layout当中的initialLayoutAttributesForAppearingItemAtIndexPath和finalLayoutAttributesForDisappearingItemAtIndexPath方法进行修改。     <br/>
+3、插入、删除、刷新、移动内部执行哪些动画，我们如何去修改。</p>
+
+<h2>参考：</h2>
+
+<p><a href="http://objccn.io/issue-12-5/">Collection View 动画</a></p>
+]]></content>
+  </entry>
+  
+</feed>

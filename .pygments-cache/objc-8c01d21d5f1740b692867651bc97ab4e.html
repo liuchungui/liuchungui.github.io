@@ -1,0 +1,38 @@
+<div class="highlight"><pre><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">testProperty</span> <span class="p">{</span>
+    <span class="cm">/**</span>
+<span class="cm">     *  添加property</span>
+<span class="cm">     */</span>
+    <span class="kt">objc_property_attribute_t</span> <span class="n">attribute1</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;T&quot;</span><span class="p">,</span> <span class="s">&quot;@</span><span class="se">\&quot;</span><span class="s">NSString</span><span class="se">\&quot;</span><span class="s">&quot;</span><span class="p">};</span>
+    <span class="kt">objc_property_attribute_t</span> <span class="n">attribute2</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;C&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">};</span>
+    <span class="kt">objc_property_attribute_t</span> <span class="n">attribute3</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;N&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">};</span>
+    <span class="kt">objc_property_attribute_t</span> <span class="n">attribute4</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;V&quot;</span><span class="p">,</span> <span class="s">&quot;_lcg&quot;</span><span class="p">};</span>
+    <span class="kt">objc_property_attribute_t</span> <span class="n">attributesList</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span><span class="n">attribute1</span><span class="p">,</span> <span class="n">attribute2</span><span class="p">,</span> <span class="n">attribute3</span><span class="p">,</span> <span class="n">attribute4</span><span class="p">};</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">class_addProperty</span><span class="p">([</span><span class="n">Student</span> <span class="k">class</span><span class="p">],</span> <span class="s">&quot;lcg&quot;</span><span class="p">,</span> <span class="n">attributesList</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span> <span class="p">{</span>
+        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;add property success!&quot;</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">else</span> <span class="p">{</span>
+        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;add property failure!&quot;</span><span class="p">);</span>
+    <span class="p">}</span>
+    
+    <span class="cm">/**</span>
+<span class="cm">     *  打印property的name和property_attribute_t</span>
+<span class="cm">     */</span>
+    <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">outCount</span><span class="p">;</span>
+    <span class="kt">objc_property_t</span> <span class="o">*</span><span class="n">propertyList</span> <span class="o">=</span> <span class="n">class_copyPropertyList</span><span class="p">([</span><span class="n">Student</span> <span class="k">class</span><span class="p">],</span> <span class="o">&amp;</span><span class="n">outCount</span><span class="p">);</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">outCount</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kt">objc_property_t</span> <span class="n">property</span> <span class="o">=</span> <span class="n">propertyList</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+        <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">propertyName</span> <span class="o">=</span> <span class="n">property_getName</span><span class="p">(</span><span class="n">property</span><span class="p">);</span>
+        <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">attribute</span> <span class="o">=</span> <span class="n">property_getAttributes</span><span class="p">(</span><span class="n">property</span><span class="p">);</span>
+        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;propertyName: %s, attribute: %s&quot;</span><span class="p">,</span> <span class="n">propertyName</span><span class="p">,</span> <span class="n">attribute</span><span class="p">);</span>
+        
+        <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">attributeCount</span><span class="p">;</span>
+        <span class="kt">objc_property_attribute_t</span> <span class="o">*</span><span class="n">attributeList</span> <span class="o">=</span> <span class="n">property_copyAttributeList</span><span class="p">(</span><span class="n">property</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">attributeCount</span><span class="p">);</span>
+        <span class="k">for</span> <span class="p">(</span><span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">attributeCount</span><span class="p">;</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+            <span class="kt">objc_property_attribute_t</span> <span class="n">attribute</span> <span class="o">=</span> <span class="n">attributeList</span><span class="p">[</span><span class="n">j</span><span class="p">];</span>
+            <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span> <span class="o">=</span> <span class="n">attribute</span><span class="p">.</span><span class="n">name</span><span class="p">;</span>
+            <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">value</span> <span class="o">=</span> <span class="n">attribute</span><span class="p">.</span><span class="n">value</span><span class="p">;</span>
+            <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;attribute name: %s, value: %s&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>

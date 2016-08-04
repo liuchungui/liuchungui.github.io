@@ -1,0 +1,9 @@
+<div class="highlight"><pre><span class="c1">// 创建一个新类和元类</span>
+<span class="kt">Class</span> <span class="nf">objc_allocateClassPair</span> <span class="p">(</span> <span class="kt">Class</span> <span class="n">superclass</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">extraBytes</span> <span class="p">);</span>
+ 
+<span class="c1">// 销毁一个类及其相关联的类</span>
+<span class="kt">void</span> <span class="nf">objc_disposeClassPair</span> <span class="p">(</span> <span class="kt">Class</span> <span class="n">cls</span> <span class="p">);</span>
+ 
+<span class="c1">// 在应用中注册由objc_allocateClassPair创建的类</span>
+<span class="kt">void</span> <span class="nf">objc_registerClassPair</span> <span class="p">(</span> <span class="kt">Class</span> <span class="n">cls</span> <span class="p">);</span>
+</pre></div>

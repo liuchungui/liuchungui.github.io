@@ -1,0 +1,48 @@
+<div class="highlight"><pre><span class="sd">/**</span>
+<span class="sd"> * 检查消息是否来自微信</span>
+<span class="sd"> * @return bool</span>
+<span class="sd"> */</span>
+<span class="k">private</span> <span class="k">function</span> <span class="nf">check_from_wx</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">//检查$_GET中的参数</span>
+    <span class="nx">param_check</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;signature&#39;</span><span class="p">,</span> <span class="s1">&#39;timestamp&#39;</span><span class="p">,</span> <span class="s1">&#39;nonce&#39;</span><span class="p">]);</span>
+
+    <span class="c1">//获取参数</span>
+    <span class="nv">$signature</span> <span class="o">=</span> <span class="nv">$_GET</span><span class="p">[</span><span class="s2">&quot;signature&quot;</span><span class="p">];</span>
+    <span class="nv">$timestamp</span> <span class="o">=</span> <span class="nv">$_GET</span><span class="p">[</span><span class="s2">&quot;timestamp&quot;</span><span class="p">];</span>
+    <span class="nv">$nonce</span> <span class="o">=</span> <span class="nv">$_GET</span><span class="p">[</span><span class="s2">&quot;nonce&quot;</span><span class="p">];</span>
+
+    <span class="nv">$token</span> <span class="o">=</span> <span class="nx">WX_APP_TOKEN</span><span class="p">;</span>
+    <span class="nv">$tmpArr</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span><span class="nv">$token</span><span class="p">,</span> <span class="nv">$timestamp</span><span class="p">,</span> <span class="nv">$nonce</span><span class="p">);</span>
+    <span class="c1">// use SORT_STRING rule</span>
+    <span class="nb">sort</span><span class="p">(</span><span class="nv">$tmpArr</span><span class="p">,</span> <span class="nx">SORT_STRING</span><span class="p">);</span>
+    <span class="nv">$tmpStr</span> <span class="o">=</span> <span class="nb">implode</span><span class="p">(</span><span class="nv">$tmpArr</span><span class="p">);</span>
+    <span class="nv">$tmpStr</span> <span class="o">=</span> <span class="nb">sha1</span><span class="p">(</span><span class="nv">$tmpStr</span><span class="p">);</span>
+    
+    <span class="c1">//验证</span>
+    <span class="k">if</span><span class="p">(</span><span class="nv">$tmpStr</span> <span class="o">==</span> <span class="nv">$signature</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="k">true</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">else</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="k">false</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">public</span> <span class="k">function</span> <span class="nf">check_post</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">//检查消息是否来自微信</span>
+    <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">check_from_wx</span><span class="p">())</span> <span class="p">{</span>
+        <span class="c1">//非法</span>
+        <span class="k">echo</span> <span class="s2">&quot;非法操作&quot;</span><span class="p">;</span>
+    <span class="p">}</span>
+    
+    <span class="c1">//获取POST参数</span>
+    <span class="nv">$param</span> <span class="o">=</span> <span class="nb">file_get_contents</span><span class="p">(</span><span class="s2">&quot;php://input&quot;</span><span class="p">);</span>
+    <span class="c1">//将xml格式中的数据读取成数组</span>
+    <span class="nv">$param</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">format</span><span class="o">-&gt;</span><span class="na">factory</span><span class="p">(</span><span class="nv">$param</span><span class="p">,</span> <span class="s1">&#39;xml&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">to_array</span><span class="p">();</span>
+
+    <span class="c1">//将消息插入by_message表中</span>
+    <span class="nv">$result</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">share_model</span><span class="o">-&gt;</span><span class="na">insert</span><span class="p">(</span><span class="nv">$msg_info</span><span class="p">,</span> <span class="s1">&#39;by_message&#39;</span><span class="p">);</span>
+    
+    <span class="c1">//回复空字符串</span>
+    <span class="k">echo</span> <span class="s2">&quot;&quot;</span><span class="p">;</span>
+   <span class="p">}</span>
+</pre></div>

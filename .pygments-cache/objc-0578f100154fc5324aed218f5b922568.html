@@ -1,0 +1,41 @@
+<div class="highlight"><pre><span class="bp">UIImageView</span> <span class="o">*</span><span class="n">imageView</span> <span class="o">=</span> <span class="p">[[</span><span class="bp">UIImageView</span> <span class="n">alloc</span><span class="p">]</span> <span class="nl">initWithImage</span><span class="p">:[</span><span class="bp">UIImage</span> <span class="nl">imageNamed</span><span class="p">:</span><span class="s">@&quot;dog.jpg&quot;</span><span class="p">]];</span>
+<span class="n">imageView</span><span class="p">.</span><span class="n">contentMode</span> <span class="o">=</span> <span class="n">UIViewContentModeScaleAspectFit</span><span class="p">;</span>
+<span class="c1">//注意：代码约束需要设置视图的translatesAutoresizingMaskIntoConstraints属性为NO</span>
+<span class="n">imageView</span><span class="p">.</span><span class="n">translatesAutoresizingMaskIntoConstraints</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span>
+<span class="p">[</span><span class="nb">self</span><span class="p">.</span><span class="n">view</span> <span class="nl">addSubview</span><span class="p">:</span><span class="n">imageView</span><span class="p">];</span>
+<span class="nb">self</span><span class="p">.</span><span class="n">imageView</span> <span class="o">=</span> <span class="n">imageView</span><span class="p">;</span>
+
+<span class="bp">UILabel</span> <span class="o">*</span><span class="n">label</span> <span class="o">=</span> <span class="p">[[</span><span class="bp">UILabel</span> <span class="n">alloc</span><span class="p">]</span> <span class="nl">initWithFrame</span><span class="p">:</span><span class="n">CGRectZero</span><span class="p">];</span>
+<span class="n">label</span><span class="p">.</span><span class="n">textColor</span> <span class="o">=</span> <span class="p">[</span><span class="bp">UIColor</span> <span class="n">darkGrayColor</span><span class="p">];</span>
+<span class="n">label</span><span class="p">.</span><span class="n">text</span> <span class="o">=</span> <span class="s">@&quot;This is a lovely dog&quot;</span><span class="p">;</span>
+<span class="n">label</span><span class="p">.</span><span class="n">translatesAutoresizingMaskIntoConstraints</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span>
+<span class="p">[</span><span class="nb">self</span><span class="p">.</span><span class="n">view</span> <span class="nl">addSubview</span><span class="p">:</span><span class="n">label</span><span class="p">];</span>
+
+<span class="bp">NSDictionary</span> <span class="o">*</span><span class="n">viewsDictionary</span> <span class="o">=</span> <span class="n">NSDictionaryOfVariableBindings</span><span class="p">(</span><span class="n">imageView</span><span class="p">,</span> <span class="n">label</span><span class="p">);</span>
+
+<span class="c1">//设置图片的水平方向距父视图左右两边都为10像素</span>
+<span class="bp">NSArray</span> <span class="o">*</span><span class="n">constraintArr1</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSLayoutConstraint</span> <span class="nl">constraintsWithVisualFormat</span><span class="p">:</span><span class="s">@&quot;H:|-10-[imageView]-10-|&quot;</span> <span class="nl">options</span><span class="p">:</span><span class="mi">0</span> <span class="nl">metrics</span><span class="p">:</span><span class="nb">nil</span> <span class="nl">views</span><span class="p">:</span><span class="n">viewsDictionary</span><span class="p">];</span>
+<span class="p">[</span><span class="nb">self</span><span class="p">.</span><span class="n">view</span> <span class="nl">addConstraints</span><span class="p">:</span><span class="n">constraintArr1</span><span class="p">];</span>
+
+<span class="cm">/*</span>
+<span class="cm">//设置图片垂直方向距父视图顶部10像素，底部100像素</span>
+<span class="cm">NSArray *constraintArr2 = [NSLayoutConstraint constraintsWithVisualFormat:@&quot;V:|-10-[imageView]-100-|&quot; options:0 metrics:nil views:viewsDictionary];</span>
+<span class="cm">[self.view addConstraints:constraintArr2];</span>
+
+<span class="cm">//设置label的约束</span>
+<span class="cm">NSArray *constraintArr3 = [NSLayoutConstraint constraintsWithVisualFormat:@&quot;V:[imageView]-30-[label]&quot; options:0 metrics:nil views:viewsDictionary];</span>
+<span class="cm">[self.view addConstraints:constraintArr3];</span>
+<span class="cm">    */</span>
+
+<span class="c1">//设置图片的宽与高的比例为5:7</span>
+<span class="bp">NSLayoutConstraint</span> <span class="o">*</span><span class="n">constraint1</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSLayoutConstraint</span> <span class="nl">constraintWithItem</span><span class="p">:</span><span class="n">imageView</span> <span class="nl">attribute</span><span class="p">:</span><span class="n">NSLayoutAttributeHeight</span> <span class="nl">relatedBy</span><span class="p">:</span><span class="n">NSLayoutRelationEqual</span> <span class="nl">toItem</span><span class="p">:</span><span class="n">imageView</span> <span class="nl">attribute</span><span class="p">:</span><span class="n">NSLayoutAttributeWidth</span> <span class="nl">multiplier</span><span class="p">:</span><span class="mf">1.4</span> <span class="nl">constant</span><span class="p">:</span><span class="mi">0</span><span class="p">];</span>
+<span class="p">[</span><span class="nb">self</span><span class="p">.</span><span class="n">view</span> <span class="nl">addConstraint</span><span class="p">:</span><span class="n">constraint1</span><span class="p">];</span>
+
+<span class="c1">//设置图片距顶部10像素，描述文字处于图片与屏幕底部中间</span>
+<span class="bp">NSArray</span> <span class="o">*</span><span class="n">constraintArr3</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSLayoutConstraint</span> <span class="nl">constraintsWithVisualFormat</span><span class="p">:</span><span class="s">@&quot;V:|-10-[imageView]-[label]-|&quot;</span> <span class="nl">options</span><span class="p">:</span><span class="mi">0</span> <span class="nl">metrics</span><span class="p">:</span><span class="nb">nil</span> <span class="nl">views</span><span class="p">:</span><span class="n">viewsDictionary</span><span class="p">];</span>
+<span class="p">[</span><span class="nb">self</span><span class="p">.</span><span class="n">view</span> <span class="nl">addConstraints</span><span class="p">:</span><span class="n">constraintArr3</span><span class="p">];</span>
+
+<span class="c1">//描述文本水平居中</span>
+<span class="bp">NSLayoutConstraint</span> <span class="o">*</span><span class="n">constraint2</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSLayoutConstraint</span> <span class="nl">constraintWithItem</span><span class="p">:</span><span class="n">label</span> <span class="nl">attribute</span><span class="p">:</span><span class="n">NSLayoutAttributeCenterX</span> <span class="nl">relatedBy</span><span class="p">:</span><span class="n">NSLayoutRelationEqual</span> <span class="nl">toItem</span><span class="p">:</span><span class="nb">self</span><span class="p">.</span><span class="n">view</span> <span class="nl">attribute</span><span class="p">:</span><span class="n">NSLayoutAttributeCenterX</span> <span class="nl">multiplier</span><span class="p">:</span><span class="mf">1.0</span> <span class="nl">constant</span><span class="p">:</span><span class="mi">0</span><span class="p">];</span>
+<span class="p">[</span><span class="nb">self</span><span class="p">.</span><span class="n">view</span> <span class="nl">addConstraint</span><span class="p">:</span><span class="n">constraint2</span><span class="p">];</span>
+</pre></div>

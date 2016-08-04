@@ -1,0 +1,12 @@
+<div class="highlight"><pre><span class="c1">// 获取指定的属性</span>
+<span class="kt">objc_property_t</span> <span class="nf">class_getProperty</span> <span class="p">(</span> <span class="kt">Class</span> <span class="n">cls</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span> <span class="p">);</span>
+ 
+<span class="c1">// 获取属性列表</span>
+<span class="kt">objc_property_t</span> <span class="o">*</span> <span class="nf">class_copyPropertyList</span> <span class="p">(</span> <span class="kt">Class</span> <span class="n">cls</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="o">*</span><span class="n">outCount</span> <span class="p">);</span>
+ 
+<span class="c1">// 为类添加属性</span>
+<span class="kt">BOOL</span> <span class="nf">class_addProperty</span> <span class="p">(</span> <span class="kt">Class</span> <span class="n">cls</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">,</span> <span class="k">const</span> <span class="kt">objc_property_attribute_t</span> <span class="o">*</span><span class="n">attributes</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">attributeCount</span> <span class="p">);</span>
+ 
+<span class="c1">// 替换类的属性</span>
+<span class="kt">void</span> <span class="nf">class_replaceProperty</span> <span class="p">(</span> <span class="kt">Class</span> <span class="n">cls</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">,</span> <span class="k">const</span> <span class="kt">objc_property_attribute_t</span> <span class="o">*</span><span class="n">attributes</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">attributeCount</span> <span class="p">);</span>
+</pre></div>

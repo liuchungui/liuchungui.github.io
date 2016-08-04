@@ -1,0 +1,6 @@
+<div class="highlight"><pre><span class="p">[</span><span class="n">containerView</span> <span class="n">layoutIfNeeded</span><span class="p">];</span> <span class="c1">// Ensures that all pending layout operations have been completed</span>
+<span class="p">[</span><span class="bp">UIView</span> <span class="nl">animateWithDuration</span><span class="p">:</span><span class="mf">1.0</span> <span class="nl">animations</span><span class="p">:</span><span class="o">^</span><span class="p">{</span>
+    <span class="c1">// Make all constraint changes here</span>
+<span class="p">[</span><span class="n">containerView</span> <span class="n">layoutIfNeeded</span><span class="p">];</span> <span class="c1">// Forces the layout of the subtree animation block and then captures all of the frame changes</span>
+<span class="p">}];</span>
+</pre></div>

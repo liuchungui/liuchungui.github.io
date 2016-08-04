@@ -1,0 +1,20 @@
+<div class="highlight"><pre><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">liuchungui</span><span class="o">.</span><span class="na">nativemoduleexample</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">com.facebook.react.bridge.NativeModule</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.facebook.react.bridge.ReactApplicationContext</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.facebook.react.bridge.ReactContext</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.facebook.react.bridge.ReactContextBaseJavaModule</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.facebook.react.bridge.ReactMethod</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.lang.String</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">BGNativeExampleModule</span> <span class="kd">extends</span> <span class="n">ReactContextBaseJavaModule</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="nf">BGNativeExampleModule</span><span class="o">(</span><span class="n">ReactApplicationContext</span> <span class="n">reactContext</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">super</span><span class="o">(</span><span class="n">reactContext</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getName</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="s">&quot;BGNativeModuleExample&quot;</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>

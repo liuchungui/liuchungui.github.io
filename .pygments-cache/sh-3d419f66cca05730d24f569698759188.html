@@ -1,0 +1,17 @@
+<div class="highlight"><pre><span class="nv">$ </span>brew update
+
+Error: Cowardly refusing to <span class="sb">`</span>sudo brew update<span class="sb">`</span>
+You can use brew with sudo, but only <span class="k">if</span> the brew executable is owned by root.
+However, this is both not recommended and completely unsupported so <span class="k">do</span> so at
+your own risk.
+bogon:Downloads user<span class="nv">$ </span>brew update
+Error: The /usr/local directory is not writable.
+Even <span class="k">if</span> this directory was writable when you installed Homebrew, other
+software may change permissions on this directory. Some versions of the
+<span class="s2">&quot;InstantOn&quot;</span> component of Airfoil or running Cocktail cleanup/optimizations
+are known to <span class="k">do</span> this.
+
+You should probably change the ownership and permissions of /usr/local
+back to your user account.
+  sudo chown -R <span class="k">$(</span>whoami<span class="k">)</span>:admin /usr/local
+</pre></div>

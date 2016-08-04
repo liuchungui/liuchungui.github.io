@@ -1,0 +1,24 @@
+<div class="highlight"><pre><span class="kd">public</span> <span class="kd">class</span> <span class="nc">BGNativeExampleModule</span> <span class="kd">extends</span> <span class="n">ReactContextBaseJavaModule</span> <span class="o">{</span>
+    <span class="kd">protected</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">TAG</span> <span class="o">=</span> <span class="n">BGNativeExampleModule</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">getSimpleName</span><span class="o">();</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span>  <span class="n">String</span> <span class="n">TestEventName</span> <span class="o">=</span> <span class="s">&quot;TestEventName&quot;</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="n">Timer</span> <span class="n">timer</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="nf">BGNativeExampleModule</span><span class="o">(</span><span class="kd">final</span> <span class="n">ReactApplicationContext</span> <span class="n">reactContext</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">super</span><span class="o">(</span><span class="n">reactContext</span><span class="o">);</span>
+        <span class="c1">//开启定时器</span>
+        <span class="n">TimerTask</span> <span class="n">task</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">TimerTask</span><span class="o">()</span> <span class="o">{</span>
+            <span class="nd">@Override</span>
+            <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+                <span class="c1">//发送事件</span>
+                <span class="n">WritableMap</span> <span class="n">params</span> <span class="o">=</span> <span class="n">Arguments</span><span class="o">.</span><span class="na">createMap</span><span class="o">();</span>
+                <span class="n">params</span><span class="o">.</span><span class="na">putString</span><span class="o">(</span><span class="s">&quot;name&quot;</span><span class="o">,</span> <span class="s">&quot;Jack&quot;</span><span class="o">);</span>
+                <span class="n">reactContext</span>
+                        <span class="o">.</span><span class="na">getJSModule</span><span class="o">(</span><span class="n">DeviceEventManagerModule</span><span class="o">.</span><span class="na">RCTDeviceEventEmitter</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+                        <span class="o">.</span><span class="na">emit</span><span class="o">(</span><span class="n">TestEventName</span><span class="o">,</span> <span class="n">params</span><span class="o">);</span>
+
+            <span class="o">}</span>
+        <span class="o">};</span>
+        <span class="n">timer</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Timer</span><span class="o">();</span>
+        <span class="n">timer</span><span class="o">.</span><span class="na">schedule</span><span class="o">(</span><span class="n">task</span><span class="o">,</span> <span class="mi">1000</span><span class="o">,</span> <span class="mi">1000</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>

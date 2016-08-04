@@ -1,0 +1,1057 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Web | liuchungui's Blog]]></title>
+  <link href="http://www.liuchungui.com/blog/categories/web/atom.xml" rel="self"/>
+  <link href="http://www.liuchungui.com/"/>
+  <updated>2016-08-01T14:44:55+08:00</updated>
+  <id>http://www.liuchungui.com/</id>
+  <author>
+    <name><![CDATA[刘春桂]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[微信公众号开发总结]]></title>
+    <link href="http://www.liuchungui.com/blog/2016/08/01/wei-xin-gong-zhong-hao-kai-fa-zong-jie/"/>
+    <updated>2016-08-01T11:51:36+08:00</updated>
+    <id>http://www.liuchungui.com/blog/2016/08/01/wei-xin-gong-zhong-hao-kai-fa-zong-jie</id>
+    <content type="html"><![CDATA[<p>公司准备在微信公众号上做个东西，所以研究了一周的微信公众号开发，今天在这里做一个总结。
+在总结之前，先说一下本人使用的环境，语言是PHP，框架是<a href="https://github.com/bcit-ci/CodeIgniter">CI</a>和CI框架下的一个RESTFul框架<a href="https://github.com/chriskacerguis/codeigniter-restserver">codeigniter-restserver</a>。</p>
+
+<!-- more -->
+
+
+<h2>一、配置服务器</h2>
+
+<p>在开发之前，我们首先需要在微信公众号下设置服务器配置，这里完全可以参考官方的<a href="https://mp.weixin.qq.com/wiki?t=resource/res_main&amp;id=mp1421135319&amp;token=&amp;lang=zh_CN">接入指南</a>。
+需要说明两点的是：</p>
+
+<ol>
+<li>我们只能填写一个URL（服务器地址），当微信服务器想要发送消息给我们服务器，只能通过这个URL来进行交互。</li>
+<li>我们在接入的时候，有个验证消息是否来自微信服务器的过程，这个验证过程是GET请求，我们需要输出echostr，验证代码如下：</li>
+</ol>
+
+
+<pre><code class="php">    /**
+     * 检查消息是否来自微信
+     * @return bool
+     */
+    private function check_from_wx() {
+        //检查$_GET中的参数
+        param_check($_GET, ['signature', 'timestamp', 'nonce']);
+
+        //获取参数
+        $signature = $_GET["signature"];
+        $timestamp = $_GET["timestamp"];
+        $nonce = $_GET["nonce"];
+
+        $token = WX_APP_TOKEN;
+        $tmpArr = array($token, $timestamp, $nonce);
+        // use SORT_STRING rule
+        sort($tmpArr, SORT_STRING);
+        $tmpStr = implode($tmpArr);
+        $tmpStr = sha1($tmpStr);
+
+        //验证
+        if($tmpStr == $signature) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    /**
+     * 配合微信服务器验证是否有效
+     */
+    public function check_get() {
+        $echoStr = $this-&gt;get("echostr");
+        if($this-&gt;check_from_wx()) {
+           echo $echoStr;
+        }
+        else {
+            echo "验证不通过";
+        }
+        exit;
+    }
+</code></pre>
+
+<p>看到上面的代码，你也许会有疑问，为什么在<code>check_get</code>方法中使用<code>$this-&gt;get</code>获取get参数，而在<code>check_from_wx</code>方法中使用的是<code>$_GET</code>。这是因为我们后面接收的消息是微信服务器向我们发送POST请求，但是验证的参数却是放在URL后面，所以为了兼容，专门封装了一个<code>check_from_wx</code>的私有方法。</p>
+
+<p>到这里，我们算是配置好了，下面我们来看看如何接收和回复用户发来的消息。</p>
+
+<h2>二、接收消息和回复消息</h2>
+
+<p>接收和回复消息的流程图大概就是这样的：
+<img src="http://ww4.sinaimg.cn/large/7746cd07jw1f66f138zo1j218q0imacd.jpg" alt="" />
+看上面的流程图，我们可以把整个接收和回复消息分成四个步骤：</p>
+
+<ul>
+<li>第一步：用户在微信公众号内发送一条消息，微信客户端将这条消息发送给微信服务器。</li>
+<li>第二步：微信服务器将消息以POST方式将消息提交给我们服务器，而这个服务器的地址只有一个，就是我们前面配置服务器填写的URL地址。消息的数据格式是XML格式的。</li>
+<li>第三步：我们收到这个消息之后，做出对应的回复，返回对应的XML数据，就算是进行回复了。</li>
+<li>第四步：微信服务器将我们服务器的消息返回给微信客户端，这样用户就看到了我们回复的消息了。</li>
+</ul>
+
+
+<p>看了上面的消息接收和回复流程图，我们下面使用代码进行实现。在配置服务器的时候，我先前填写的URL地址对应的接口是<code>check</code>，所以接收消息的PHP代码这么写：</p>
+
+<pre><code class="php">    /**
+     * 检查消息是否来自微信
+     * @return bool
+     */
+    private function check_from_wx() {
+        //检查$_GET中的参数
+        param_check($_GET, ['signature', 'timestamp', 'nonce']);
+
+        //获取参数
+        $signature = $_GET["signature"];
+        $timestamp = $_GET["timestamp"];
+        $nonce = $_GET["nonce"];
+
+        $token = WX_APP_TOKEN;
+        $tmpArr = array($token, $timestamp, $nonce);
+        // use SORT_STRING rule
+        sort($tmpArr, SORT_STRING);
+        $tmpStr = implode($tmpArr);
+        $tmpStr = sha1($tmpStr);
+
+        //验证
+        if($tmpStr == $signature) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    public function check_post() {
+        //检查消息是否来自微信
+        if(!$this-&gt;check_from_wx()) {
+            //非法
+            echo "非法操作";
+        }
+
+        //获取POST参数
+        $param = file_get_contents("php://input");
+        //将xml格式中的数据读取成数组
+        $param = $this-&gt;format-&gt;factory($param, 'xml')-&gt;to_array();
+
+        //将消息插入by_message表中
+        $result = $this-&gt;share_model-&gt;insert($msg_info, 'by_message');
+
+        //回复空字符串
+        echo "";
+   }
+</code></pre>
+
+<p>  上面代码值得注意有三个地方，第一个地方是我们检查消息是否来自微信，是获取<code>$_GET</code>中的参数；第二个地方是我们不能使用<code>$_POST</code>和<code>$this-&gt;post</code>来获取post参数，只能使用<code>file_get_contents("php://input")</code>来获取；第三个地方是当我们没有消息回复的时候，回复<code>success和空字符串</code>就代表交互成功，否则用户就会看到<code>该公众号暂时无法提供服务</code>。</p>
+
+<p>  当写好代码之后，我们在微信公众号中发送消息，它就会将消息存入到<code>by_message</code>表中，我们就可以进行查看。如果出现<code>该公众号暂时无法提供服务</code>，那就可能我们服务器出错误了，可以开启日志功能，使用<code>log_message</code>输出日志进行调试。</p>
+
+<p> 当接收消息没问题之后，我们就可以进行回复消息了，代码如下：</p>
+
+<pre><code class="php">    public function check_post() {
+        //检查消息是否来自微信
+        if(!$this-&gt;check_from_wx()) {
+            //非法
+            echo "非法操作";
+        }
+
+        //获取POST参数
+        $param = file_get_contents("php://input");
+        //获取xml中的数据
+        $param = $this-&gt;format-&gt;factory($param, 'xml')-&gt;to_array();
+
+        //选出参数
+        $msg_info = array_choose($param, ['Content', 'ToUserName', 'FromUserName', 'MsgId', 'MsgType']);
+        //将消息插入数据库
+        $result = $this-&gt;share_model-&gt;insert($msg_info, 'by_message');
+
+        //获取信息
+        $to_user = $param['ToUserName'];
+        $from_user = $param['FromUserName'];
+        $content = $param['Content'];
+
+        //去掉消息id
+        unset($param['MsgId']);
+
+        //回复的内容
+        $content = 'http://xxxxxx.com/';
+        $response_text = "&lt;xml&gt;
+                            &lt;ToUserName&gt;&lt;![CDATA[%s]]&gt;&lt;/ToUserName&gt;
+                            &lt;FromUserName&gt;&lt;![CDATA[%s]]&gt;&lt;/FromUserName&gt;
+                            &lt;CreateTime&gt;%s&lt;/CreateTime&gt;
+                            &lt;MsgType&gt;&lt;![CDATA[%s]]&gt;&lt;/MsgType&gt;
+                            &lt;Content&gt;&lt;![CDATA[%s]]&gt;&lt;/Content&gt;
+                          &lt;/xml&gt;";
+        $response_text = sprintf($response_text, $from_user, $to_user, time(), $param['MsgType'], $content);
+        echo $response_text;
+    }
+</code></pre>
+
+<p>配置好之后，我们在微信公众输入字符，它就会回复<code>http://xxxxxx.com/</code>。</p>
+
+<p>上面代码需要注意的是，我们回复消息的时候，返回的数据格式是<code>xml格式</code>的，而且对格式有严格要求。我前面使用框架中的<code>format类</code>生成xml的数据是无法被微信读取的，所以建议和我上面一样的写法。</p>
+
+<p>还有，上面回复的消息是文本消息，我们还可以回复图片、图文、语音、视频、音乐等消息，其实它们都大体相同，查看官方的文档<a href="https://mp.weixin.qq.com/wiki?t=resource/res_main&amp;id=mp1421140543&amp;token=&amp;lang=zh_CN">被动回复用户消息</a>这一节，按照对应的格式进行回复就行了。</p>
+
+<p>到这一步的时候，是不是很有成就感？其实，这还是很小的一步，微信开发还有很多的内容，就消息管理这部分来说，它就分接收和发送消息两大类。</p>
+
+<p>其中，接收消息有两种：</p>
+
+<ul>
+<li>第一种：接收普通消息，它是微信用户向公众号发送的消息，我们上面说的就是接收普通消息。</li>
+<li>第二种：接收事件消息，它是微信用户在微信公众号里面交互过程中产生的事件消息，例如关注/取消事件、扫描带参数二维码等等。具体可以接收哪些事件消息，就去查询微信的开发文档吧。接收事件消息说起来很高端的样子，其实它和普通消息差不多，整个接收和回复流程和上面一样，只是有的事件消息是不允许我们回复用户的。</li>
+</ul>
+
+
+<p>而发送消息就有被动<code>回复消息</code>、<code>客服消息</code>、<code>群发消息</code>、<code>模板消息</code>四种，其中这四种我又把它分成两小类，被动回复消息算是一类，我们前面实现对用户消息的回复就算是这一类；另外三种我将它们归类为主动发送消息，与被动回复消息不同的是，它会被微信主动推送给用户，流程大概如下图：</p>
+
+<p><img src="http://ww1.sinaimg.cn/large/7746cd07jw1f66jvxhdfij20nx07uaaf.jpg" alt="" /></p>
+
+<p>了解了流程之后，我们下面来实现模板消息的发送。</p>
+
+<h2>三、发送模板消息</h2>
+
+<p>模板消息可以定制，而且发送模板消息后，微信会主动推送给用户，这是我们开发很需要的一个功能。（注：模板消息只有认证后的服务号才可以使用）。</p>
+
+<p>首先，我们在微信公众平台的<code>功能-&gt;添加功能插件</code>处添加这个功能，进入模板消息页面，从模板库中添加一个模板消息，获取到模板ID。当然，我们也可以创建一个符号自己业务的模板消息，进行定制（这个需要申请）。</p>
+
+<p>然后，我们对应着模板详情的数据格式，写一个接口专门用来发送模板消息。</p>
+
+<p>下面是模板详情：</p>
+
+<p><img src="http://ww2.sinaimg.cn/large/7746cd07jw1f658hkxak6j20iu0kb75u.jpg" alt="" /></p>
+
+<p>对应上面的模板消息，我们的接口这么写：</p>
+
+<pre><code>/**
+     * 发送模板消息
+     */
+    public function send_template_message_get() {
+        //检查参数
+        param_check($this-&gt;get(), ['uid']);
+        $uid = $this-&gt;get('uid');
+
+        //wx appid
+        $wx_app_id = WX_APP_ID;
+        $wx_app_secret = WX_APP_SECRET;
+
+        //get access token
+        $token_info = file_get_contents("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&amp;appid=$wx_app_id&amp;secret=$wx_app_secret");
+        $token_info = json_decode($token_info, true);
+        $access_token = $token_info['access_token'];
+
+        //获取用户信息
+        $openid = $this-&gt;user_model-&gt;get_value('openid', $uid);
+
+        //组织参数
+        $param = array(
+            "touser" =&gt; $openid,
+            "template_id" =&gt; "jt_Rl5X9QWXMiRihrQz67n4riGt3kaPA81Zku0wLm9M",
+            "url" =&gt; "http://www.beyondwinlaw.com/test/wx/test/home.html",
+            "data" =&gt; [
+                "first" =&gt; [
+                    "value" =&gt; "案件有新进展",
+                    "color" =&gt; "#173177"
+                ],
+                "keyword1" =&gt; [
+                    "value" =&gt; "jkfdjafjdsfjdjfs",
+                    "color" =&gt; "#173177"
+                ],
+                "keyword2" =&gt; [
+                    "value" =&gt; "jkfdjafjdsfjdjfs",
+                    "color" =&gt; "#173177"
+                ],
+                "keyword3" =&gt; [
+                    "value" =&gt; "jkfdjafjdsfjdjfs",
+                    "color" =&gt; "#173177"
+                ],
+                "keyword4" =&gt; [
+                    "value" =&gt; "2016-07-12 11:11:11",
+                    "color" =&gt; "#173177"
+                ],
+                "keyword5" =&gt; [
+                    "value" =&gt; "jkfdjafjdsfjdjfs",
+                    "color" =&gt; "#173177"
+                ],
+                "remark" =&gt; [
+                    "value" =&gt; "点击查看案件进度详情",
+                    "color" =&gt; "#173177"
+                ]
+            ]
+        );
+
+        //发送请求
+        $url = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=$access_token";
+        $result = send_post($url, $param);
+        answer([
+            "result" =&gt; $result
+        ]);
+    }
+</code></pre>
+
+<p>效果是这样的：</p>
+
+<p align="center" >
+  <img src="http://ww3.sinaimg.cn/mw690/7746cd07jw1f65905jwfbj20mq10iq75.jpg" height=554 width = 345>
+</p>
+
+
+<p>这样，我们就实现了模板消息的发送，至于客服消息、群发接口，原理差不多，因为我没实现过，这里就不多说了。</p>
+
+<h2>四、网页授权，获取用户信息</h2>
+
+<p>微信采用的是OAuth对开发者进行授权的，具体OAuth授权原理请google查询。在开发之前，我们需要先到公众平台官网中的<code>开发-接口权限-网页服务-网页授权获取用户基本信息</code>的配置选项中，修改授权回调域名。</p>
+
+<p><img src="http://ww2.sinaimg.cn/large/7746cd07jw1f65ggry50ij20y20dimyr.jpg" alt="" /></p>
+
+<p>整个授权过程，其实微信官方已经说的很清楚了。我这里简略说一下，算是总结下吧！</p>
+
+<p>首先，我们需要获取access_token，它的时序图和微信开放平台类似，如下：
+<img src="http://ww1.sinaimg.cn/mw690/7746cd07jw1f68rcxtd2lj21020fu40c.jpg" alt="" /></p>
+
+<p>这整个过程是当用户要登录我们的网站时，我们带上回调地址、AppId、scope等参数跳转到微信授权页面；然后获得用户的同意之后，它会跳转到我们的回调地址，并带上code参数；最后我们通过code、AppId、AppSecret请求接口，获取access_token。</p>
+
+<p>之后，我们通过access_token请求对应的接口，就可以获取用户的基本信息了。</p>
+
+<p>需要注意地方有两个：</p>
+
+<ol>
+<li>我们的回调地址需要进行encodeURL，否则可能回调地址中url后面的参数会丢失。</li>
+<li>我们的回调地址的域名必须是前面配置的域名。</li>
+</ol>
+
+
+<p>具体的实现细节，根据官方文档<a href="https://mp.weixin.qq.com/wiki?t=resource/res_main&amp;id=mp1421140842&amp;token=&amp;lang=zh_CN">微信网页授权</a>和<a href="https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&amp;t=resource/res_list&amp;verify=1&amp;id=open1419316505&amp;token=&amp;lang=zh_CN">网站应用微信登录开发指南</a>的步骤来就行了。</p>
+
+<h2>五、JS-SDK的使用</h2>
+
+<p>在我们要做的产品中，我们希望能够控制每个页面分享的链接，而JS-SDK就可以做到这一切。
+它的使用步骤可以查阅<a href="https://mp.weixin.qq.com/wiki?t=resource/res_main&amp;id=mp1421141115&amp;token=&amp;lang=zh_CN">微信JS-SDK说明文档</a>这个文档，而且在网页最后还有对应的<a href="http://demo.open.weixin.qq.com/jssdk">DEMO页面</a>和<a href="http://demo.open.weixin.qq.com/jssdk/sample.zip">示例代码</a>。</p>
+
+<p>我们的实现是这样的，在前端专门写了一个JS文件<code>wx_share.js</code>，这个JS文件中将当前的url传给后台，请求后台的数据对JS-SDK进行配置。代码如下：</p>
+
+<pre><code class="javascript">var server_url = "http://192.168.30.249/by/wx_api/index.php/share/wx_config";
+var url = window.location.href;
+
+//配置微信
+$.ajax({
+    type: "GET",
+    url: server_url,
+    data: {
+        url: encodeURI(url)
+    },
+    dataType: "json",
+    success: function(data){
+        // alert('请求分享配置数据成功');
+        wx.config({
+            debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+            appId: data.data.appId, // 必填，公众号的唯一标识
+            timestamp: data.data.timestamp, // 必填，生成签名的时间戳
+            nonceStr: data.data.nonceStr, // 必填，生成签名的随机串
+            signature: data.data.signature,// 必填，签名，见附录1
+            jsApiList: ['onMenuShareAppMessage', 'onMenuShareTimeline'] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+        });
+        wx.ready(function() {
+            // alert("分享验证完毕");
+        });
+        wx.error(function() {
+            // alert("分享验证失败");
+        });
+
+        //获取uid和link_id
+        var uid = localStorage.getItem("uid");
+        var linkId = localStorage.getItem("link_id");
+        var shareUrl = "http://www.baidu.com";
+        //存在linkId, 则分享带上link_id等参数
+        if(linkId != undefined &amp;&amp; linkId != "" &amp;&amp; linkId != null) {
+          shareUrl = shareUrl + "?super_id=" + uid + "&amp;link_id=" + linkId;
+        }
+        // alert("分享链接: "+shareUrl);
+
+        wx.onMenuShareAppMessage({
+            title: '分享测试', // 分享标题
+            desc: '测试一下', // 分享描述
+            link: shareUrl, // 分享链接
+            imgUrl: 'http://www.beyondwinlaw.com/gw4/images/zhongjie.jpg', // 分享图标
+            type: 'link', // 分享类型,music、video或link，不填默认为link
+            dataUrl: '', // 如果type是music或video，则要提供数据链接，默认为空
+            success: function () {
+                // 用户确认分享后执行的回调函数
+                // alert("分享成功");
+            },
+            cancel: function () {
+                // 用户取消分享后执行的回调函数
+                // alert("取消分享");
+            }
+        });
+    },
+    error: function(data) {
+        alert('请求分享配置数据失败');
+    }
+});
+</code></pre>
+
+<p>而具体JS-SDK权限签名算法的实现是放在后台的，这个实现我是直接使用官方的<code>jssdk</code>的类，只是将它稍微修改了下。
+<code>share.php</code>中<code>wx_config</code>接口实现如下：</p>
+
+<pre><code>    /**
+     * 获取微信配置
+     */
+    public function wx_config_get() {
+        //获取参数
+        param_check($this-&gt;get(), ['url']);
+        $url = $this-&gt;get('url');
+        $url = urldecode($url);
+
+        $jssdk = new JSSDK(WX_APP_ID, WX_APP_SECRET, $url);
+        $signPackage = $jssdk-&gt;GetSignPackage();
+        answer($signPackage);
+    }
+</code></pre>
+
+<p>而修改后的JS-SDK代码如下：</p>
+
+<pre><code>class JSSDK {
+  private $appId;
+  private $appSecret;
+  private $url;
+
+  public function __construct($appId, $appSecret, $url) {
+    $this-&gt;appId = $appId;
+    $this-&gt;appSecret = $appSecret;
+    $this-&gt;url = $url;
+  }
+
+  public function getSignPackage() {
+    // 注意 URL 一定要动态获取，不能 hardcode.
+//    $protocol = (!empty($_SERVER['HTTPS']) &amp;&amp; $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
+//    $url = "$protocol$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+    $url = $this-&gt;url;
+
+    //wx appid
+    $wx_app_id = $this-&gt;appId;
+    $wx_app_secret = $this-&gt;appSecret;
+
+    //get token
+    $token_info = file_get_contents("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&amp;appid=$wx_app_id&amp;secret=$wx_app_secret");
+    $token_info = json_decode($token_info, true);
+    $access_token = $token_info['access_token'];
+
+    //get ticket
+    $ticket_info = file_get_contents("https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=$access_token&amp;type=jsapi");
+    $ticket_info = json_decode($ticket_info, true);
+    $ticket = $ticket_info['ticket'];
+
+    //拼接字符串
+    $timestamp = time();
+    $nonceStr = $this-&gt;createNonceStr();
+    // 这里参数的顺序要按照 key 值 ASCII 码升序排序
+    $string = "jsapi_ticket=$ticket&amp;noncestr=$nonceStr&amp;timestamp=$timestamp&amp;url=$url";
+
+    //使用sha1进行签名
+    $signature = sha1($string);
+
+    $signPackage = array(
+      "appId"     =&gt; $this-&gt;appId,
+      "nonceStr"  =&gt; $nonceStr,
+      "timestamp" =&gt; $timestamp,
+      "url"       =&gt; $url,
+      "signature" =&gt; $signature,
+      "rawString" =&gt; $string
+    );
+    return $signPackage; 
+  }
+
+  private function createNonceStr($length = 16) {
+    $chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    $str = "";
+    for ($i = 0; $i &lt; $length; $i++) {
+      $str .= substr($chars, mt_rand(0, strlen($chars) - 1), 1);
+    }
+    return $str;
+  }
+
+  private function httpGet($url) {
+    $curl = curl_init();
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($curl, CURLOPT_TIMEOUT, 500);
+    // 为保证第三方服务器与微信服务器之间数据传输的安全性，所有微信接口采用https方式调用，必须使用下面2行代码打开ssl安全校验。
+    // 如果在部署过程中代码在此处验证失败，请到 http://curl.haxx.se/ca/cacert.pem 下载新的证书判别文件。
+    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, true);
+    curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, true);
+    curl_setopt($curl, CURLOPT_URL, $url);
+
+    $res = curl_exec($curl);
+    curl_close($curl);
+
+    return $res;
+  }
+
+  private function get_php_file($filename) {
+    return trim(substr(file_get_contents($filename), 15));
+  }
+}
+</code></pre>
+
+<p>这里需要说明一下的是，这里我只是测试功能的实现，<code>获取access_token</code>是直接通过接口实时进行获取的。如果是在生产环境，还请参考官方的<a href="https://mp.weixin.qq.com/wiki?t=resource/res_main&amp;id=mp1421140183&amp;token=&amp;lang=zh_CN">获取access_token</a>。</p>
+
+<p>在这里我碰到一个问题，耽搁了挺久的时间。那就是前面我按照官方文档自己写的签名算法，然后各种配置不成功。后来下载了官方的demo，发现官方文档jssdk没有问题，然后将自己的签名算法放入官方的jssdk中，也没有问题。因为官方文档是前后端放在一块的，所以总感觉url不对，但是对<code>url进行encodeURL</code>之后，发现还是不行。最后和小伙伴一起google了之后，<code>将生成数字随机替换成生成字母随机数</code>，然后配置就没问题了。</p>
+
+<p>到这一步，逻辑已经全部实现，只需要在我们对应的页面中引入JS-SDK和wx_share.js文件就行了，如下：</p>
+
+<p>```</p>
+
+<script src="http://res.wx.qq.com/open/js/jweixin-1.1.0.js"></script>
+
+
+<script src="js/wx_share.js"></script>
+
+
+<p>```</p>
+
+<p>成功之后的效果如下：</p>
+
+<p align="center" >
+  <img src="http://ww4.sinaimg.cn/large/7746cd07jw1f6e24s7grrj20ku112q4f.jpg" height=667 width=375>
+</p>
+
+
+<h2>六、自定义菜单</h2>
+
+<p>自定义菜单这个是比较简单的，我们只需要将我们配置数据POST到微信服务器，微信用户进入我们公众号之后，看到界面就变成了我们自定义菜单样式。
+在这里，我也写了一个接口，用来修改菜单：</p>
+
+<pre><code class="php">   /**
+     * 更改微信公众号菜单
+     * @note 这个接口在线上是禁止调用的,它只需要更改的时候,调用一次就行了
+     */
+    public function change_menu_get() {
+        //获取access_token, 需要中控服务器,否则会造成服务不稳定,咱们这里暂时不这么做
+        $app_id = WX_APP_ID;
+        $app_secret = WX_APP_SECRET;
+        $content = file_get_contents("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&amp;appid=$app_id&amp;secret=$app_secret");
+        $info = json_decode($content, true);
+        $access_token = $info['access_token'];
+
+        //自定义菜单
+        $auth_url = "https://open.weixin.qq.com/connect/oauth2/authorize?appid={$app_id}&amp;redirect_uri=http://www.liuchungui.com/api/wx_api/index.php/share/test&amp;response_type=code&amp;scope=snsapi_userinfo&amp;state=123#wechat_redirect";
+
+        $menu = array(
+            "button" =&gt; [
+                [
+                    "type" =&gt; "view",
+                    "name" =&gt; "合作",
+                    "url" =&gt; $auth_url
+                ],
+                [
+                    "name" =&gt; "菜单",
+                    "sub_button" =&gt; [
+                        [
+                            "type" =&gt; "view",
+                            "name" =&gt; "官网",
+                            "url" =&gt; "http://www.liuchungui.com/"
+                        ],
+                        [
+                            "type" =&gt; "view",
+                            "name" =&gt; "关于我们",
+                            "url" =&gt; "http://www.liuchungui.com/about.html"
+                        ]
+                    ]
+                ]
+            ]
+        );
+
+        $menu_url = "https://api.weixin.qq.com/cgi-bin/menu/create?access_token=$access_token";
+        //发送POST请求
+        $result = send_post($menu_url, $menu);
+        $result = json_decode($result, true);
+        //返回数据
+        if($result['errcode'] === 0) {
+            answer(true, '更改菜单');
+        }
+        else {
+            answer(false, '更改菜单');
+        }
+    }
+</code></pre>
+
+<p>这个只是创建菜单，其他操作菜单的接口请查阅<a href="https://mp.weixin.qq.com/wiki?t=resource/res_main&amp;id=mp1421141013&amp;token=&amp;lang=zh_CN">自定义菜单</a>。</p>
+
+<p>效果如下：</p>
+
+<p align="center" >
+  <img src="http://ww2.sinaimg.cn/mw690/7746cd07jw1f67s9b3h6hj20ks10c78z.jpg" height=604 width=345>
+</p>
+
+
+<h2>推荐</h2>
+
+<p>在搜索资料的时候，无意之间找到一个微信公众号开发的框架<a href="https://github.com/overtrue/wechat">wechat</a>，star不少，而且看了下开发文档<a href="https://easywechat.org/">EasyWechat</a>，讲得比较详细，应该是一个不错的框架，后期准备使用它来进行开发，推荐大家看看。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Mac环境下Nginx实现反向代理]]></title>
+    <link href="http://www.liuchungui.com/blog/2015/10/21/mhuan-jing-xia-nginxshi-xian-fan-xiang-dai-li/"/>
+    <updated>2015-10-21T10:16:01+08:00</updated>
+    <id>http://www.liuchungui.com/blog/2015/10/21/mhuan-jing-xia-nginxshi-xian-fan-xiang-dai-li</id>
+    <content type="html"><![CDATA[<h2>1、安装</h2>
+
+<p>首先，我们需要搭建Nginx环境，我这里是通过homebrew一键式搭建，步骤如下：  <br/>
+1、安装homebrew</p>
+
+<pre><code>$ ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+</code></pre>
+
+<p>以<a href="brew.sh">官网homebrew</a>为准</p>
+
+<p>2、安装nginx</p>
+
+<pre><code>$ brew install nginx
+</code></pre>
+
+<p>查看Nginx安装的版本
+<code>
+$ nginx -v
+</code></p>
+
+<p>Nginx常用的命令有</p>
+
+<pre><code class="">#查看版本，以及配置文件地址
+nginx -V
+#查看版本 
+nginx -v
+#指定配置文件
+nginx -c filename
+#帮助
+nginx -h
+#重新加载配置|重启|停止|退出 nginx
+nginx -s reload|reopen|stop|quit
+#打开 nginx
+sudo nginx
+#测试配置是否有语法错误
+sudo nginx -t
+</code></pre>
+
+<!-- more -->
+
+
+<h2>2、Nginx配置WEB服务器</h2>
+
+<p>使用Nginx做反向代理，我们需要了解一下Nginx中http模块的配置。</p>
+
+<h4>编辑Nginx配置文件</h4>
+
+<pre><code>$ sudo vim /usr/local/etc/nginx/nginx.conf
+</code></pre>
+
+<p>找到http模块，修改http模块中的listen为80，如下：</p>
+
+<pre><code>http {
+    #导入类型配置文件
+    include       mime.types;
+    #设定默认类型为二进制流
+    default_type  application/octet-stream;
+    #启用sendfile()函数
+    sendfile        on;
+    #客户端与服务器连接的超时时间为65秒，超过65秒，服务器关闭连接
+    keepalive_timeout  65;
+    #是否开启gzip，默认关闭
+    #gzip  on;
+    #一个server块
+    server {
+        #服务器监听的端口为80
+        listen       80;
+        #服务器名称为localhost，我们可以通过localhost来访问这个server块的服务
+        server_name  localhost;
+        #location块，它存放在server块当中，location会尝试根据用户请求中的URI来匹配上面的/uri表达式，如果可以匹配，就选择location {}块中的配置来处理用户请求。
+        location / {
+            #以root方式设置资源路径，它与alias的不同请见下面的 http模块中文件路径定义
+            root   html;
+            #默认访问的页面，从左依次找到右，直到找到这个文件，然后返回结束请求
+            index  index.html index.htm;
+            #设置错误页面，对应的错误码是404，错误页面是/Users/user/Sites/404.html
+            error_page 404  /404.html;
+        }
+    }
+    include servers/*;
+}
+</code></pre>
+
+<h4>http模块中文件路径定义：</h4>
+
+<p>1、以<strong>root</strong>方式设置资源路径  <br/>
+语法: root path;  <br/>
+默认: root html;  <br/>
+配置块: http, server, location, if   <br/>
+例如，定义资源文件相对于HTTP请求的根目录。</p>
+
+<pre><code>location /download/ {
+    root /opt/web/html;
+}
+</code></pre>
+
+<p>在上面的配置中，如果有一个请求的URI是/download/index/test.html，那么Web服务器将会返回服务器上/opt/web/html/download/index/test.html文件的内容。</p>
+
+<p>2、以<strong>alias</strong>方式设置资源路径   <br/>
+语法：alias path;   <br/>
+配置块：location     <br/>
+alias也是用来设置文件资源路径的，它与root的不同点主要在于如何解读紧跟location后面的uri参数，这将会致使alias与root以不同的方式将用户请求映射到真正的磁盘文件上。  <br/>
+例如，如果有一个请求的URI是/conf/nginx.conf，而用户实际想访问的文件在/usr/local/nginx/conf/nginx.conf，那么想要使用alias来进行设置的话，可以采用如下方式：</p>
+
+<pre><code>location /conf {
+    alias /usr/local/nginx/conf/;
+}
+</code></pre>
+
+<p>如果用root设置，那么语句如下所示：</p>
+
+<pre><code>location /conf {
+    alias /usr/local/nginx/;
+}
+</code></pre>
+
+<p>使用alias时，在URI向实际文件路径的映射过程中，已经把location后配置的/conf这部分字符串丢弃掉，因此，/conf/nginx.conf请求将根据alias path映射为path/nginx.conf。root则不然，它会根据完整的URI请求来映射，因此/conf/nginx.conf请求会根据root path映射为path/conf/nginx.conf。这也是root可以放置到http、server、location或if块中，而alias只能放置到location块中的原因。  <br/>
+alias后面还可以添加正则表达式，例如：</p>
+
+<pre><code>location ~ ^/test/(\w+)\.(\w+)$ {
+    alias /usr/local/nginx/$2/$1.$2;
+}
+</code></pre>
+
+<p>这样，请求在访问/test/nginx.conf时，Nginx会返回/usr/local/nginx/conf/nginx.conf文件中的内容。</p>
+
+<h4>开启Nginx的Web服务</h4>
+
+<p>开启Nginx服务之前，如果我们开启了Apache服务，那么我需要先关闭Apache服务</p>
+
+<pre><code>#开启Nginx
+$ sudo nginx
+</code></pre>
+
+<p>使用localhost来访问，若是出现nginx欢迎页，说明成功。</p>
+
+<h2>3、使用Nginx做反向代理</h2>
+
+<p>反向代理（reverse proxy）方式是指用代理服务器来接受Internet上的连接请求，然后将请求转发给内部网络中的上游服务器，并将从上游服务器上得到的结果返回给Internet上请求连接的客户端，此时代理服务器对外的表现就是一个Web服务器。   <br/>
+这里，我是在本机搭建，通过修改host来模拟多个域名访问本机的nginx。</p>
+
+<h4>1、修改hosts文件</h4>
+
+<p>$ vim /etc/hosts    <br/>
+在内部添加域名解析</p>
+
+<pre><code>127.0.0.1 pinger.com www.pinger.com
+127.0.0.1 test.com www.test.com
+127.0.0.1 chungui.com www.chungui.com
+</code></pre>
+
+<h4>2、修改nginx配置文件</h4>
+
+<p>$ sudo vim /usr/local/etc/nginx/nginx.conf    <br/>
+在后面添加server模块，内部通过<code>proxy_pass</code>设置反向代理</p>
+
+<pre><code>    server {
+        listen  80;
+        server_name  *.pinger.com pinger.com;
+        location / {
+            proxy_pass http://www.baidu.com;
+        }
+    }
+    server {
+        listen 80;
+        server_name *.chungui.com chungui.com;
+        location / {
+            proxy_pass http://www.renren.com;
+        }
+    }
+    server {
+        listen 80;
+        server_name test.com;
+        location / {
+            proxy_pass http://www.zhihu.com;
+        }
+    } 
+</code></pre>
+
+<p>其中，server_name可以指向多个域名值</p>
+
+<h4>3、重启nginx服务</h4>
+
+<pre><code>#重启服务
+$ sudo nginx -s reload
+</code></pre>
+
+<p>这时，反向代理已经搭建成功。你可以在本地通过<code>chungui.com</code>访问到人人网，<code>test.com</code>访问到知乎。不过，设置<code>pinger.com</code>访问的<code>http://www.baidu.com</code>站点，而百度服务器内部会自动跳转到<code>https://www.baidu.com</code>站点，所以我们通过<code>pinger.com</code>会跳转到<code>https://www.baidu.com</code>，这个时候我们可以将百度的替换成https就行了，修改配置如下：</p>
+
+<pre><code>server {
+    listen       80;
+    server_name  *.pinger.com pinger.com;
+    location / {
+        proxy_pass https://www.baidu.com;
+    }
+}
+</code></pre>
+
+<p>这个时候，再使用<code>pinger.com</code>在浏览器里访问时就不会出现跳转的问题了。</p>
+
+<h2>参考</h2>
+
+<p><a href="http://manual.51yip.com/nginx/">Nginx中文参考手册,教程</a>    <br/>
+<a href="http://blog.csdn.net/dracotianlong/article/details/21817097">mac 安装 nginx 环境</a>   <br/>
+<a href="http://segmentfault.com/a/1190000002963355">Mac OS使用brew安装Nginx、MySQL、PHP-FPM的LAMP开发环境</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[自建证书配置HTTPS服务器]]></title>
+    <link href="http://www.liuchungui.com/blog/2015/09/25/zi-jian-zheng-shu-pei-zhi-httpsfu-wu-qi/"/>
+    <updated>2015-09-25T11:24:02+08:00</updated>
+    <id>http://www.liuchungui.com/blog/2015/09/25/zi-jian-zheng-shu-pei-zhi-httpsfu-wu-qi</id>
+    <content type="html"><![CDATA[<h3>说明</h3>
+
+<p>1、写这篇博客的初衷是因为最近iOS9出来了，苹果官方默认要求使用HTTPS，所以自己想整一个HTTPS服务器，也想好好了解一下HTTPS通信，也知道了HTTPS其实就是在HTTP的基础上加上了SSL/TLS。具体想了解SSL/TLS原理的请浏览<a href="http://www.ruanyifeng.com/blog/2014/02/ssl_tls.html">SSL/TLS协议运行机制的概述</a>和<a href="http://segmentfault.com/a/1190000002554673">SSL/TLS原理详解</a>。中途看了很多博客，也花了不少时间，所以想记录一些东西。</p>
+
+<p>2、这篇博客的内容主要是讲升级openssl、如何自己创建证书、配置证书到服务器和自建CA。其中对证书不太了解的，可以看<a href="http://kb.cnblogs.com/page/194742/">数字证书及CA的扫盲介绍</a>这篇文章。本篇博客其中第2步和第3步已经重复，只需要选择其中一步操作就可以搭建HTTPS服务器，当然搭建都是不受信任的，如果是架设网站还是需要到权威的CA机构申请证书。本来还有生成iOS客户端的证书和使用证书连接服务器相关的内容，由于篇幅的原因就把它放在下一篇吧。</p>
+
+<p>3、本人使用了Mac10.10.5和Ubuntu 14.04.1进行配置搭建，本篇博客主要以Unbuntu 14.04.1系统为主。而本人这个Ubuntu 14.04.1是阿里云一键安装的，而且没有更改里面的服务器设置，所以诸多的配置可能与一般Linux系统不太相同（与我电脑上的Linux mint就很大不同）。不过，我会在最后说明一下Mac和Linux配置一些不同的地方，其实都是一些相关路径的不同。当然，有可能你的Apache安装路径与我说的几种路径都不同，没关系，对照着修改也应该没什么问题。</p>
+
+<!-- more -->
+
+
+<h3>1、安装升级openssl</h3>
+
+<h5>首先，查看下当前设备的openssl版本，如果版本在openssl1.0.1g以上，请略过</h5>
+
+<pre><code>openssl version -a
+#OpenSSL 1.0.1f 6 Jan 2014
+</code></pre>
+
+<p>如果是处于<code>1.0.1-1.0.1f</code>的版本，那就赶快升级到<code>1.0.1g</code>版本以上吧！因为这些版本存在漏洞，详情请见<a href="http://drops.wooyun.org/papers/1381">关于OpenSSL“心脏出血”漏洞的分析</a></p>
+
+<p>从上面信息可以看出我们的系统版本是1.0.1f，openssl需要升级，那我们先来下载源代码</p>
+
+<pre><code>wget http://www.openssl.org/source/openssl-1.0.1g.tar.gz     
+</code></pre>
+
+<p>下载完之后，解压并进行安装</p>
+
+<pre><code>tar -zxvf openssl-1.0.1g.tar.gz         
+cd  openssl-1.0.1g         
+./config shared zlib            
+make &amp;&amp; make install          
+</code></pre>
+
+<p>安装的过程中，碰到了一个问题
+make: *** [install_docs] Error 255
+解决这个问题请使用<code>make install_sw</code>安装，详情见<a href="https://github.com/openssl/openssl/issues/57">https://github.com/openssl/openssl/issues/57</a></p>
+
+<h5>随后，进行相关的设置</h5>
+
+<pre><code>#修改历史的OpenSSL文件设置备份
+mv /usr/bin/openssl /usr/bin/openssl.old
+mv /usr/include/openssl /usr/include/openssl.old
+
+#设置软连接使其使用新的OpenSSL版本 刚刚安装的OpenSSL默认安装在/usr/local/ssl
+ln -s /usr/local/ssl/bin/openssl /usr/bin/openssl
+ln -s /usr/local/ssl/include/openssl /usr/include/openssl
+
+#更新动态链接库数据
+echo "/usr/local/ssl/lib" &gt;&gt; /etc/ld.so.conf
+ldconfig -v
+</code></pre>
+
+<p>最后查看一下版本</p>
+
+<pre><code>openssl version
+OpenSSL 1.0.1g 7 Apr 2014
+</code></pre>
+
+<p>1.0.1g版本安装成功</p>
+
+<h3>2、创建用私钥签名的证书，配置到Apache服务器</h3>
+
+<h5>首先，生成私钥，创建请求证书，使用私钥对证书进行签名</h5>
+
+<p>生成私钥  <br/>
+<code>openssl genrsa -des3 -out private.key 2048</code> <br/>
+-des3代表加上了加密，后面的2048是代表生成的密钥的位数，1024已经不是很安全，详情请见<a href="http://get.jobdeer.com/1607.get">互联网全站HTTPS的时代已经到来</a></p>
+
+<p>生成证书请求   <br/>
+<code>openssl req -new -key private.key -out server.csr</code>  <br/>
+这一步需要填写一些信息，其中<code>Common Name (e.g. server FQDN or YOUR name) []</code>这个需要填写你的域名或服务器地址。</p>
+
+<p>生成服务器的私钥，去除密钥口令   <br/>
+<code>openssl rsa -in private.key -out server.key</code></p>
+
+<p>使用私钥为证书请求签名，生成给服务器签署的证书，格式是x509的PEM格式  <br/>
+<code>openssl x509 -req -in server.csr -out server.crt -outform pem -signkey server.key -days 3650</code> <br/>
+-outform pem指定证书生成的格式，默认是pem，所以这个命令也可以写作成<code>sudo openssl x509 -req -in server.csr -out server.crt -signkey server.key -days 3650</code>。</p>
+
+<p>将证书copy到Apache配置路径下</p>
+
+<pre><code>sudo  mkdir /alidata/server/httpd/conf/ssl
+cp server.key /alidata/server/httpd/conf/ssl/server.key
+cp server.crt  /alidata/server/httpd/conf/ssl/server.crt
+</code></pre>
+
+<h5>其次，配置Apache服务器</h5>
+
+<p>编辑/alidata/server/httpd/conf/httpd.conf文件</p>
+
+<pre><code>#LoadModule ssl_module modules/mod_ssl.so
+#LoadModule socache_shmcb_module modules/mod_socache_shmcb.so
+#Include conf/extra/httpd-ssl.conf
+</code></pre>
+
+<p>将这三行前面的#去掉</p>
+
+<p>编辑<code>/alidata/server/httpd/conf/extra/httpd-ssl.conf</code>文件，找到SSLCertificateFile、SSLCertificateKeyFile，修改它们两对应的文件</p>
+
+<pre><code>SSLCertificateFile "/alidata/server/httpd/conf/ssl/server.crt"
+SSLCertificateKeyFile "/alidata/server/httpd/conf/ssl/server.key"
+</code></pre>
+
+<p>编辑<code>/alidata/server/httpd/conf/vhosts/phpwind.conf</code>文件，这里我没有更改阿里云的配置，如果你不是阿里云服务器，找到对应的<code>httpd/conf/extra/httpd-vhosts.conf</code>文件进行修改。这个文件我主要加了下面的内容：</p>
+
+<pre><code>&lt;VirtualHost *:443&gt;
+        SSLCertificateFile    /alidata/server/httpd/conf/ssl/server.crt
+        SSLCertificateKeyFile /alidata/server/httpd/conf/ssl/server.key
+        ServerName 182.92.5.161
+        DocumentRoot /alidata/www
+&lt;/VirtualHost&gt;
+</code></pre>
+
+<p>最后，咱们重启Apache服务器，输入链接查看是否配置成功。</p>
+
+<h3>3、自建CA，用CA证书进行签名，配置到Apache服务器</h3>
+
+<h5>第一步、使用CA.sh创建CA根证书</h5>
+
+<p>修改openssl的配置文件<code>sudo vim /usr/local/ssl/openssl.cnf</code>，修改<code>default_bits=1024</code>为<code>default_bits=2048</code>，使其openssl加密使用2048位，原因前面已经说过。</p>
+
+<p>随后创建一个目录，并且将生成CA证书的脚本CA.sh复制到这个目录</p>
+
+<pre><code>mkdir ca
+cd ca
+cp /usr/local/ssl/misc/CA.sh CA.sh
+</code></pre>
+
+<p>CA.sh这个脚本如果找不到，可以使用 <code>openssl version -a</code>查看openssl对应的目录，而CA.sh一般就在这个目录的子目录misc目录下。</p>
+
+<p>之后执行<code>./CA.sh -newca</code>命令  <br/>
+CA.sh会使用<code>/usr/local/ssl/openssl.cnf</code>中的配置来创建私钥和证书，这正是我们第一步为啥需要修改这个文件的原因。</p>
+
+<p>创建CA证书过程中，不输入信息，直接回车，填写加密私钥的密码和生成CA证书的相关信息。</p>
+
+<p>创建完之后会生成demoCA目录。这个目录有</p>
+
+<pre><code>cacert.pem  certs  index.txt       index.txt.old  private
+careq.pem   crl    index.txt.attr  newcerts       serial
+</code></pre>
+
+<p>其中cacert.pem是CA的证书，private存放CA的私钥，newcerts存放CA签名的备份。到这里，我们的CA已经建好了，下面我们可以通过CA来对我们的证书进行签名了。</p>
+
+<h5>第二步、使用CA根证书为服务器证书签名</h5>
+
+<pre><code>#生成私钥
+sudo  openssl genrsa -des3 -out private.key 2048
+#生成证书请求
+sudo openssl req -new -key private.key -out server.csr
+#生成服务器的私钥，去除密钥口令
+sudo openssl rsa -in private.key -out server.key
+#使用CA进行签名，生成server.crt
+cp server.csr newreq.pem
+./CA.sh -sign
+mv newcert.pem server.crt
+或者上面三步都不需要，直接使用下面一步
+openssl ca -in server.csr -out server.crt
+</code></pre>
+
+<p>更多openssl ca 命令请见<a href="http://blog.csdn.net/as3luyuan123/article/details/13346613">OpenSSL命令&ndash;ca</a></p>
+
+<h5>第三步、配置服务器：</h5>
+
+<pre><code>mkdir ssl
+cp server.crt ssl/server.crt
+cp server.key ssl/server.key
+cp demoCA/cacert.pem ssl/ca.crt
+cp -r ssl /alidata/server/httpd/conf/
+</code></pre>
+
+<p>编辑<code>/alidata/server/httpd/conf/extra/httpd-ssl.conf</code>文件，找到SSLCertificateFile、SSLCertificateKeyFile、SSLCACertificatePath、SSLCACertificateFile进行修改</p>
+
+<pre><code># 指定服务器证书位置
+SSLCertificateFile "/alidata/server/httpd/conf/ssl/server.crt"
+# 指定服务器证书key位置
+SSLCertificateKeyFile "/alidata/server/httpd/conf/ssl/server.key"
+# 证书目录
+SSLCACertificatePath "/alidata/server/httpd/conf/ssl"
+# 根证书位置
+SSLCACertificateFile "/alidata/server/httpd/conf/ssl/ca.crt"
+</code></pre>
+
+<p>修改vhost配置<code>vim /alidata/server/httpd/conf/vhosts/phpwind.conf</code></p>
+
+<pre><code>&lt;VirtualHost *:443&gt;
+        SSLCertificateFile    /alidata/server/httpd/conf/ssl/server.crt
+        SSLCertificateKeyFile /alidata/server/httpd/conf/ssl/server.key
+        SSLCACertificatePath /alidata/server/httpd/conf/ssl
+        SSLCACertificateFile /alidata/server/httpd/conf/ssl/ca.crt
+        ServerName 182.92.5.161
+        DocumentRoot /alidata/www
+&lt;/VirtualHost&gt;
+</code></pre>
+
+<p>最后，咱们重启Apache服务器，在浏览器输入链接查看是否配置成功。可以在浏览器上查看证书信息，与第二步不同之处在于此时的证书有两个。</p>
+
+<h3>最后，与Mac和寻常Linux系统一些区别</h3>
+
+<h5>一、与MAC的几点不同</h5>
+
+<p>1、首先安装openssl，参考我的<a href="http://www.liuchungui.com/blog/2016/05/10/mac10-dot-11sheng-ji-an-zhuang-openssl/">Mac10.11升级安装openssl</a>  <br/>
+2、Mac上对应的Openssl的路径是<code>/System/Library/OpenSSL/</code>  <br/>
+3、Mac上对应的Apache的路径是<code>/etc/apache2/</code>  <br/>
+4、Mac上重启服务器使用<code>/usr/sbin/apachectl restart</code>，阿里云服务器使用<code>/etc/init.d/httpd restart</code>或者<code>service httpd restart</code>   <br/>
+5、Mac上vhost配置的路径是<code>/etc/apache2/extra/httpd-vhosts.conf</code></p>
+
+<h5>二、与寻常Linux系统的不同</h5>
+
+<p>主要借鉴<a href="http://m.blog.csdn.net/blog/whyliu_/41749521">MacOS openssl下生成建立CA并生成服务器和客户端证书方法</a>这篇文章   <br/>
+1、linux上Apache的路径是<code>/usr/local/apache</code>  <br/>
+2、linux上vhost配置的路径是<code>/usr/local/apache/conf/extra/httpd_vhosts.conf</code></p>
+
+<h3>总结</h3>
+
+<p>1、对HTTPS的理解  <br/>
+它的基本原理是服务器拥有一个私钥，客户端拥有公钥，当然它们是使用证书管理的。每次通信它们通过证书进行身份认证。身份认证之后客户端发送一个“对话密钥”给服务器。传输“对话密钥”时，客户端公钥通过不对称加密算法进行加密了的，只有服务器才能解密。然后双方使用这个"对话密钥"对内容进行对称加密，双方之间传输内容。</p>
+
+<p>2、对openssl、SSL/TLS的相关理解  <br/>
+openssl是一套工具，它是一个开源库，可以对相关内容进行加密和解密，也可以生成证书并且进行数字签名。它创建的x509证书有PEM和DER两种编码，而且它们还可以导出p12文件。它使用的加密算法有对称加密，也有不对称加密。</p>
+
+<p>3、HTTPS相关理论知识博客，值得细读  <br/>
+<a href="http://segmentfault.com/a/1190000002568019">OpenSSL 与 SSL 数字证书概念贴</a>  <br/>
+<a href="http://www.ruanyifeng.com/blog/2014/02/ssl_tls.html">SSL/TLS协议运行机制的概述</a>  <br/>
+<a href="http://segmentfault.com/a/1190000002554673">SSL/TLS原理详解</a></p>
+
+<h3>参考：</h3>
+
+<p><a href="http://www.yezhongqi.com/archives/1377.html">https介绍与环境搭建</a>  <br/>
+<a href="http://myswirl.blog.163.com/blog/static/5131864220071014102353799/">OpenSSL常用命令</a>  <br/>
+<a href="http://blog.csdn.net/as3luyuan123/article/details/13344757">OpenSSL命令&mdash;CA.pl</a>  <br/>
+<a href="http://m.blog.csdn.net/blog/whyliu_/41749521">MacOS openssl下生成建立CA并生成服务器和客户端证书方法</a>   <br/>
+<a href="http://blog.csdn.net/zhu410289616/article/details/46566073">mac中apache开启https功能，本地发布安装app</a>  <br/>
+<a href="http://www.cnblogs.com/kyrios/p/tls-and-certificates.html">TLS/HTTPS 证书生成与验证</a>   <br/>
+<a href="http://www.cnblogs.com/phpinfo/archive/2013/08/09/3246376.html">OpenSSL小结</a>      <br/>
+<a href="http://www.cnblogs.com/alittlebitcool/archive/2011/09/22/2185418.html">利用openssl进行RSA加密解密</a>  <br/>
+<a href="http://blog.sina.com.cn/s/blog_a9303fd90101jmtx.html">DER 和 PEM 格式</a></p>
+]]></content>
+  </entry>
+  
+</feed>

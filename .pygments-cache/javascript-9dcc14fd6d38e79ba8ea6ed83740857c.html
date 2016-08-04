@@ -1,0 +1,17 @@
+<div class="highlight"><pre><span class="err">@</span><span class="nx">Override</span>
+<span class="kr">public</span> <span class="k">void</span> <span class="nx">onHostResume</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">Log</span><span class="p">.</span><span class="nx">i</span><span class="p">(</span><span class="nx">TAG</span><span class="p">,</span> <span class="s2">&quot;onHostResume&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="err">@</span><span class="nx">Override</span>
+<span class="kr">public</span> <span class="k">void</span> <span class="nx">onHostPause</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">Log</span><span class="p">.</span><span class="nx">i</span><span class="p">(</span><span class="nx">TAG</span><span class="p">,</span> <span class="s2">&quot;onHostPause&quot;</span><span class="p">);</span>
+    <span class="nx">timer</span><span class="p">.</span><span class="nx">cancel</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="err">@</span><span class="nx">Override</span>
+<span class="kr">public</span> <span class="k">void</span> <span class="nx">onHostDestroy</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">Log</span><span class="p">.</span><span class="nx">i</span><span class="p">(</span><span class="nx">TAG</span><span class="p">,</span> <span class="s2">&quot;onHostDestroy&quot;</span><span class="p">);</span>
+    <span class="nx">timer</span><span class="p">.</span><span class="nx">cancel</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>

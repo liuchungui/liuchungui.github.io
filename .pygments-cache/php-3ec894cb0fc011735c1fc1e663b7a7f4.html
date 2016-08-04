@@ -1,0 +1,65 @@
+<div class="highlight"><pre><span class="sd">/**</span>
+<span class="sd">     * 发送模板消息</span>
+<span class="sd">     */</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">send_template_message_get</span><span class="p">()</span> <span class="p">{</span>
+        <span class="c1">//检查参数</span>
+        <span class="nx">param_check</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(),</span> <span class="p">[</span><span class="s1">&#39;uid&#39;</span><span class="p">]);</span>
+        <span class="nv">$uid</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s1">&#39;uid&#39;</span><span class="p">);</span>
+
+        <span class="c1">//wx appid</span>
+        <span class="nv">$wx_app_id</span> <span class="o">=</span> <span class="nx">WX_APP_ID</span><span class="p">;</span>
+        <span class="nv">$wx_app_secret</span> <span class="o">=</span> <span class="nx">WX_APP_SECRET</span><span class="p">;</span>
+
+        <span class="c1">//get access token</span>
+        <span class="nv">$token_info</span> <span class="o">=</span> <span class="nb">file_get_contents</span><span class="p">(</span><span class="s2">&quot;https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&amp;appid=</span><span class="si">$wx_app_id</span><span class="s2">&amp;secret=</span><span class="si">$wx_app_secret</span><span class="s2">&quot;</span><span class="p">);</span>
+        <span class="nv">$token_info</span> <span class="o">=</span> <span class="nb">json_decode</span><span class="p">(</span><span class="nv">$token_info</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>
+        <span class="nv">$access_token</span> <span class="o">=</span> <span class="nv">$token_info</span><span class="p">[</span><span class="s1">&#39;access_token&#39;</span><span class="p">];</span>
+
+        <span class="c1">//获取用户信息</span>
+        <span class="nv">$openid</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">user_model</span><span class="o">-&gt;</span><span class="na">get_value</span><span class="p">(</span><span class="s1">&#39;openid&#39;</span><span class="p">,</span> <span class="nv">$uid</span><span class="p">);</span>
+
+        <span class="c1">//组织参数</span>
+        <span class="nv">$param</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+            <span class="s2">&quot;touser&quot;</span> <span class="o">=&gt;</span> <span class="nv">$openid</span><span class="p">,</span>
+            <span class="s2">&quot;template_id&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;jt_Rl5X9QWXMiRihrQz67n4riGt3kaPA81Zku0wLm9M&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;url&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;http://www.beyondwinlaw.com/test/wx/test/home.html&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;data&quot;</span> <span class="o">=&gt;</span> <span class="p">[</span>
+                <span class="s2">&quot;first&quot;</span> <span class="o">=&gt;</span> <span class="p">[</span>
+                    <span class="s2">&quot;value&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;案件有新进展&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;color&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;#173177&quot;</span>
+                <span class="p">],</span>
+                <span class="s2">&quot;keyword1&quot;</span> <span class="o">=&gt;</span> <span class="p">[</span>
+                    <span class="s2">&quot;value&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;jkfdjafjdsfjdjfs&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;color&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;#173177&quot;</span>
+                <span class="p">],</span>
+                <span class="s2">&quot;keyword2&quot;</span> <span class="o">=&gt;</span> <span class="p">[</span>
+                    <span class="s2">&quot;value&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;jkfdjafjdsfjdjfs&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;color&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;#173177&quot;</span>
+                <span class="p">],</span>
+                <span class="s2">&quot;keyword3&quot;</span> <span class="o">=&gt;</span> <span class="p">[</span>
+                    <span class="s2">&quot;value&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;jkfdjafjdsfjdjfs&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;color&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;#173177&quot;</span>
+                <span class="p">],</span>
+                <span class="s2">&quot;keyword4&quot;</span> <span class="o">=&gt;</span> <span class="p">[</span>
+                    <span class="s2">&quot;value&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;2016-07-12 11:11:11&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;color&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;#173177&quot;</span>
+                <span class="p">],</span>
+                <span class="s2">&quot;keyword5&quot;</span> <span class="o">=&gt;</span> <span class="p">[</span>
+                    <span class="s2">&quot;value&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;jkfdjafjdsfjdjfs&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;color&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;#173177&quot;</span>
+                <span class="p">],</span>
+                <span class="s2">&quot;remark&quot;</span> <span class="o">=&gt;</span> <span class="p">[</span>
+                    <span class="s2">&quot;value&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;点击查看案件进度详情&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;color&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;#173177&quot;</span>
+                <span class="p">]</span>
+            <span class="p">]</span>
+        <span class="p">);</span>
+
+        <span class="c1">//发送请求</span>
+        <span class="nv">$url</span> <span class="o">=</span> <span class="s2">&quot;https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=</span><span class="si">$access_token</span><span class="s2">&quot;</span><span class="p">;</span>
+        <span class="nv">$result</span> <span class="o">=</span> <span class="nx">send_post</span><span class="p">(</span><span class="nv">$url</span><span class="p">,</span> <span class="nv">$param</span><span class="p">);</span>
+        <span class="nx">answer</span><span class="p">([</span>
+            <span class="s2">&quot;result&quot;</span> <span class="o">=&gt;</span> <span class="nv">$result</span>
+        <span class="p">]);</span>
+    <span class="p">}</span>
+</pre></div>

@@ -1,0 +1,6 @@
+<div class="highlight"><pre><span class="kt">dispatch_queue_t</span> <span class="n">serialQueue</span> <span class="o">=</span> <span class="n">dispatch_queue_create</span><span class="p">(</span><span class="n">kBGGCDTestIdentifier</span><span class="p">,</span> <span class="n">DISPATCH_QUEUE_SERIAL</span><span class="p">);</span>
+    <span class="kt">dispatch_queue_t</span> <span class="n">globalQueue</span> <span class="o">=</span> 
+<span class="n">dispatch_get_global_queue</span><span class="p">(</span><span class="n">DISPATCH_QUEUE_PRIORITY_HIGH</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+<span class="c1">//注意：被设置优先级的队列是第一个参数。</span>
+<span class="n">dispatch_set_target_queue</span><span class="p">(</span><span class="n">serialQueue</span><span class="p">,</span> <span class="n">globalQueue</span><span class="p">);</span>
+</pre></div>

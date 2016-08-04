@@ -1,0 +1,8 @@
+<div class="highlight"><pre><span class="c1">//使用归档写入</span>
+<span class="bp">NSString</span> <span class="o">*</span><span class="n">userName</span> <span class="o">=</span> <span class="s">@&quot;Jack&quot;</span><span class="p">;</span>
+<span class="bp">NSString</span> <span class="o">*</span><span class="n">filePath</span> <span class="o">=</span> <span class="p">[[</span><span class="n">NSSearchPathForDirectoriesInDomains</span><span class="p">(</span><span class="n">NSDocumentDirectory</span><span class="p">,</span> <span class="n">NSUserDomainMask</span><span class="p">,</span> <span class="nb">YES</span><span class="p">)</span> <span class="n">lastObject</span><span class="p">]</span> <span class="nl">stringByAppendingPathComponent</span><span class="p">:</span><span class="s">@&quot;UserNameFile&quot;</span><span class="p">];</span>
+<span class="p">[</span><span class="bp">NSKeyedArchiver</span> <span class="nl">archiveRootObject</span><span class="p">:</span><span class="n">userName</span> <span class="nl">toFile</span><span class="p">:</span><span class="n">filePath</span><span class="p">];</span>
+
+<span class="c1">//使用解归档读取</span>
+<span class="n">userName</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSKeyedUnarchiver</span> <span class="nl">unarchiveObjectWithFile</span><span class="p">:</span><span class="n">filePath</span><span class="p">];</span>
+</pre></div>

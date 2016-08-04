@@ -1,0 +1,15 @@
+<div class="highlight"><pre><span class="c1">//同一组当中，垂直方向：行与行之间的间距；水平方向：列与列之间的间距</span>
+<span class="k">@property</span> <span class="p">(</span><span class="k">nonatomic</span><span class="p">)</span> <span class="n">CGFloat</span> <span class="n">minimumLineSpacing</span><span class="p">;</span> 
+<span class="c1">//垂直方向：同一行中的cell之间的间距；水平方向：同一列中，cell与cell之间的间距</span>
+<span class="k">@property</span> <span class="p">(</span><span class="k">nonatomic</span><span class="p">)</span> <span class="n">CGFloat</span> <span class="n">minimumInteritemSpacing</span><span class="p">;</span>
+<span class="c1">//每个cell统一尺寸</span>
+<span class="k">@property</span> <span class="p">(</span><span class="k">nonatomic</span><span class="p">)</span> <span class="bp">CGSize</span> <span class="n">itemSize</span><span class="p">;</span>
+<span class="c1">//滑动反向，默认滑动方向是垂直方向滑动</span>
+<span class="k">@property</span> <span class="p">(</span><span class="k">nonatomic</span><span class="p">)</span> <span class="n">UICollectionViewScrollDirection</span> <span class="n">scrollDirection</span><span class="p">;</span> 
+<span class="c1">//每一组头视图的尺寸。如果是垂直方向滑动，则只有高起作用；如果是水平方向滑动，则只有宽起作用。</span>
+<span class="k">@property</span> <span class="p">(</span><span class="k">nonatomic</span><span class="p">)</span> <span class="bp">CGSize</span> <span class="n">headerReferenceSize</span><span class="p">;</span>
+<span class="c1">//每一组尾部视图的尺寸。如果是垂直方向滑动，则只有高起作用；如果是水平方向滑动，则只有宽起作用。</span>
+<span class="k">@property</span> <span class="p">(</span><span class="k">nonatomic</span><span class="p">)</span> <span class="bp">CGSize</span> <span class="n">footerReferenceSize</span><span class="p">;</span>
+<span class="c1">//每一组的内容缩进</span>
+<span class="k">@property</span> <span class="p">(</span><span class="k">nonatomic</span><span class="p">)</span> <span class="bp">UIEdgeInsets</span> <span class="n">sectionInset</span><span class="p">;</span>
+</pre></div>

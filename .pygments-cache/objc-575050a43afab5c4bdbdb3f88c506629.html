@@ -1,0 +1,22 @@
+<div class="highlight"><pre><span class="kt">void</span> <span class="nf">testBarrier</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kt">dispatch_queue_t</span> <span class="n">concurrentQueue</span> <span class="o">=</span> <span class="n">dispatch_queue_create</span><span class="p">(</span><span class="s">&quot;BG.concurrent.com&quot;</span><span class="p">,</span> <span class="n">DISPATCH_QUEUE_CONCURRENT</span><span class="p">);</span>
+    <span class="n">dispatch_async</span><span class="p">(</span><span class="n">concurrentQueue</span><span class="p">,</span> <span class="o">^</span><span class="p">{</span>
+        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;reading 1&quot;</span><span class="p">);</span>
+    <span class="p">});</span>
+    <span class="n">dispatch_async</span><span class="p">(</span><span class="n">concurrentQueue</span><span class="p">,</span> <span class="o">^</span><span class="p">{</span>
+        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;reading 2&quot;</span><span class="p">);</span>
+    <span class="p">});</span>
+    <span class="n">dispatch_async</span><span class="p">(</span><span class="n">concurrentQueue</span><span class="p">,</span> <span class="o">^</span><span class="p">{</span>
+        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;reading 3&quot;</span><span class="p">);</span>
+    <span class="p">});</span>
+    <span class="n">dispatch_barrier_async</span><span class="p">(</span><span class="n">concurrentQueue</span><span class="p">,</span> <span class="o">^</span><span class="p">{</span>
+        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;writing&quot;</span><span class="p">);</span>
+    <span class="p">});</span>
+    <span class="n">dispatch_async</span><span class="p">(</span><span class="n">concurrentQueue</span><span class="p">,</span> <span class="o">^</span><span class="p">{</span>
+        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;reading 4&quot;</span><span class="p">);</span>
+    <span class="p">});</span>
+    <span class="n">dispatch_async</span><span class="p">(</span><span class="n">concurrentQueue</span><span class="p">,</span> <span class="o">^</span><span class="p">{</span>
+        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;reading 5&quot;</span><span class="p">);</span>
+    <span class="p">});</span>
+<span class="p">}</span>
+</pre></div>

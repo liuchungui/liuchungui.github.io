@@ -1,0 +1,82 @@
+<div class="highlight"><pre><span class="p">-</span> <span class="p">(</span><span class="kt">BOOL</span><span class="p">)</span><span class="nf">evaluateServerTrust:</span><span class="p">(</span><span class="n">SecTrustRef</span><span class="p">)</span><span class="nv">serverTrust</span>
+                  <span class="nf">forDomain:</span><span class="p">(</span><span class="bp">NSString</span> <span class="o">*</span><span class="p">)</span><span class="nv">domain</span>
+<span class="p">{</span>
+    <span class="c1">//当使用自建证书验证域名时，需要使用AFSSLPinningModePublicKey或者AFSSLPinningModeCertificate</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">domain</span> <span class="o">&amp;&amp;</span> <span class="nb">self</span><span class="p">.</span><span class="n">allowInvalidCertificates</span> <span class="o">&amp;&amp;</span> <span class="nb">self</span><span class="p">.</span><span class="n">validatesDomainName</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="nb">self</span><span class="p">.</span><span class="n">SSLPinningMode</span> <span class="o">==</span> <span class="n">AFSSLPinningModeNone</span> <span class="o">||</span> <span class="p">[</span><span class="nb">self</span><span class="p">.</span><span class="n">pinnedCertificates</span> <span class="n">count</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">))</span> <span class="p">{</span>
+        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;In order to validate a domain name for self signed certificates, you MUST use pinning.&quot;</span><span class="p">);</span>
+        <span class="k">return</span> <span class="nb">NO</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="bp">NSMutableArray</span> <span class="o">*</span><span class="n">policies</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSMutableArray</span> <span class="n">array</span><span class="p">];</span>
+    <span class="c1">//需要验证域名时，需要添加一个验证域名的策略</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nb">self</span><span class="p">.</span><span class="n">validatesDomainName</span><span class="p">)</span> <span class="p">{</span>
+        <span class="p">[</span><span class="n">policies</span> <span class="nl">addObject</span><span class="p">:(</span><span class="k">__bridge_transfer</span> <span class="kt">id</span><span class="p">)</span><span class="n">SecPolicyCreateSSL</span><span class="p">(</span><span class="nb">true</span><span class="p">,</span> <span class="p">(</span><span class="k">__bridge</span> <span class="n">CFStringRef</span><span class="p">)</span><span class="n">domain</span><span class="p">)];</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="p">[</span><span class="n">policies</span> <span class="nl">addObject</span><span class="p">:(</span><span class="k">__bridge_transfer</span> <span class="kt">id</span><span class="p">)</span><span class="n">SecPolicyCreateBasicX509</span><span class="p">()];</span>
+    <span class="p">}</span>
+    
+    <span class="c1">//设置验证的策略，可以是多个</span>
+    <span class="n">SecTrustSetPolicies</span><span class="p">(</span><span class="n">serverTrust</span><span class="p">,</span> <span class="p">(</span><span class="k">__bridge</span> <span class="n">CFArrayRef</span><span class="p">)</span><span class="n">policies</span><span class="p">);</span>
+
+    <span class="c1">//SSLPinningMode为AFSSLPinningModeNone时，allowInvalidCertificates为YES，则代表服务器任何证书都能验证通过；如果它为NO，则需要判断此服务器证书是否是系统信任的证书</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nb">self</span><span class="p">.</span><span class="n">SSLPinningMode</span> <span class="o">==</span> <span class="n">AFSSLPinningModeNone</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nb">self</span><span class="p">.</span><span class="n">allowInvalidCertificates</span> <span class="o">||</span> <span class="n">AFServerTrustIsValid</span><span class="p">(</span><span class="n">serverTrust</span><span class="p">)){</span>
+            <span class="k">return</span> <span class="nb">YES</span><span class="p">;</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nb">NO</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">AFServerTrustIsValid</span><span class="p">(</span><span class="n">serverTrust</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nb">self</span><span class="p">.</span><span class="n">allowInvalidCertificates</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nb">NO</span><span class="p">;</span>
+    <span class="p">}</span>
+    
+    <span class="c1">//获取服务器证书的内容</span>
+    <span class="bp">NSArray</span> <span class="o">*</span><span class="n">serverCertificates</span> <span class="o">=</span> <span class="n">AFCertificateTrustChainForServerTrust</span><span class="p">(</span><span class="n">serverTrust</span><span class="p">);</span>
+    <span class="k">switch</span> <span class="p">(</span><span class="nb">self</span><span class="p">.</span><span class="n">SSLPinningMode</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">case</span> <span class="nl">AFSSLPinningModeNone</span><span class="p">:</span>
+        <span class="k">default</span><span class="o">:</span>
+            <span class="k">return</span> <span class="nb">NO</span><span class="p">;</span>
+        <span class="k">case</span> <span class="nl">AFSSLPinningModeCertificate</span><span class="p">:</span> <span class="p">{</span>
+            <span class="c1">//AFSSLPinningModeCertificate是直接将本地的证书设置为信任的根证书，然后来进行判断，并且比较本地证书的内容和服务器证书内容是否相同，如果有一个相同则返回YES</span>
+            
+            <span class="bp">NSMutableArray</span> <span class="o">*</span><span class="n">pinnedCertificates</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSMutableArray</span> <span class="n">array</span><span class="p">];</span>
+            <span class="k">for</span> <span class="p">(</span><span class="bp">NSData</span> <span class="o">*</span><span class="n">certificateData</span> <span class="k">in</span> <span class="nb">self</span><span class="p">.</span><span class="n">pinnedCertificates</span><span class="p">)</span> <span class="p">{</span>
+                <span class="p">[</span><span class="n">pinnedCertificates</span> <span class="nl">addObject</span><span class="p">:(</span><span class="k">__bridge_transfer</span> <span class="kt">id</span><span class="p">)</span><span class="n">SecCertificateCreateWithData</span><span class="p">(</span><span class="nb">NULL</span><span class="p">,</span> <span class="p">(</span><span class="k">__bridge</span> <span class="n">CFDataRef</span><span class="p">)</span><span class="n">certificateData</span><span class="p">)];</span>
+            <span class="p">}</span>
+            <span class="c1">//设置本地的证书为根证书</span>
+            <span class="n">SecTrustSetAnchorCertificates</span><span class="p">(</span><span class="n">serverTrust</span><span class="p">,</span> <span class="p">(</span><span class="k">__bridge</span> <span class="n">CFArrayRef</span><span class="p">)</span><span class="n">pinnedCertificates</span><span class="p">);</span>
+            
+            <span class="c1">//通过本地的证书来判断服务器证书是否可信，不可信，则验证不通过</span>
+            <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">AFServerTrustIsValid</span><span class="p">(</span><span class="n">serverTrust</span><span class="p">))</span> <span class="p">{</span>
+                <span class="k">return</span> <span class="nb">NO</span><span class="p">;</span>
+            <span class="p">}</span>
+            
+            <span class="c1">//判断本地证书和服务器证书的内容是否相同</span>
+            <span class="bp">NSUInteger</span> <span class="n">trustedCertificateCount</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+            <span class="k">for</span> <span class="p">(</span><span class="bp">NSData</span> <span class="o">*</span><span class="n">trustChainCertificate</span> <span class="k">in</span> <span class="n">serverCertificates</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">if</span> <span class="p">([</span><span class="nb">self</span><span class="p">.</span><span class="n">pinnedCertificates</span> <span class="nl">containsObject</span><span class="p">:</span><span class="n">trustChainCertificate</span><span class="p">])</span> <span class="p">{</span>
+                    <span class="n">trustedCertificateCount</span><span class="o">++</span><span class="p">;</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+            <span class="k">return</span> <span class="n">trustedCertificateCount</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">case</span> <span class="nl">AFSSLPinningModePublicKey</span><span class="p">:</span> <span class="p">{</span>
+            <span class="c1">//AFSSLPinningModePublicKey是通过比较证书当中公钥(PublicKey)部分来进行验证，通过SecTrustCopyPublicKey方法获取本地证书和服务器证书，然后进行比较，如果有一个相同，则通过验证</span>
+            
+            <span class="bp">NSUInteger</span> <span class="n">trustedPublicKeyCount</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+            <span class="bp">NSArray</span> <span class="o">*</span><span class="n">publicKeys</span> <span class="o">=</span> <span class="n">AFPublicKeyTrustChainForServerTrust</span><span class="p">(</span><span class="n">serverTrust</span><span class="p">);</span>
+            
+            <span class="c1">//判断服务器证书的公钥与本地的证书公钥是否相同，相同则客户端认证通过</span>
+            <span class="k">for</span> <span class="p">(</span><span class="kt">id</span> <span class="n">trustChainPublicKey</span> <span class="k">in</span> <span class="n">publicKeys</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">for</span> <span class="p">(</span><span class="kt">id</span> <span class="n">pinnedPublicKey</span> <span class="k">in</span> <span class="nb">self</span><span class="p">.</span><span class="n">pinnedPublicKeys</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">AFSecKeyIsEqualToKey</span><span class="p">((</span><span class="k">__bridge</span> <span class="n">SecKeyRef</span><span class="p">)</span><span class="n">trustChainPublicKey</span><span class="p">,</span> <span class="p">(</span><span class="k">__bridge</span> <span class="n">SecKeyRef</span><span class="p">)</span><span class="n">pinnedPublicKey</span><span class="p">))</span> <span class="p">{</span>
+                        <span class="n">trustedPublicKeyCount</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">;</span>
+                    <span class="p">}</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+            <span class="k">return</span> <span class="n">trustedPublicKeyCount</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    
+    <span class="k">return</span> <span class="nb">NO</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>

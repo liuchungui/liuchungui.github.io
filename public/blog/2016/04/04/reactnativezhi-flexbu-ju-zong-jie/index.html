@@ -1,0 +1,272 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>ReactNative之Flex布局总结 - liuchungui's Blog</title>
+  <meta name="author" content="刘春桂">
+
+  
+  <meta name="description" content="从二月份开始学习ReactNative到现在已经有两个月了，零碎的记录了很多笔记，一直想写一些ReactNative相关的东西，奈何感觉自己学习的还比较浅陋，而且笔记比较杂乱，不知从何而起，所以迟迟没有动笔。清明三天假，决定无论如何都得整一篇出来。本来是想整一篇ReactNative布局篇的， &hellip;">
+  <meta name="keywords" content="ReactNative, react-native, Flex布局, Flex">
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://www.liuchungui.com/blog/2016/04/04/reactnativezhi-flexbu-ju-zong-jie/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="liuchungui's Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">liuchungui's Blog</a></h1>
+  
+    <h2>代码嗨起来</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="www.liuchungui.com">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">ReactNative之Flex布局总结</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-04-04T18:35:53+08:00'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>4</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>6:35 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>从二月份开始学习ReactNative到现在已经有两个月了，零碎的记录了很多笔记，一直想写一些ReactNative相关的东西，奈何感觉自己学习的还比较浅陋，而且笔记比较杂乱，不知从何而起，所以迟迟没有动笔。清明三天假，决定无论如何都得整一篇出来。本来是想整一篇ReactNative布局篇的，但是看看那么多布局属性，自己对CSS又不是特别熟悉，布局篇从何谈起？所以，专门拿出ReactNative中布局比较重要的一个点Flex布局来做下总结，算是开启ReactNative篇章。</p>
+
+<p>Flex是Flexible Box的缩写，意为“弹性布局”，2009年它由W3C提出了一种新的网页布局方案。而FaceBook将这个布局也应用到React和ReactNative两个项目当中。而在ReactNative当中，网页的有些属性和属性的值并不支持，下面来看看ReactNative当中支持的属性。（如果对于Flex布局不太了解的同学，可以看看<a href="http://www.ruanyifeng.com/blog/2015/07/flex-grammar.html">Flex 布局教程：语法篇</a>）</p>
+
+<!-- more -->
+
+
+<h2>一、容器属性：</h2>
+
+<p>ReactNative支持的容器属性有flexDirection、flexWrap、justifyContent和alignItems。</p>
+
+<h4>1、 flexDirection属性</h4>
+
+<p>flexDirection属性决定了主轴的方向，它有两个值：</p>
+
+<ul>
+<li>row: 主轴为水平方向，起点在左端</li>
+<li>column:  主轴为垂直方向，起点在顶部</li>
+</ul>
+
+
+<h4>2、flexWrap属性</h4>
+
+<p>flexWrap属性定义一条轴线排不下时是否折行。它有两个值，分别是'wrap'和'nowrap'，分别代表支持换行和不支持换行，默认是'nowrap'。</p>
+
+<h4>3、justifyContent属性</h4>
+
+<p>主轴的对齐方式，默认为'flex-start'，它的值有五个：</p>
+
+<ul>
+<li>flex-start：主轴起点对齐</li>
+<li>flex-end：主轴终点</li>
+<li>center：居中</li>
+<li>space-between：两端对齐，项目之间的间隔都相等</li>
+<li>space-around: 每个项目两侧的间隔相等。项目之间的间隔比项目与边框的间隔大一倍。</li>
+</ul>
+
+
+<h4>4、alignItems属性</h4>
+
+<p>交叉轴的对齐方式，默认为'stretch'，它有四个值：</p>
+
+<ul>
+<li>flex-start: 交叉轴的起点对齐</li>
+<li>flex-end: 交叉轴的终点对齐</li>
+<li>center: 交叉轴的中心对齐</li>
+<li>stretch: 容器中的所有项目拉伸填满整个容器</li>
+</ul>
+
+
+<h2>二、项目属性</h2>
+
+<h4>1、flex属性</h4>
+
+<p>是否让当前的视图尽量占用更大的空间，这个属性可能使项目属性justifyContent失效。有两个值0和1，0代表否，1代表是，默认为0。</p>
+
+<h3>2、alignSelf属性</h3>
+
+<p>允许单个项目在交叉轴方向上与其他项目不一样的对齐方式，可覆盖alignItems属性，它的值有五个，除了'auto'，其他都与alignItem属性完全一致，默认为'auto'。</p>
+
+<h2>后话</h2>
+
+<p>在刚开始接触ReactNative的时候，对于我这么一个从未有过前端开发的iOS开发程序员，两个地方直接让我懵了，一是里面的语法，另外一个就是Flex布局。布局当中其它例如bottom、left、margin等等属性都能从字面意思理解，而Flex布局，确实是从没见过的东西，不理解里面的概念根本没法用。好在找到了阮一峰老师的<a href="http://www.ruanyifeng.com/blog/2015/07/flex-grammar.html">Flex 布局教程：语法篇</a>的这篇文章，快速的掌握了Flex布局。
+在这几天ReactNative的开发当中，越发觉得Flex布局的重要性，能将上面的属性全部理解清楚的话，并且灵活使用，必然会让ReactNative开发之旅更加得心应手。</p>
+
+<h2>参考：</h2>
+
+<p><a href="http://www.ruanyifeng.com/blog/2015/07/flex-grammar.html">Flex 布局教程：语法篇</a>  <br/>
+<a href="http://reactnative.cn/docs/flexbox.html#content">弹性盒(Flexbox)</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">刘春桂</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2016-04-04T18:35:53+08:00'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>4</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>6:35 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/reactnative/'>reactnative</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2016/03/14/runtimezhi-lei-yu-dui-xiang-zong-jie/" title="Previous Post: Runtime之类与对象总结">&laquo; Runtime之类与对象总结</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2016/04/04/gcdzong-jie/" title="Next Post: GCD总结">GCD总结 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/08/01/wei-xin-gong-zhong-hao-kai-fa-zong-jie/">微信公众号开发总结</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/05/10/mac10-dot-11sheng-ji-an-zhuang-openssl/">Mac10.11升级安装openssl</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/05/08/reactnativezhi-yuan-sheng-mo-kuai-kai-fa-bing-fa-bu-androidpian/">ReactNative之原生模块开发并发布——android篇</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/05/02/reactnativezhi-yuan-sheng-mo-kuai-kai-fa-bing-fa-bu-iospian/">ReactNative之原生模块开发并发布——iOS篇</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/04/23/ubuntuxia-da-jian-vpn/">Ubuntu下搭建vpn历程</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+ <h1>Categories</h1>
+ <ul id="categories">
+  <li class='category'><a href='/blog/categories/git/'>git (1)</a></li>
+<li class='category'><a href='/blog/categories/gitbook/'>gitbook (1)</a></li>
+<li class='category'><a href='/blog/categories/ios/'>ios (10)</a></li>
+<li class='category'><a href='/blog/categories/mac/'>mac (1)</a></li>
+<li class='category'><a href='/blog/categories/octopress/'>octopress (1)</a></li>
+<li class='category'><a href='/blog/categories/reactnative/'>reactnative (3)</a></li>
+<li class='category'><a href='/blog/categories/web/'>web (3)</a></li>
+<li class='category'><a href='/blog/categories/年度总结/'>年度总结 (1)</a></li>
+
+ </ul>
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - 刘春桂 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

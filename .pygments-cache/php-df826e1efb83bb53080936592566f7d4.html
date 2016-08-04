@@ -1,0 +1,53 @@
+<div class="highlight"><pre>   <span class="sd">/**</span>
+<span class="sd">     * 更改微信公众号菜单</span>
+<span class="sd">     * @note 这个接口在线上是禁止调用的,它只需要更改的时候,调用一次就行了</span>
+<span class="sd">     */</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="nf">change_menu_get</span><span class="p">()</span> <span class="p">{</span>
+        <span class="c1">//获取access_token, 需要中控服务器,否则会造成服务不稳定,咱们这里暂时不这么做</span>
+        <span class="nv">$app_id</span> <span class="o">=</span> <span class="nx">WX_APP_ID</span><span class="p">;</span>
+        <span class="nv">$app_secret</span> <span class="o">=</span> <span class="nx">WX_APP_SECRET</span><span class="p">;</span>
+        <span class="nv">$content</span> <span class="o">=</span> <span class="nb">file_get_contents</span><span class="p">(</span><span class="s2">&quot;https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&amp;appid=</span><span class="si">$app_id</span><span class="s2">&amp;secret=</span><span class="si">$app_secret</span><span class="s2">&quot;</span><span class="p">);</span>
+        <span class="nv">$info</span> <span class="o">=</span> <span class="nb">json_decode</span><span class="p">(</span><span class="nv">$content</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>
+        <span class="nv">$access_token</span> <span class="o">=</span> <span class="nv">$info</span><span class="p">[</span><span class="s1">&#39;access_token&#39;</span><span class="p">];</span>
+
+        <span class="c1">//自定义菜单</span>
+        <span class="nv">$auth_url</span> <span class="o">=</span> <span class="s2">&quot;https://open.weixin.qq.com/connect/oauth2/authorize?appid=</span><span class="si">{</span><span class="nv">$app_id</span><span class="si">}</span><span class="s2">&amp;redirect_uri=http://www.liuchungui.com/api/wx_api/index.php/share/test&amp;response_type=code&amp;scope=snsapi_userinfo&amp;state=123#wechat_redirect&quot;</span><span class="p">;</span>
+
+        <span class="nv">$menu</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+            <span class="s2">&quot;button&quot;</span> <span class="o">=&gt;</span> <span class="p">[</span>
+                <span class="p">[</span>
+                    <span class="s2">&quot;type&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;view&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;name&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;合作&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;url&quot;</span> <span class="o">=&gt;</span> <span class="nv">$auth_url</span>
+                <span class="p">],</span>
+                <span class="p">[</span>
+                    <span class="s2">&quot;name&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;菜单&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;sub_button&quot;</span> <span class="o">=&gt;</span> <span class="p">[</span>
+                        <span class="p">[</span>
+                            <span class="s2">&quot;type&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;view&quot;</span><span class="p">,</span>
+                            <span class="s2">&quot;name&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;官网&quot;</span><span class="p">,</span>
+                            <span class="s2">&quot;url&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;http://www.liuchungui.com/&quot;</span>
+                        <span class="p">],</span>
+                        <span class="p">[</span>
+                            <span class="s2">&quot;type&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;view&quot;</span><span class="p">,</span>
+                            <span class="s2">&quot;name&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;关于我们&quot;</span><span class="p">,</span>
+                            <span class="s2">&quot;url&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;http://www.liuchungui.com/about.html&quot;</span>
+                        <span class="p">]</span>
+                    <span class="p">]</span>
+                <span class="p">]</span>
+            <span class="p">]</span>
+        <span class="p">);</span>
+
+        <span class="nv">$menu_url</span> <span class="o">=</span> <span class="s2">&quot;https://api.weixin.qq.com/cgi-bin/menu/create?access_token=</span><span class="si">$access_token</span><span class="s2">&quot;</span><span class="p">;</span>
+        <span class="c1">//发送POST请求</span>
+        <span class="nv">$result</span> <span class="o">=</span> <span class="nx">send_post</span><span class="p">(</span><span class="nv">$menu_url</span><span class="p">,</span> <span class="nv">$menu</span><span class="p">);</span>
+        <span class="nv">$result</span> <span class="o">=</span> <span class="nb">json_decode</span><span class="p">(</span><span class="nv">$result</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>
+        <span class="c1">//返回数据</span>
+        <span class="k">if</span><span class="p">(</span><span class="nv">$result</span><span class="p">[</span><span class="s1">&#39;errcode&#39;</span><span class="p">]</span> <span class="o">===</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">answer</span><span class="p">(</span><span class="k">true</span><span class="p">,</span> <span class="s1">&#39;更改菜单&#39;</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="k">else</span> <span class="p">{</span>
+            <span class="nx">answer</span><span class="p">(</span><span class="k">false</span><span class="p">,</span> <span class="s1">&#39;更改菜单&#39;</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+</pre></div>

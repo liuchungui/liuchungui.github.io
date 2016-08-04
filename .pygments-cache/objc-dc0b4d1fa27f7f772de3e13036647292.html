@@ -1,0 +1,12 @@
+<div class="highlight"><pre><span class="n">RCT_REMAP_METHOD</span><span class="p">(</span><span class="n">testRespondMethod</span><span class="p">,</span>
+                 <span class="nl">name</span><span class="p">:(</span><span class="bp">NSString</span> <span class="o">*</span><span class="p">)</span><span class="n">name</span>
+                 <span class="nl">resolver</span><span class="p">:(</span><span class="n">RCTPromiseResolveBlock</span><span class="p">)</span><span class="n">resolve</span>
+                 <span class="nl">rejecter</span><span class="p">:(</span><span class="n">RCTPromiseRejectBlock</span><span class="p">)</span><span class="n">reject</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span><span class="p">([</span><span class="nb">self</span> <span class="nl">respondsToSelector</span><span class="p">:</span><span class="n">NSSelectorFromString</span><span class="p">(</span><span class="n">name</span><span class="p">)])</span> <span class="p">{</span>
+    <span class="n">resolve</span><span class="p">(</span><span class="m">@YES</span><span class="p">);</span>
+  <span class="p">}</span>
+  <span class="k">else</span> <span class="p">{</span>
+    <span class="n">reject</span><span class="p">(</span><span class="s">@&quot;-1001&quot;</span><span class="p">,</span> <span class="s">@&quot;not respond this method&quot;</span><span class="p">,</span> <span class="nb">nil</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>

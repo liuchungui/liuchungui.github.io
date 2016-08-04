@@ -1,0 +1,8 @@
+<div class="highlight"><pre><span class="c1">//写入</span>
+<span class="p">[</span><span class="n">BGGlobal</span> <span class="n">sharedGlobal</span><span class="p">].</span><span class="n">userName</span> <span class="o">=</span> <span class="s">@&quot;Jack&quot;</span><span class="p">;</span>
+<span class="c1">//写入文件，我使用的是将整个对象归档到一个文件当中</span>
+<span class="p">[</span><span class="n">BGGlobal</span> <span class="n">writeToFile</span><span class="p">];</span>
+
+<span class="c1">//读取</span>
+<span class="bp">NSString</span> <span class="o">*</span><span class="n">userName</span> <span class="o">=</span> <span class="p">[</span><span class="n">BGGlobal</span> <span class="n">sharedGlobal</span><span class="p">].</span><span class="n">userName</span><span class="p">;</span>
+</pre></div>

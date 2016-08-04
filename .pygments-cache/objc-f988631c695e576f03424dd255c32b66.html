@@ -1,0 +1,22 @@
+<div class="highlight"><pre><span class="cm">/**</span>
+<span class="cm"> *  测试成员变量</span>
+<span class="cm"> */</span>
+<span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">testIvar</span> <span class="p">{</span>
+    <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">outCount</span><span class="p">;</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">class_addIvar</span><span class="p">([</span><span class="n">Student</span> <span class="k">class</span><span class="p">],</span> <span class="s">&quot;_hell&quot;</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">id</span><span class="p">),</span> <span class="n">log2</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="kt">id</span><span class="p">)),</span> <span class="s">&quot;@&quot;</span><span class="p">))</span> <span class="p">{</span>
+        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;Add Ivar Success!&quot;</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">else</span> <span class="p">{</span>
+        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;Add Ivar failed!&quot;</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="n">Ivar</span> <span class="o">*</span><span class="n">ivarList</span> <span class="o">=</span> <span class="n">class_copyIvarList</span><span class="p">([</span><span class="n">Student</span> <span class="k">class</span><span class="p">],</span> <span class="o">&amp;</span><span class="n">outCount</span><span class="p">);</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">outCount</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">Ivar</span> <span class="n">ivar</span> <span class="o">=</span> <span class="n">ivarList</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+        <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">ivarName</span> <span class="o">=</span> <span class="n">ivar_getName</span><span class="p">(</span><span class="n">ivar</span><span class="p">);</span>
+        <span class="kt">ptrdiff_t</span> <span class="n">offset</span> <span class="o">=</span> <span class="n">ivar_getOffset</span><span class="p">(</span><span class="n">ivar</span><span class="p">);</span>
+        <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">types</span> <span class="o">=</span> <span class="n">ivar_getTypeEncoding</span><span class="p">(</span><span class="n">ivar</span><span class="p">);</span>
+        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;ivar:%s, offset:%zd, type:%s&quot;</span><span class="p">,</span> <span class="n">ivarName</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">types</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="n">free</span><span class="p">(</span><span class="n">ivarList</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>

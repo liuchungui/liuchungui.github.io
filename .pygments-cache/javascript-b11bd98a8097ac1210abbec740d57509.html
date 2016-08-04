@@ -1,0 +1,14 @@
+<div class="highlight"><pre><span class="cm">/**</span>
+<span class="cm"> * 获取微信配置</span>
+<span class="cm"> */</span>
+<span class="kr">public</span> <span class="kd">function</span> <span class="nx">wx_config_get</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">//获取参数</span>
+    <span class="nx">param_check</span><span class="p">(</span><span class="nx">$this</span><span class="o">-&gt;</span><span class="nx">get</span><span class="p">(),</span> <span class="p">[</span><span class="s1">&#39;url&#39;</span><span class="p">]);</span>
+    <span class="nx">$url</span> <span class="o">=</span> <span class="nx">$this</span><span class="o">-&gt;</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;url&#39;</span><span class="p">);</span>
+    <span class="nx">$url</span> <span class="o">=</span> <span class="nx">urldecode</span><span class="p">(</span><span class="nx">$url</span><span class="p">);</span>
+
+    <span class="nx">$jssdk</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">JSSDK</span><span class="p">(</span><span class="nx">WX_APP_ID</span><span class="p">,</span> <span class="nx">WX_APP_SECRET</span><span class="p">,</span> <span class="nx">$url</span><span class="p">);</span>
+    <span class="nx">$signPackage</span> <span class="o">=</span> <span class="nx">$jssdk</span><span class="o">-&gt;</span><span class="nx">GetSignPackage</span><span class="p">();</span>
+    <span class="nx">answer</span><span class="p">(</span><span class="nx">$signPackage</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>

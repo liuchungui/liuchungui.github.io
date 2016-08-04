@@ -1,0 +1,29 @@
+<div class="highlight"><pre><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">testCreateClass</span> <span class="p">{</span>
+    <span class="kt">Class</span> <span class="n">cls</span> <span class="o">=</span> <span class="n">objc_allocateClassPair</span><span class="p">([</span><span class="n">Person</span> <span class="k">class</span><span class="p">],</span> <span class="s">&quot;Teacher&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+    <span class="c1">//添加成员变量，只能在运行时创建类添加，并且是在objc_allocateClassPair与objc_registerClassPair之间</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">class_addIvar</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="s">&quot;_level&quot;</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">id</span><span class="p">),</span> <span class="n">log2</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="kt">id</span><span class="p">)),</span> <span class="s">&quot;@</span><span class="se">\&quot;</span><span class="s">NSString</span><span class="se">\&quot;</span><span class="s">&quot;</span><span class="p">))</span> <span class="p">{</span>
+        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;添加_level成员变量成功&quot;</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">else</span> <span class="p">{</span>
+        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;添加_level成员变量失败&quot;</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="n">objc_registerClassPair</span><span class="p">(</span><span class="n">cls</span><span class="p">);</span>
+    
+    <span class="cm">/**</span>
+<span class="cm">     *  当有实例存在不能销毁类，所以讲代码放到里面</span>
+<span class="cm">     */</span>
+    <span class="p">{</span>
+        <span class="c1">//创建对象</span>
+        <span class="n">Person</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="p">[[</span><span class="n">cls</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%@&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">p</span> <span class="k">class</span><span class="p">]);</span>
+        <span class="p">[</span><span class="n">p</span> <span class="n">printInfo</span><span class="p">];</span>
+        <span class="c1">//设置值</span>
+        <span class="p">[</span><span class="n">p</span> <span class="nl">setValue</span><span class="p">:</span><span class="s">@&quot;高级讲师&quot;</span> <span class="nl">forKey</span><span class="p">:</span><span class="s">@&quot;level&quot;</span><span class="p">];</span>
+        <span class="bp">NSString</span> <span class="o">*</span><span class="n">level</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="nl">valueForKey</span><span class="p">:</span><span class="s">@&quot;level&quot;</span><span class="p">];</span>
+        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;level: %@&quot;</span><span class="p">,</span> <span class="n">level</span><span class="p">);</span>
+    <span class="p">}</span>
+    
+    <span class="c1">//销毁类，当有实例存在的时候是不能销毁类</span>
+    <span class="n">objc_disposeClassPair</span><span class="p">(</span><span class="n">cls</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>

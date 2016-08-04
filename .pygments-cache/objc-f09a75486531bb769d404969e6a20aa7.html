@@ -1,0 +1,28 @@
+<div class="highlight"><pre><span class="c1">// 返回指定对象的一份拷贝</span>
+<span class="kt">id</span> <span class="nf">object_copy</span> <span class="p">(</span> <span class="kt">id</span> <span class="n">obj</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">size</span> <span class="p">);</span>
+ 
+<span class="c1">// 释放指定对象占用的内存</span>
+<span class="kt">id</span> <span class="nf">object_dispose</span> <span class="p">(</span> <span class="kt">id</span> <span class="n">obj</span> <span class="p">);</span>
+<span class="c1">// 修改类实例的实例变量的值</span>
+<span class="n">Ivar</span> <span class="nf">object_setInstanceVariable</span> <span class="p">(</span> <span class="kt">id</span> <span class="n">obj</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">value</span> <span class="p">);</span>
+ 
+<span class="c1">// 获取对象实例变量的值</span>
+<span class="n">Ivar</span> <span class="nf">object_getInstanceVariable</span> <span class="p">(</span> <span class="kt">id</span> <span class="n">obj</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">,</span> <span class="kt">void</span> <span class="o">**</span><span class="n">outValue</span> <span class="p">);</span>
+ 
+<span class="c1">// 返回指向给定对象分配的任何额外字节的指针</span>
+<span class="kt">void</span> <span class="o">*</span> <span class="nf">object_getIndexedIvars</span> <span class="p">(</span> <span class="kt">id</span> <span class="n">obj</span> <span class="p">);</span>
+ 
+<span class="c1">// 返回对象中实例变量的值</span>
+<span class="kt">id</span> <span class="nf">object_getIvar</span> <span class="p">(</span> <span class="kt">id</span> <span class="n">obj</span><span class="p">,</span> <span class="n">Ivar</span> <span class="n">ivar</span> <span class="p">);</span>
+ 
+<span class="c1">// 设置对象中实例变量的值</span>
+<span class="kt">void</span> <span class="nf">object_setIvar</span> <span class="p">(</span> <span class="kt">id</span> <span class="n">obj</span><span class="p">,</span> <span class="n">Ivar</span> <span class="n">ivar</span><span class="p">,</span> <span class="kt">id</span> <span class="n">value</span> <span class="p">);</span>
+<span class="c1">// 返回给定对象的类名</span>
+<span class="k">const</span> <span class="kt">char</span> <span class="o">*</span> <span class="nf">object_getClassName</span> <span class="p">(</span> <span class="kt">id</span> <span class="n">obj</span> <span class="p">);</span>
+ 
+<span class="c1">// 返回对象的类</span>
+<span class="kt">Class</span> <span class="nf">object_getClass</span> <span class="p">(</span> <span class="kt">id</span> <span class="n">obj</span> <span class="p">);</span>
+ 
+<span class="c1">// 设置对象的类</span>
+<span class="kt">Class</span> <span class="nf">object_setClass</span> <span class="p">(</span> <span class="kt">id</span> <span class="n">obj</span><span class="p">,</span> <span class="kt">Class</span> <span class="n">cls</span> <span class="p">);</span>
+</pre></div>

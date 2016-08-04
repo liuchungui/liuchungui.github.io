@@ -1,0 +1,17 @@
+<div class="highlight"><pre><span class="k">struct</span> <span class="n">objc_class</span> <span class="p">{</span>
+    <span class="kt">Class</span> <span class="n">isa</span>  <span class="n">OBJC_ISA_AVAILABILITY</span><span class="p">;</span>
+ 
+<span class="cp">#if !__OBJC2__</span>
+    <span class="kt">Class</span> <span class="n">super_class</span>                       <span class="n">OBJC2_UNAVAILABLE</span><span class="p">;</span>  <span class="c1">// 父类</span>
+    <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span>                        <span class="n">OBJC2_UNAVAILABLE</span><span class="p">;</span>  <span class="c1">// 类名</span>
+    <span class="kt">long</span> <span class="n">version</span>                            <span class="n">OBJC2_UNAVAILABLE</span><span class="p">;</span>  <span class="c1">// 类的版本信息，默认为0</span>
+    <span class="kt">long</span> <span class="n">info</span>                               <span class="n">OBJC2_UNAVAILABLE</span><span class="p">;</span>  <span class="c1">// 类信息，供运行期使用的一些位标识</span>
+    <span class="kt">long</span> <span class="n">instance_size</span>                      <span class="n">OBJC2_UNAVAILABLE</span><span class="p">;</span>  <span class="c1">// 该类的实例变量大小</span>
+    <span class="k">struct</span> <span class="n">objc_ivar_list</span> <span class="o">*</span><span class="n">ivars</span>            <span class="n">OBJC2_UNAVAILABLE</span><span class="p">;</span>  <span class="c1">// 该类的成员变量链表</span>
+    <span class="k">struct</span> <span class="n">objc_method_list</span> <span class="o">**</span><span class="n">methodLists</span>   <span class="n">OBJC2_UNAVAILABLE</span><span class="p">;</span>  <span class="c1">// 方法定义的链表</span>
+    <span class="k">struct</span> <span class="n">objc_cache</span> <span class="o">*</span><span class="n">cache</span>                <span class="n">OBJC2_UNAVAILABLE</span><span class="p">;</span>  <span class="c1">// 方法缓存</span>
+    <span class="k">struct</span> <span class="n">objc_protocol_list</span> <span class="o">*</span><span class="n">protocols</span>    <span class="n">OBJC2_UNAVAILABLE</span><span class="p">;</span>  <span class="c1">// 协议链表</span>
+<span class="cp">#endif</span>
+ 
+<span class="p">}</span> <span class="n">OBJC2_UNAVAILABLE</span><span class="p">;</span>
+</pre></div>

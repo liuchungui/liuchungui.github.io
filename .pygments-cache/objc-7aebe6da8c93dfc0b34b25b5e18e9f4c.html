@@ -1,0 +1,14 @@
+<div class="highlight"><pre><span class="c1">// 获取已注册的类定义的列表</span>
+<span class="kt">int</span> <span class="nf">objc_getClassList</span> <span class="p">(</span> <span class="kt">Class</span> <span class="o">*</span><span class="n">buffer</span><span class="p">,</span> <span class="kt">int</span> <span class="n">bufferCount</span> <span class="p">);</span>
+ 
+<span class="c1">// 创建并返回一个指向所有已注册类的指针列表</span>
+<span class="kt">Class</span> <span class="o">*</span> <span class="nf">objc_copyClassList</span> <span class="p">(</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="o">*</span><span class="n">outCount</span> <span class="p">);</span>
+ 
+<span class="c1">// 返回指定类的类定义</span>
+<span class="kt">Class</span> <span class="nf">objc_lookUpClass</span> <span class="p">(</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span> <span class="p">);</span>
+<span class="kt">Class</span> <span class="nf">objc_getClass</span> <span class="p">(</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span> <span class="p">);</span>
+<span class="kt">Class</span> <span class="nf">objc_getRequiredClass</span> <span class="p">(</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span> <span class="p">);</span>
+ 
+<span class="c1">// 返回指定类的元类</span>
+<span class="kt">Class</span> <span class="nf">objc_getMetaClass</span> <span class="p">(</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span> <span class="p">);</span>
+</pre></div>

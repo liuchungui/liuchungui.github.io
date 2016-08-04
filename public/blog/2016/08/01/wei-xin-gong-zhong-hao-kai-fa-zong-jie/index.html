@@ -1,0 +1,1176 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>微信公众号开发总结 - liuchungui's Blog</title>
+  <meta name="author" content="刘春桂">
+
+  
+  <meta name="description" content="公司准备在微信公众号上做个东西，所以研究了一周的微信公众号开发，今天在这里做一个总结。
+在总结之前，先说一下本人使用的环境，语言是PHP，框架是CI和CI框架下的一个RESTFul框架codeigniter-restserver。 一、配置服务器 在开发之前， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://www.liuchungui.com/blog/2016/08/01/wei-xin-gong-zhong-hao-kai-fa-zong-jie/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="liuchungui's Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">liuchungui's Blog</a></h1>
+  
+    <h2>代码嗨起来</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="www.liuchungui.com">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">微信公众号开发总结</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-08-01T11:51:36+08:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>1</span><span class='date-suffix'>st</span>, <span class='date-year'>2016</span></span> <span class='time'>11:51 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>公司准备在微信公众号上做个东西，所以研究了一周的微信公众号开发，今天在这里做一个总结。
+在总结之前，先说一下本人使用的环境，语言是PHP，框架是<a href="https://github.com/bcit-ci/CodeIgniter">CI</a>和CI框架下的一个RESTFul框架<a href="https://github.com/chriskacerguis/codeigniter-restserver">codeigniter-restserver</a>。</p>
+
+<!-- more -->
+
+
+<h2>一、配置服务器</h2>
+
+<p>在开发之前，我们首先需要在微信公众号下设置服务器配置，这里完全可以参考官方的<a href="https://mp.weixin.qq.com/wiki?t=resource/res_main&amp;id=mp1421135319&amp;token=&amp;lang=zh_CN">接入指南</a>。
+需要说明两点的是：</p>
+
+<ol>
+<li>我们只能填写一个URL（服务器地址），当微信服务器想要发送消息给我们服务器，只能通过这个URL来进行交互。</li>
+<li>我们在接入的时候，有个验证消息是否来自微信服务器的过程，这个验证过程是GET请求，我们需要输出echostr，验证代码如下：</li>
+</ol>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="sd">/**</span>
+</span><span class='line'><span class="sd"> * 检查消息是否来自微信</span>
+</span><span class='line'><span class="sd"> * @return bool</span>
+</span><span class='line'><span class="sd"> */</span>
+</span><span class='line'><span class="k">private</span> <span class="k">function</span> <span class="nf">check_from_wx</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">//检查$_GET中的参数</span>
+</span><span class='line'>    <span class="nx">param_check</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;signature&#39;</span><span class="p">,</span> <span class="s1">&#39;timestamp&#39;</span><span class="p">,</span> <span class="s1">&#39;nonce&#39;</span><span class="p">]);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//获取参数</span>
+</span><span class='line'>    <span class="nv">$signature</span> <span class="o">=</span> <span class="nv">$_GET</span><span class="p">[</span><span class="s2">&quot;signature&quot;</span><span class="p">];</span>
+</span><span class='line'>    <span class="nv">$timestamp</span> <span class="o">=</span> <span class="nv">$_GET</span><span class="p">[</span><span class="s2">&quot;timestamp&quot;</span><span class="p">];</span>
+</span><span class='line'>    <span class="nv">$nonce</span> <span class="o">=</span> <span class="nv">$_GET</span><span class="p">[</span><span class="s2">&quot;nonce&quot;</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nv">$token</span> <span class="o">=</span> <span class="nx">WX_APP_TOKEN</span><span class="p">;</span>
+</span><span class='line'>    <span class="nv">$tmpArr</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span><span class="nv">$token</span><span class="p">,</span> <span class="nv">$timestamp</span><span class="p">,</span> <span class="nv">$nonce</span><span class="p">);</span>
+</span><span class='line'>    <span class="c1">// use SORT_STRING rule</span>
+</span><span class='line'>    <span class="nb">sort</span><span class="p">(</span><span class="nv">$tmpArr</span><span class="p">,</span> <span class="nx">SORT_STRING</span><span class="p">);</span>
+</span><span class='line'>    <span class="nv">$tmpStr</span> <span class="o">=</span> <span class="nb">implode</span><span class="p">(</span><span class="nv">$tmpArr</span><span class="p">);</span>
+</span><span class='line'>    <span class="nv">$tmpStr</span> <span class="o">=</span> <span class="nb">sha1</span><span class="p">(</span><span class="nv">$tmpStr</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//验证</span>
+</span><span class='line'>    <span class="k">if</span><span class="p">(</span><span class="nv">$tmpStr</span> <span class="o">==</span> <span class="nv">$signature</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="k">true</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="k">false</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="sd">/**</span>
+</span><span class='line'><span class="sd"> * 配合微信服务器验证是否有效</span>
+</span><span class='line'><span class="sd"> */</span>
+</span><span class='line'><span class="k">public</span> <span class="k">function</span> <span class="nf">check_get</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nv">$echoStr</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s2">&quot;echostr&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">if</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">check_from_wx</span><span class="p">())</span> <span class="p">{</span>
+</span><span class='line'>       <span class="k">echo</span> <span class="nv">$echoStr</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">echo</span> <span class="s2">&quot;验证不通过&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">exit</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>看到上面的代码，你也许会有疑问，为什么在<code>check_get</code>方法中使用<code>$this-&gt;get</code>获取get参数，而在<code>check_from_wx</code>方法中使用的是<code>$_GET</code>。这是因为我们后面接收的消息是微信服务器向我们发送POST请求，但是验证的参数却是放在URL后面，所以为了兼容，专门封装了一个<code>check_from_wx</code>的私有方法。</p>
+
+<p>到这里，我们算是配置好了，下面我们来看看如何接收和回复用户发来的消息。</p>
+
+<h2>二、接收消息和回复消息</h2>
+
+<p>接收和回复消息的流程图大概就是这样的：
+<img src="http://ww4.sinaimg.cn/large/7746cd07jw1f66f138zo1j218q0imacd.jpg" alt="" />
+看上面的流程图，我们可以把整个接收和回复消息分成四个步骤：</p>
+
+<ul>
+<li>第一步：用户在微信公众号内发送一条消息，微信客户端将这条消息发送给微信服务器。</li>
+<li>第二步：微信服务器将消息以POST方式将消息提交给我们服务器，而这个服务器的地址只有一个，就是我们前面配置服务器填写的URL地址。消息的数据格式是XML格式的。</li>
+<li>第三步：我们收到这个消息之后，做出对应的回复，返回对应的XML数据，就算是进行回复了。</li>
+<li>第四步：微信服务器将我们服务器的消息返回给微信客户端，这样用户就看到了我们回复的消息了。</li>
+</ul>
+
+
+<p>看了上面的消息接收和回复流程图，我们下面使用代码进行实现。在配置服务器的时候，我先前填写的URL地址对应的接口是<code>check</code>，所以接收消息的PHP代码这么写：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="sd">/**</span>
+</span><span class='line'><span class="sd"> * 检查消息是否来自微信</span>
+</span><span class='line'><span class="sd"> * @return bool</span>
+</span><span class='line'><span class="sd"> */</span>
+</span><span class='line'><span class="k">private</span> <span class="k">function</span> <span class="nf">check_from_wx</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">//检查$_GET中的参数</span>
+</span><span class='line'>    <span class="nx">param_check</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;signature&#39;</span><span class="p">,</span> <span class="s1">&#39;timestamp&#39;</span><span class="p">,</span> <span class="s1">&#39;nonce&#39;</span><span class="p">]);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//获取参数</span>
+</span><span class='line'>    <span class="nv">$signature</span> <span class="o">=</span> <span class="nv">$_GET</span><span class="p">[</span><span class="s2">&quot;signature&quot;</span><span class="p">];</span>
+</span><span class='line'>    <span class="nv">$timestamp</span> <span class="o">=</span> <span class="nv">$_GET</span><span class="p">[</span><span class="s2">&quot;timestamp&quot;</span><span class="p">];</span>
+</span><span class='line'>    <span class="nv">$nonce</span> <span class="o">=</span> <span class="nv">$_GET</span><span class="p">[</span><span class="s2">&quot;nonce&quot;</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nv">$token</span> <span class="o">=</span> <span class="nx">WX_APP_TOKEN</span><span class="p">;</span>
+</span><span class='line'>    <span class="nv">$tmpArr</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span><span class="nv">$token</span><span class="p">,</span> <span class="nv">$timestamp</span><span class="p">,</span> <span class="nv">$nonce</span><span class="p">);</span>
+</span><span class='line'>    <span class="c1">// use SORT_STRING rule</span>
+</span><span class='line'>    <span class="nb">sort</span><span class="p">(</span><span class="nv">$tmpArr</span><span class="p">,</span> <span class="nx">SORT_STRING</span><span class="p">);</span>
+</span><span class='line'>    <span class="nv">$tmpStr</span> <span class="o">=</span> <span class="nb">implode</span><span class="p">(</span><span class="nv">$tmpArr</span><span class="p">);</span>
+</span><span class='line'>    <span class="nv">$tmpStr</span> <span class="o">=</span> <span class="nb">sha1</span><span class="p">(</span><span class="nv">$tmpStr</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//验证</span>
+</span><span class='line'>    <span class="k">if</span><span class="p">(</span><span class="nv">$tmpStr</span> <span class="o">==</span> <span class="nv">$signature</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="k">true</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="k">false</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">public</span> <span class="k">function</span> <span class="nf">check_post</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">//检查消息是否来自微信</span>
+</span><span class='line'>    <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">check_from_wx</span><span class="p">())</span> <span class="p">{</span>
+</span><span class='line'>        <span class="c1">//非法</span>
+</span><span class='line'>        <span class="k">echo</span> <span class="s2">&quot;非法操作&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//获取POST参数</span>
+</span><span class='line'>    <span class="nv">$param</span> <span class="o">=</span> <span class="nb">file_get_contents</span><span class="p">(</span><span class="s2">&quot;php://input&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="c1">//将xml格式中的数据读取成数组</span>
+</span><span class='line'>    <span class="nv">$param</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">format</span><span class="o">-&gt;</span><span class="na">factory</span><span class="p">(</span><span class="nv">$param</span><span class="p">,</span> <span class="s1">&#39;xml&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">to_array</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//将消息插入by_message表中</span>
+</span><span class='line'>    <span class="nv">$result</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">share_model</span><span class="o">-&gt;</span><span class="na">insert</span><span class="p">(</span><span class="nv">$msg_info</span><span class="p">,</span> <span class="s1">&#39;by_message&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//回复空字符串</span>
+</span><span class='line'>    <span class="k">echo</span> <span class="s2">&quot;&quot;</span><span class="p">;</span>
+</span><span class='line'>   <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>  上面代码值得注意有三个地方，第一个地方是我们检查消息是否来自微信，是获取<code>$_GET</code>中的参数；第二个地方是我们不能使用<code>$_POST</code>和<code>$this-&gt;post</code>来获取post参数，只能使用<code>file_get_contents("php://input")</code>来获取；第三个地方是当我们没有消息回复的时候，回复<code>success和空字符串</code>就代表交互成功，否则用户就会看到<code>该公众号暂时无法提供服务</code>。</p>
+
+<p>  当写好代码之后，我们在微信公众号中发送消息，它就会将消息存入到<code>by_message</code>表中，我们就可以进行查看。如果出现<code>该公众号暂时无法提供服务</code>，那就可能我们服务器出错误了，可以开启日志功能，使用<code>log_message</code>输出日志进行调试。</p>
+
+<p> 当接收消息没问题之后，我们就可以进行回复消息了，代码如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="k">public</span> <span class="k">function</span> <span class="nf">check_post</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">//检查消息是否来自微信</span>
+</span><span class='line'>    <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">check_from_wx</span><span class="p">())</span> <span class="p">{</span>
+</span><span class='line'>        <span class="c1">//非法</span>
+</span><span class='line'>        <span class="k">echo</span> <span class="s2">&quot;非法操作&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//获取POST参数</span>
+</span><span class='line'>    <span class="nv">$param</span> <span class="o">=</span> <span class="nb">file_get_contents</span><span class="p">(</span><span class="s2">&quot;php://input&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="c1">//获取xml中的数据</span>
+</span><span class='line'>    <span class="nv">$param</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">format</span><span class="o">-&gt;</span><span class="na">factory</span><span class="p">(</span><span class="nv">$param</span><span class="p">,</span> <span class="s1">&#39;xml&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">to_array</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//选出参数</span>
+</span><span class='line'>    <span class="nv">$msg_info</span> <span class="o">=</span> <span class="nx">array_choose</span><span class="p">(</span><span class="nv">$param</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;Content&#39;</span><span class="p">,</span> <span class="s1">&#39;ToUserName&#39;</span><span class="p">,</span> <span class="s1">&#39;FromUserName&#39;</span><span class="p">,</span> <span class="s1">&#39;MsgId&#39;</span><span class="p">,</span> <span class="s1">&#39;MsgType&#39;</span><span class="p">]);</span>
+</span><span class='line'>    <span class="c1">//将消息插入数据库</span>
+</span><span class='line'>    <span class="nv">$result</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">share_model</span><span class="o">-&gt;</span><span class="na">insert</span><span class="p">(</span><span class="nv">$msg_info</span><span class="p">,</span> <span class="s1">&#39;by_message&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//获取信息</span>
+</span><span class='line'>    <span class="nv">$to_user</span> <span class="o">=</span> <span class="nv">$param</span><span class="p">[</span><span class="s1">&#39;ToUserName&#39;</span><span class="p">];</span>
+</span><span class='line'>    <span class="nv">$from_user</span> <span class="o">=</span> <span class="nv">$param</span><span class="p">[</span><span class="s1">&#39;FromUserName&#39;</span><span class="p">];</span>
+</span><span class='line'>    <span class="nv">$content</span> <span class="o">=</span> <span class="nv">$param</span><span class="p">[</span><span class="s1">&#39;Content&#39;</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//去掉消息id</span>
+</span><span class='line'>    <span class="nb">unset</span><span class="p">(</span><span class="nv">$param</span><span class="p">[</span><span class="s1">&#39;MsgId&#39;</span><span class="p">]);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//回复的内容</span>
+</span><span class='line'>    <span class="nv">$content</span> <span class="o">=</span> <span class="s1">&#39;http://xxxxxx.com/&#39;</span><span class="p">;</span>
+</span><span class='line'>    <span class="nv">$response_text</span> <span class="o">=</span> <span class="s2">&quot;&lt;xml&gt;</span>
+</span><span class='line'><span class="s2">                        &lt;ToUserName&gt;&lt;![CDATA[%s]]&gt;&lt;/ToUserName&gt;</span>
+</span><span class='line'><span class="s2">                        &lt;FromUserName&gt;&lt;![CDATA[%s]]&gt;&lt;/FromUserName&gt;</span>
+</span><span class='line'><span class="s2">                        &lt;CreateTime&gt;%s&lt;/CreateTime&gt;</span>
+</span><span class='line'><span class="s2">                        &lt;MsgType&gt;&lt;![CDATA[%s]]&gt;&lt;/MsgType&gt;</span>
+</span><span class='line'><span class="s2">                        &lt;Content&gt;&lt;![CDATA[%s]]&gt;&lt;/Content&gt;</span>
+</span><span class='line'><span class="s2">                      &lt;/xml&gt;&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="nv">$response_text</span> <span class="o">=</span> <span class="nb">sprintf</span><span class="p">(</span><span class="nv">$response_text</span><span class="p">,</span> <span class="nv">$from_user</span><span class="p">,</span> <span class="nv">$to_user</span><span class="p">,</span> <span class="nb">time</span><span class="p">(),</span> <span class="nv">$param</span><span class="p">[</span><span class="s1">&#39;MsgType&#39;</span><span class="p">],</span> <span class="nv">$content</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">echo</span> <span class="nv">$response_text</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>配置好之后，我们在微信公众输入字符，它就会回复<code>http://xxxxxx.com/</code>。</p>
+
+<p>上面代码需要注意的是，我们回复消息的时候，返回的数据格式是<code>xml格式</code>的，而且对格式有严格要求。我前面使用框架中的<code>format类</code>生成xml的数据是无法被微信读取的，所以建议和我上面一样的写法。</p>
+
+<p>还有，上面回复的消息是文本消息，我们还可以回复图片、图文、语音、视频、音乐等消息，其实它们都大体相同，查看官方的文档<a href="https://mp.weixin.qq.com/wiki?t=resource/res_main&amp;id=mp1421140543&amp;token=&amp;lang=zh_CN">被动回复用户消息</a>这一节，按照对应的格式进行回复就行了。</p>
+
+<p>到这一步的时候，是不是很有成就感？其实，这还是很小的一步，微信开发还有很多的内容，就消息管理这部分来说，它就分接收和发送消息两大类。</p>
+
+<p>其中，接收消息有两种：</p>
+
+<ul>
+<li>第一种：接收普通消息，它是微信用户向公众号发送的消息，我们上面说的就是接收普通消息。</li>
+<li>第二种：接收事件消息，它是微信用户在微信公众号里面交互过程中产生的事件消息，例如关注/取消事件、扫描带参数二维码等等。具体可以接收哪些事件消息，就去查询微信的开发文档吧。接收事件消息说起来很高端的样子，其实它和普通消息差不多，整个接收和回复流程和上面一样，只是有的事件消息是不允许我们回复用户的。</li>
+</ul>
+
+
+<p>而发送消息就有被动<code>回复消息</code>、<code>客服消息</code>、<code>群发消息</code>、<code>模板消息</code>四种，其中这四种我又把它分成两小类，被动回复消息算是一类，我们前面实现对用户消息的回复就算是这一类；另外三种我将它们归类为主动发送消息，与被动回复消息不同的是，它会被微信主动推送给用户，流程大概如下图：</p>
+
+<p><img src="http://ww1.sinaimg.cn/large/7746cd07jw1f66jvxhdfij20nx07uaaf.jpg" alt="" /></p>
+
+<p>了解了流程之后，我们下面来实现模板消息的发送。</p>
+
+<h2>三、发送模板消息</h2>
+
+<p>模板消息可以定制，而且发送模板消息后，微信会主动推送给用户，这是我们开发很需要的一个功能。（注：模板消息只有认证后的服务号才可以使用）。</p>
+
+<p>首先，我们在微信公众平台的<code>功能-&gt;添加功能插件</code>处添加这个功能，进入模板消息页面，从模板库中添加一个模板消息，获取到模板ID。当然，我们也可以创建一个符号自己业务的模板消息，进行定制（这个需要申请）。</p>
+
+<p>然后，我们对应着模板详情的数据格式，写一个接口专门用来发送模板消息。</p>
+
+<p>下面是模板详情：</p>
+
+<p><img src="http://ww2.sinaimg.cn/large/7746cd07jw1f658hkxak6j20iu0kb75u.jpg" alt="" /></p>
+
+<p>对应上面的模板消息，我们的接口这么写：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="sd">/**</span>
+</span><span class='line'><span class="sd">     * 发送模板消息</span>
+</span><span class='line'><span class="sd">     */</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">send_template_message_get</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>        <span class="c1">//检查参数</span>
+</span><span class='line'>        <span class="nx">param_check</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(),</span> <span class="p">[</span><span class="s1">&#39;uid&#39;</span><span class="p">]);</span>
+</span><span class='line'>        <span class="nv">$uid</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s1">&#39;uid&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">//wx appid</span>
+</span><span class='line'>        <span class="nv">$wx_app_id</span> <span class="o">=</span> <span class="nx">WX_APP_ID</span><span class="p">;</span>
+</span><span class='line'>        <span class="nv">$wx_app_secret</span> <span class="o">=</span> <span class="nx">WX_APP_SECRET</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">//get access token</span>
+</span><span class='line'>        <span class="nv">$token_info</span> <span class="o">=</span> <span class="nb">file_get_contents</span><span class="p">(</span><span class="s2">&quot;https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&amp;appid=</span><span class="si">$wx_app_id</span><span class="s2">&amp;secret=</span><span class="si">$wx_app_secret</span><span class="s2">&quot;</span><span class="p">);</span>
+</span><span class='line'>        <span class="nv">$token_info</span> <span class="o">=</span> <span class="nb">json_decode</span><span class="p">(</span><span class="nv">$token_info</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>
+</span><span class='line'>        <span class="nv">$access_token</span> <span class="o">=</span> <span class="nv">$token_info</span><span class="p">[</span><span class="s1">&#39;access_token&#39;</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">//获取用户信息</span>
+</span><span class='line'>        <span class="nv">$openid</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">user_model</span><span class="o">-&gt;</span><span class="na">get_value</span><span class="p">(</span><span class="s1">&#39;openid&#39;</span><span class="p">,</span> <span class="nv">$uid</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">//组织参数</span>
+</span><span class='line'>        <span class="nv">$param</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>            <span class="s2">&quot;touser&quot;</span> <span class="o">=&gt;</span> <span class="nv">$openid</span><span class="p">,</span>
+</span><span class='line'>            <span class="s2">&quot;template_id&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;jt_Rl5X9QWXMiRihrQz67n4riGt3kaPA81Zku0wLm9M&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="s2">&quot;url&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;http://www.beyondwinlaw.com/test/wx/test/home.html&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="s2">&quot;data&quot;</span> <span class="o">=&gt;</span> <span class="p">[</span>
+</span><span class='line'>                <span class="s2">&quot;first&quot;</span> <span class="o">=&gt;</span> <span class="p">[</span>
+</span><span class='line'>                    <span class="s2">&quot;value&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;案件有新进展&quot;</span><span class="p">,</span>
+</span><span class='line'>                    <span class="s2">&quot;color&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;#173177&quot;</span>
+</span><span class='line'>                <span class="p">],</span>
+</span><span class='line'>                <span class="s2">&quot;keyword1&quot;</span> <span class="o">=&gt;</span> <span class="p">[</span>
+</span><span class='line'>                    <span class="s2">&quot;value&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;jkfdjafjdsfjdjfs&quot;</span><span class="p">,</span>
+</span><span class='line'>                    <span class="s2">&quot;color&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;#173177&quot;</span>
+</span><span class='line'>                <span class="p">],</span>
+</span><span class='line'>                <span class="s2">&quot;keyword2&quot;</span> <span class="o">=&gt;</span> <span class="p">[</span>
+</span><span class='line'>                    <span class="s2">&quot;value&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;jkfdjafjdsfjdjfs&quot;</span><span class="p">,</span>
+</span><span class='line'>                    <span class="s2">&quot;color&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;#173177&quot;</span>
+</span><span class='line'>                <span class="p">],</span>
+</span><span class='line'>                <span class="s2">&quot;keyword3&quot;</span> <span class="o">=&gt;</span> <span class="p">[</span>
+</span><span class='line'>                    <span class="s2">&quot;value&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;jkfdjafjdsfjdjfs&quot;</span><span class="p">,</span>
+</span><span class='line'>                    <span class="s2">&quot;color&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;#173177&quot;</span>
+</span><span class='line'>                <span class="p">],</span>
+</span><span class='line'>                <span class="s2">&quot;keyword4&quot;</span> <span class="o">=&gt;</span> <span class="p">[</span>
+</span><span class='line'>                    <span class="s2">&quot;value&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;2016-07-12 11:11:11&quot;</span><span class="p">,</span>
+</span><span class='line'>                    <span class="s2">&quot;color&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;#173177&quot;</span>
+</span><span class='line'>                <span class="p">],</span>
+</span><span class='line'>                <span class="s2">&quot;keyword5&quot;</span> <span class="o">=&gt;</span> <span class="p">[</span>
+</span><span class='line'>                    <span class="s2">&quot;value&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;jkfdjafjdsfjdjfs&quot;</span><span class="p">,</span>
+</span><span class='line'>                    <span class="s2">&quot;color&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;#173177&quot;</span>
+</span><span class='line'>                <span class="p">],</span>
+</span><span class='line'>                <span class="s2">&quot;remark&quot;</span> <span class="o">=&gt;</span> <span class="p">[</span>
+</span><span class='line'>                    <span class="s2">&quot;value&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;点击查看案件进度详情&quot;</span><span class="p">,</span>
+</span><span class='line'>                    <span class="s2">&quot;color&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;#173177&quot;</span>
+</span><span class='line'>                <span class="p">]</span>
+</span><span class='line'>            <span class="p">]</span>
+</span><span class='line'>        <span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">//发送请求</span>
+</span><span class='line'>        <span class="nv">$url</span> <span class="o">=</span> <span class="s2">&quot;https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=</span><span class="si">$access_token</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class='line'>        <span class="nv">$result</span> <span class="o">=</span> <span class="nx">send_post</span><span class="p">(</span><span class="nv">$url</span><span class="p">,</span> <span class="nv">$param</span><span class="p">);</span>
+</span><span class='line'>        <span class="nx">answer</span><span class="p">([</span>
+</span><span class='line'>            <span class="s2">&quot;result&quot;</span> <span class="o">=&gt;</span> <span class="nv">$result</span>
+</span><span class='line'>        <span class="p">]);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>效果是这样的：</p>
+
+<p align="center" >
+  <img src="http://ww3.sinaimg.cn/mw690/7746cd07jw1f65905jwfbj20mq10iq75.jpg" height=554 width = 345>
+</p>
+
+
+<p>这样，我们就实现了模板消息的发送，至于客服消息、群发接口，原理差不多，因为我没实现过，这里就不多说了。</p>
+
+<h2>四、网页授权，获取用户信息</h2>
+
+<p>微信采用的是OAuth对开发者进行授权的，具体OAuth授权原理请google查询。在开发之前，我们需要先到公众平台官网中的<code>开发-接口权限-网页服务-网页授权获取用户基本信息</code>的配置选项中，修改授权回调域名。</p>
+
+<p><img src="http://ww2.sinaimg.cn/large/7746cd07jw1f65ggry50ij20y20dimyr.jpg" alt="" /></p>
+
+<p>整个授权过程，其实微信官方已经说的很清楚了。我这里简略说一下，算是总结下吧！</p>
+
+<p>首先，我们需要获取access_token，它的时序图和微信开放平台类似，如下：
+<img src="http://ww1.sinaimg.cn/mw690/7746cd07jw1f68rcxtd2lj21020fu40c.jpg" alt="" /></p>
+
+<p>这整个过程是当用户要登录我们的网站时，我们带上回调地址、AppId、scope等参数跳转到微信授权页面；然后获得用户的同意之后，它会跳转到我们的回调地址，并带上code参数；最后我们通过code、AppId、AppSecret请求接口，获取access_token。</p>
+
+<p>之后，我们通过access_token请求对应的接口，就可以获取用户的基本信息了。</p>
+
+<p>需要注意地方有两个：</p>
+
+<ol>
+<li>我们的回调地址需要进行encodeURL，否则可能回调地址中url后面的参数会丢失。</li>
+<li>我们的回调地址的域名必须是前面配置的域名。</li>
+</ol>
+
+
+<p>具体的实现细节，根据官方文档<a href="https://mp.weixin.qq.com/wiki?t=resource/res_main&amp;id=mp1421140842&amp;token=&amp;lang=zh_CN">微信网页授权</a>和<a href="https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&amp;t=resource/res_list&amp;verify=1&amp;id=open1419316505&amp;token=&amp;lang=zh_CN">网站应用微信登录开发指南</a>的步骤来就行了。</p>
+
+<h2>五、JS-SDK的使用</h2>
+
+<p>在我们要做的产品中，我们希望能够控制每个页面分享的链接，而JS-SDK就可以做到这一切。
+它的使用步骤可以查阅<a href="https://mp.weixin.qq.com/wiki?t=resource/res_main&amp;id=mp1421141115&amp;token=&amp;lang=zh_CN">微信JS-SDK说明文档</a>这个文档，而且在网页最后还有对应的<a href="http://demo.open.weixin.qq.com/jssdk">DEMO页面</a>和<a href="http://demo.open.weixin.qq.com/jssdk/sample.zip">示例代码</a>。</p>
+
+<p>我们的实现是这样的，在前端专门写了一个JS文件<code>wx_share.js</code>，这个JS文件中将当前的url传给后台，请求后台的数据对JS-SDK进行配置。代码如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">server_url</span> <span class="o">=</span> <span class="s2">&quot;http://192.168.30.249/by/wx_api/index.php/share/wx_config&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">url</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">href</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//配置微信</span>
+</span><span class='line'><span class="nx">$</span><span class="p">.</span><span class="nx">ajax</span><span class="p">({</span>
+</span><span class='line'>    <span class="nx">type</span><span class="o">:</span> <span class="s2">&quot;GET&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">url</span><span class="o">:</span> <span class="nx">server_url</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">data</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">url</span><span class="o">:</span> <span class="nb">encodeURI</span><span class="p">(</span><span class="nx">url</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="nx">dataType</span><span class="o">:</span> <span class="s2">&quot;json&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">success</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">){</span>
+</span><span class='line'>        <span class="c1">// alert(&#39;请求分享配置数据成功&#39;);</span>
+</span><span class='line'>        <span class="nx">wx</span><span class="p">.</span><span class="nx">config</span><span class="p">({</span>
+</span><span class='line'>            <span class="nx">debug</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span> <span class="c1">// 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。</span>
+</span><span class='line'>            <span class="nx">appId</span><span class="o">:</span> <span class="nx">data</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">appId</span><span class="p">,</span> <span class="c1">// 必填，公众号的唯一标识</span>
+</span><span class='line'>            <span class="nx">timestamp</span><span class="o">:</span> <span class="nx">data</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">timestamp</span><span class="p">,</span> <span class="c1">// 必填，生成签名的时间戳</span>
+</span><span class='line'>            <span class="nx">nonceStr</span><span class="o">:</span> <span class="nx">data</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">nonceStr</span><span class="p">,</span> <span class="c1">// 必填，生成签名的随机串</span>
+</span><span class='line'>            <span class="nx">signature</span><span class="o">:</span> <span class="nx">data</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">signature</span><span class="p">,</span><span class="c1">// 必填，签名，见附录1</span>
+</span><span class='line'>            <span class="nx">jsApiList</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;onMenuShareAppMessage&#39;</span><span class="p">,</span> <span class="s1">&#39;onMenuShareTimeline&#39;</span><span class="p">]</span> <span class="c1">// 必填，需要使用的JS接口列表，所有JS接口列表见附录2</span>
+</span><span class='line'>        <span class="p">});</span>
+</span><span class='line'>        <span class="nx">wx</span><span class="p">.</span><span class="nx">ready</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>            <span class="c1">// alert(&quot;分享验证完毕&quot;);</span>
+</span><span class='line'>        <span class="p">});</span>
+</span><span class='line'>        <span class="nx">wx</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>            <span class="c1">// alert(&quot;分享验证失败&quot;);</span>
+</span><span class='line'>        <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">//获取uid和link_id</span>
+</span><span class='line'>        <span class="kd">var</span> <span class="nx">uid</span> <span class="o">=</span> <span class="nx">localStorage</span><span class="p">.</span><span class="nx">getItem</span><span class="p">(</span><span class="s2">&quot;uid&quot;</span><span class="p">);</span>
+</span><span class='line'>        <span class="kd">var</span> <span class="nx">linkId</span> <span class="o">=</span> <span class="nx">localStorage</span><span class="p">.</span><span class="nx">getItem</span><span class="p">(</span><span class="s2">&quot;link_id&quot;</span><span class="p">);</span>
+</span><span class='line'>        <span class="kd">var</span> <span class="nx">shareUrl</span> <span class="o">=</span> <span class="s2">&quot;http://www.baidu.com&quot;</span><span class="p">;</span>
+</span><span class='line'>        <span class="c1">//存在linkId, 则分享带上link_id等参数</span>
+</span><span class='line'>        <span class="k">if</span><span class="p">(</span><span class="nx">linkId</span> <span class="o">!=</span> <span class="kc">undefined</span> <span class="o">&amp;&amp;</span> <span class="nx">linkId</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span> <span class="o">&amp;&amp;</span> <span class="nx">linkId</span> <span class="o">!=</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">shareUrl</span> <span class="o">=</span> <span class="nx">shareUrl</span> <span class="o">+</span> <span class="s2">&quot;?super_id=&quot;</span> <span class="o">+</span> <span class="nx">uid</span> <span class="o">+</span> <span class="s2">&quot;&amp;link_id=&quot;</span> <span class="o">+</span> <span class="nx">linkId</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="c1">// alert(&quot;分享链接: &quot;+shareUrl);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="nx">wx</span><span class="p">.</span><span class="nx">onMenuShareAppMessage</span><span class="p">({</span>
+</span><span class='line'>            <span class="nx">title</span><span class="o">:</span> <span class="s1">&#39;分享测试&#39;</span><span class="p">,</span> <span class="c1">// 分享标题</span>
+</span><span class='line'>            <span class="nx">desc</span><span class="o">:</span> <span class="s1">&#39;测试一下&#39;</span><span class="p">,</span> <span class="c1">// 分享描述</span>
+</span><span class='line'>            <span class="nx">link</span><span class="o">:</span> <span class="nx">shareUrl</span><span class="p">,</span> <span class="c1">// 分享链接</span>
+</span><span class='line'>            <span class="nx">imgUrl</span><span class="o">:</span> <span class="s1">&#39;http://www.beyondwinlaw.com/gw4/images/zhongjie.jpg&#39;</span><span class="p">,</span> <span class="c1">// 分享图标</span>
+</span><span class='line'>            <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;link&#39;</span><span class="p">,</span> <span class="c1">// 分享类型,music、video或link，不填默认为link</span>
+</span><span class='line'>            <span class="nx">dataUrl</span><span class="o">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="c1">// 如果type是music或video，则要提供数据链接，默认为空</span>
+</span><span class='line'>            <span class="nx">success</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>                <span class="c1">// 用户确认分享后执行的回调函数</span>
+</span><span class='line'>                <span class="c1">// alert(&quot;分享成功&quot;);</span>
+</span><span class='line'>            <span class="p">},</span>
+</span><span class='line'>            <span class="nx">cancel</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>                <span class="c1">// 用户取消分享后执行的回调函数</span>
+</span><span class='line'>                <span class="c1">// alert(&quot;取消分享&quot;);</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>        <span class="p">});</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="nx">error</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">alert</span><span class="p">(</span><span class="s1">&#39;请求分享配置数据失败&#39;</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>而具体JS-SDK权限签名算法的实现是放在后台的，这个实现我是直接使用官方的<code>jssdk</code>的类，只是将它稍微修改了下。
+<code>share.php</code>中<code>wx_config</code>接口实现如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="cm">/**</span>
+</span><span class='line'><span class="cm"> * 获取微信配置</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'><span class="kr">public</span> <span class="kd">function</span> <span class="nx">wx_config_get</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">//获取参数</span>
+</span><span class='line'>    <span class="nx">param_check</span><span class="p">(</span><span class="nx">$this</span><span class="o">-&gt;</span><span class="nx">get</span><span class="p">(),</span> <span class="p">[</span><span class="s1">&#39;url&#39;</span><span class="p">]);</span>
+</span><span class='line'>    <span class="nx">$url</span> <span class="o">=</span> <span class="nx">$this</span><span class="o">-&gt;</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;url&#39;</span><span class="p">);</span>
+</span><span class='line'>    <span class="nx">$url</span> <span class="o">=</span> <span class="nx">urldecode</span><span class="p">(</span><span class="nx">$url</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">$jssdk</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">JSSDK</span><span class="p">(</span><span class="nx">WX_APP_ID</span><span class="p">,</span> <span class="nx">WX_APP_SECRET</span><span class="p">,</span> <span class="nx">$url</span><span class="p">);</span>
+</span><span class='line'>    <span class="nx">$signPackage</span> <span class="o">=</span> <span class="nx">$jssdk</span><span class="o">-&gt;</span><span class="nx">GetSignPackage</span><span class="p">();</span>
+</span><span class='line'>    <span class="nx">answer</span><span class="p">(</span><span class="nx">$signPackage</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>而修改后的JS-SDK代码如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kr">class</span> <span class="nx">JSSDK</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kr">private</span> <span class="nx">$appId</span><span class="p">;</span>
+</span><span class='line'>  <span class="kr">private</span> <span class="nx">$appSecret</span><span class="p">;</span>
+</span><span class='line'>  <span class="kr">private</span> <span class="nx">$url</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kr">public</span> <span class="kd">function</span> <span class="nx">__construct</span><span class="p">(</span><span class="nx">$appId</span><span class="p">,</span> <span class="nx">$appSecret</span><span class="p">,</span> <span class="nx">$url</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">$this</span><span class="o">-&gt;</span><span class="nx">appId</span> <span class="o">=</span> <span class="nx">$appId</span><span class="p">;</span>
+</span><span class='line'>    <span class="nx">$this</span><span class="o">-&gt;</span><span class="nx">appSecret</span> <span class="o">=</span> <span class="nx">$appSecret</span><span class="p">;</span>
+</span><span class='line'>    <span class="nx">$this</span><span class="o">-&gt;</span><span class="nx">url</span> <span class="o">=</span> <span class="nx">$url</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kr">public</span> <span class="kd">function</span> <span class="nx">getSignPackage</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">// 注意 URL 一定要动态获取，不能 hardcode.</span>
+</span><span class='line'><span class="c1">//    $protocol = (!empty($_SERVER[&#39;HTTPS&#39;]) &amp;&amp; $_SERVER[&#39;HTTPS&#39;] !== &#39;off&#39; || $_SERVER[&#39;SERVER_PORT&#39;] == 443) ? &quot;https://&quot; : &quot;http://&quot;;</span>
+</span><span class='line'><span class="c1">//    $url = &quot;$protocol$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]&quot;;</span>
+</span><span class='line'>    <span class="nx">$url</span> <span class="o">=</span> <span class="nx">$this</span><span class="o">-&gt;</span><span class="nx">url</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//wx appid</span>
+</span><span class='line'>    <span class="nx">$wx_app_id</span> <span class="o">=</span> <span class="nx">$this</span><span class="o">-&gt;</span><span class="nx">appId</span><span class="p">;</span>
+</span><span class='line'>    <span class="nx">$wx_app_secret</span> <span class="o">=</span> <span class="nx">$this</span><span class="o">-&gt;</span><span class="nx">appSecret</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//get token</span>
+</span><span class='line'>    <span class="nx">$token_info</span> <span class="o">=</span> <span class="nx">file_get_contents</span><span class="p">(</span><span class="s2">&quot;https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&amp;appid=$wx_app_id&amp;secret=$wx_app_secret&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="nx">$token_info</span> <span class="o">=</span> <span class="nx">json_decode</span><span class="p">(</span><span class="nx">$token_info</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+</span><span class='line'>    <span class="nx">$access_token</span> <span class="o">=</span> <span class="nx">$token_info</span><span class="p">[</span><span class="s1">&#39;access_token&#39;</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//get ticket</span>
+</span><span class='line'>    <span class="nx">$ticket_info</span> <span class="o">=</span> <span class="nx">file_get_contents</span><span class="p">(</span><span class="s2">&quot;https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=$access_token&amp;type=jsapi&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="nx">$ticket_info</span> <span class="o">=</span> <span class="nx">json_decode</span><span class="p">(</span><span class="nx">$ticket_info</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+</span><span class='line'>    <span class="nx">$ticket</span> <span class="o">=</span> <span class="nx">$ticket_info</span><span class="p">[</span><span class="s1">&#39;ticket&#39;</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//拼接字符串</span>
+</span><span class='line'>    <span class="nx">$timestamp</span> <span class="o">=</span> <span class="nx">time</span><span class="p">();</span>
+</span><span class='line'>    <span class="nx">$nonceStr</span> <span class="o">=</span> <span class="nx">$this</span><span class="o">-&gt;</span><span class="nx">createNonceStr</span><span class="p">();</span>
+</span><span class='line'>    <span class="c1">// 这里参数的顺序要按照 key 值 ASCII 码升序排序</span>
+</span><span class='line'>    <span class="nx">$string</span> <span class="o">=</span> <span class="s2">&quot;jsapi_ticket=$ticket&amp;noncestr=$nonceStr&amp;timestamp=$timestamp&amp;url=$url&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//使用sha1进行签名</span>
+</span><span class='line'>    <span class="nx">$signature</span> <span class="o">=</span> <span class="nx">sha1</span><span class="p">(</span><span class="nx">$string</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">$signPackage</span> <span class="o">=</span> <span class="nx">array</span><span class="p">(</span>
+</span><span class='line'>      <span class="s2">&quot;appId&quot;</span>     <span class="o">=&gt;</span> <span class="nx">$this</span><span class="o">-&gt;</span><span class="nx">appId</span><span class="p">,</span>
+</span><span class='line'>      <span class="s2">&quot;nonceStr&quot;</span>  <span class="o">=&gt;</span> <span class="nx">$nonceStr</span><span class="p">,</span>
+</span><span class='line'>      <span class="s2">&quot;timestamp&quot;</span> <span class="o">=&gt;</span> <span class="nx">$timestamp</span><span class="p">,</span>
+</span><span class='line'>      <span class="s2">&quot;url&quot;</span>       <span class="o">=&gt;</span> <span class="nx">$url</span><span class="p">,</span>
+</span><span class='line'>      <span class="s2">&quot;signature&quot;</span> <span class="o">=&gt;</span> <span class="nx">$signature</span><span class="p">,</span>
+</span><span class='line'>      <span class="s2">&quot;rawString&quot;</span> <span class="o">=&gt;</span> <span class="nx">$string</span>
+</span><span class='line'>    <span class="p">);</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nx">$signPackage</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kr">private</span> <span class="kd">function</span> <span class="nx">createNonceStr</span><span class="p">(</span><span class="nx">$length</span> <span class="o">=</span> <span class="mi">16</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">$chars</span> <span class="o">=</span> <span class="s2">&quot;abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="nx">$str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">for</span> <span class="p">(</span><span class="nx">$i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">$i</span> <span class="o">&lt;</span> <span class="nx">$length</span><span class="p">;</span> <span class="nx">$i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">$str</span> <span class="p">.</span><span class="o">=</span> <span class="nx">substr</span><span class="p">(</span><span class="nx">$chars</span><span class="p">,</span> <span class="nx">mt_rand</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nx">strlen</span><span class="p">(</span><span class="nx">$chars</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span> <span class="mi">1</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nx">$str</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kr">private</span> <span class="kd">function</span> <span class="nx">httpGet</span><span class="p">(</span><span class="nx">$url</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">$curl</span> <span class="o">=</span> <span class="nx">curl_init</span><span class="p">();</span>
+</span><span class='line'>    <span class="nx">curl_setopt</span><span class="p">(</span><span class="nx">$curl</span><span class="p">,</span> <span class="nx">CURLOPT_RETURNTRANSFER</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+</span><span class='line'>    <span class="nx">curl_setopt</span><span class="p">(</span><span class="nx">$curl</span><span class="p">,</span> <span class="nx">CURLOPT_TIMEOUT</span><span class="p">,</span> <span class="mi">500</span><span class="p">);</span>
+</span><span class='line'>    <span class="c1">// 为保证第三方服务器与微信服务器之间数据传输的安全性，所有微信接口采用https方式调用，必须使用下面2行代码打开ssl安全校验。</span>
+</span><span class='line'>    <span class="c1">// 如果在部署过程中代码在此处验证失败，请到 http://curl.haxx.se/ca/cacert.pem 下载新的证书判别文件。</span>
+</span><span class='line'>    <span class="nx">curl_setopt</span><span class="p">(</span><span class="nx">$curl</span><span class="p">,</span> <span class="nx">CURLOPT_SSL_VERIFYPEER</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+</span><span class='line'>    <span class="nx">curl_setopt</span><span class="p">(</span><span class="nx">$curl</span><span class="p">,</span> <span class="nx">CURLOPT_SSL_VERIFYHOST</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+</span><span class='line'>    <span class="nx">curl_setopt</span><span class="p">(</span><span class="nx">$curl</span><span class="p">,</span> <span class="nx">CURLOPT_URL</span><span class="p">,</span> <span class="nx">$url</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">$res</span> <span class="o">=</span> <span class="nx">curl_exec</span><span class="p">(</span><span class="nx">$curl</span><span class="p">);</span>
+</span><span class='line'>    <span class="nx">curl_close</span><span class="p">(</span><span class="nx">$curl</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="nx">$res</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kr">private</span> <span class="kd">function</span> <span class="nx">get_php_file</span><span class="p">(</span><span class="nx">$filename</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nx">trim</span><span class="p">(</span><span class="nx">substr</span><span class="p">(</span><span class="nx">file_get_contents</span><span class="p">(</span><span class="nx">$filename</span><span class="p">),</span> <span class="mi">15</span><span class="p">));</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这里需要说明一下的是，这里我只是测试功能的实现，<code>获取access_token</code>是直接通过接口实时进行获取的。如果是在生产环境，还请参考官方的<a href="https://mp.weixin.qq.com/wiki?t=resource/res_main&amp;id=mp1421140183&amp;token=&amp;lang=zh_CN">获取access_token</a>。</p>
+
+<p>在这里我碰到一个问题，耽搁了挺久的时间。那就是前面我按照官方文档自己写的签名算法，然后各种配置不成功。后来下载了官方的demo，发现官方文档jssdk没有问题，然后将自己的签名算法放入官方的jssdk中，也没有问题。因为官方文档是前后端放在一块的，所以总感觉url不对，但是对<code>url进行encodeURL</code>之后，发现还是不行。最后和小伙伴一起google了之后，<code>将生成数字随机替换成生成字母随机数</code>，然后配置就没问题了。</p>
+
+<p>到这一步，逻辑已经全部实现，只需要在我们对应的页面中引入JS-SDK和wx_share.js文件就行了，如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="o">&lt;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s2">&quot;http://res.wx.qq.com/open/js/jweixin-1.1.0.js&quot;</span><span class="o">&gt;&lt;</span><span class="err">/script&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s2">&quot;js/wx_share.js&quot;</span><span class="o">&gt;&lt;</span><span class="err">/script&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>成功之后的效果如下：</p>
+
+<p align="center" >
+  <img src="http://ww4.sinaimg.cn/large/7746cd07jw1f6e24s7grrj20ku112q4f.jpg" height=667 width=375>
+</p>
+
+
+<h2>六、自定义菜单</h2>
+
+<p>自定义菜单这个是比较简单的，我们只需要将我们配置数据POST到微信服务器，微信用户进入我们公众号之后，看到界面就变成了我们自定义菜单样式。
+在这里，我也写了一个接口，用来修改菜单：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+</pre></td><td class='code'><pre><code class='php'><span class='line'>   <span class="sd">/**</span>
+</span><span class='line'><span class="sd">     * 更改微信公众号菜单</span>
+</span><span class='line'><span class="sd">     * @note 这个接口在线上是禁止调用的,它只需要更改的时候,调用一次就行了</span>
+</span><span class='line'><span class="sd">     */</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">function</span> <span class="nf">change_menu_get</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>        <span class="c1">//获取access_token, 需要中控服务器,否则会造成服务不稳定,咱们这里暂时不这么做</span>
+</span><span class='line'>        <span class="nv">$app_id</span> <span class="o">=</span> <span class="nx">WX_APP_ID</span><span class="p">;</span>
+</span><span class='line'>        <span class="nv">$app_secret</span> <span class="o">=</span> <span class="nx">WX_APP_SECRET</span><span class="p">;</span>
+</span><span class='line'>        <span class="nv">$content</span> <span class="o">=</span> <span class="nb">file_get_contents</span><span class="p">(</span><span class="s2">&quot;https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&amp;appid=</span><span class="si">$app_id</span><span class="s2">&amp;secret=</span><span class="si">$app_secret</span><span class="s2">&quot;</span><span class="p">);</span>
+</span><span class='line'>        <span class="nv">$info</span> <span class="o">=</span> <span class="nb">json_decode</span><span class="p">(</span><span class="nv">$content</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>
+</span><span class='line'>        <span class="nv">$access_token</span> <span class="o">=</span> <span class="nv">$info</span><span class="p">[</span><span class="s1">&#39;access_token&#39;</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">//自定义菜单</span>
+</span><span class='line'>        <span class="nv">$auth_url</span> <span class="o">=</span> <span class="s2">&quot;https://open.weixin.qq.com/connect/oauth2/authorize?appid=</span><span class="si">{</span><span class="nv">$app_id</span><span class="si">}</span><span class="s2">&amp;redirect_uri=http://www.liuchungui.com/api/wx_api/index.php/share/test&amp;response_type=code&amp;scope=snsapi_userinfo&amp;state=123#wechat_redirect&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="nv">$menu</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span><span class='line'>            <span class="s2">&quot;button&quot;</span> <span class="o">=&gt;</span> <span class="p">[</span>
+</span><span class='line'>                <span class="p">[</span>
+</span><span class='line'>                    <span class="s2">&quot;type&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;view&quot;</span><span class="p">,</span>
+</span><span class='line'>                    <span class="s2">&quot;name&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;合作&quot;</span><span class="p">,</span>
+</span><span class='line'>                    <span class="s2">&quot;url&quot;</span> <span class="o">=&gt;</span> <span class="nv">$auth_url</span>
+</span><span class='line'>                <span class="p">],</span>
+</span><span class='line'>                <span class="p">[</span>
+</span><span class='line'>                    <span class="s2">&quot;name&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;菜单&quot;</span><span class="p">,</span>
+</span><span class='line'>                    <span class="s2">&quot;sub_button&quot;</span> <span class="o">=&gt;</span> <span class="p">[</span>
+</span><span class='line'>                        <span class="p">[</span>
+</span><span class='line'>                            <span class="s2">&quot;type&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;view&quot;</span><span class="p">,</span>
+</span><span class='line'>                            <span class="s2">&quot;name&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;官网&quot;</span><span class="p">,</span>
+</span><span class='line'>                            <span class="s2">&quot;url&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;http://www.liuchungui.com/&quot;</span>
+</span><span class='line'>                        <span class="p">],</span>
+</span><span class='line'>                        <span class="p">[</span>
+</span><span class='line'>                            <span class="s2">&quot;type&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;view&quot;</span><span class="p">,</span>
+</span><span class='line'>                            <span class="s2">&quot;name&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;关于我们&quot;</span><span class="p">,</span>
+</span><span class='line'>                            <span class="s2">&quot;url&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;http://www.liuchungui.com/about.html&quot;</span>
+</span><span class='line'>                        <span class="p">]</span>
+</span><span class='line'>                    <span class="p">]</span>
+</span><span class='line'>                <span class="p">]</span>
+</span><span class='line'>            <span class="p">]</span>
+</span><span class='line'>        <span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="nv">$menu_url</span> <span class="o">=</span> <span class="s2">&quot;https://api.weixin.qq.com/cgi-bin/menu/create?access_token=</span><span class="si">$access_token</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class='line'>        <span class="c1">//发送POST请求</span>
+</span><span class='line'>        <span class="nv">$result</span> <span class="o">=</span> <span class="nx">send_post</span><span class="p">(</span><span class="nv">$menu_url</span><span class="p">,</span> <span class="nv">$menu</span><span class="p">);</span>
+</span><span class='line'>        <span class="nv">$result</span> <span class="o">=</span> <span class="nb">json_decode</span><span class="p">(</span><span class="nv">$result</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>
+</span><span class='line'>        <span class="c1">//返回数据</span>
+</span><span class='line'>        <span class="k">if</span><span class="p">(</span><span class="nv">$result</span><span class="p">[</span><span class="s1">&#39;errcode&#39;</span><span class="p">]</span> <span class="o">===</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="nx">answer</span><span class="p">(</span><span class="k">true</span><span class="p">,</span> <span class="s1">&#39;更改菜单&#39;</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>            <span class="nx">answer</span><span class="p">(</span><span class="k">false</span><span class="p">,</span> <span class="s1">&#39;更改菜单&#39;</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这个只是创建菜单，其他操作菜单的接口请查阅<a href="https://mp.weixin.qq.com/wiki?t=resource/res_main&amp;id=mp1421141013&amp;token=&amp;lang=zh_CN">自定义菜单</a>。</p>
+
+<p>效果如下：</p>
+
+<p align="center" >
+  <img src="http://ww2.sinaimg.cn/mw690/7746cd07jw1f67s9b3h6hj20ks10c78z.jpg" height=604 width=345>
+</p>
+
+
+<h2>推荐</h2>
+
+<p>在搜索资料的时候，无意之间找到一个微信公众号开发的框架<a href="https://github.com/overtrue/wechat">wechat</a>，star不少，而且看了下开发文档<a href="https://easywechat.org/">EasyWechat</a>，讲得比较详细，应该是一个不错的框架，后期准备使用它来进行开发，推荐大家看看。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">刘春桂</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2016-08-01T11:51:36+08:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>1</span><span class='date-suffix'>st</span>, <span class='date-year'>2016</span></span> <span class='time'>11:51 am</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/web/'>web</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2016/05/10/mac10-dot-11sheng-ji-an-zhuang-openssl/" title="Previous Post: Mac10.11升级安装openssl">&laquo; Mac10.11升级安装openssl</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/08/01/wei-xin-gong-zhong-hao-kai-fa-zong-jie/">微信公众号开发总结</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/05/10/mac10-dot-11sheng-ji-an-zhuang-openssl/">Mac10.11升级安装openssl</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/05/08/reactnativezhi-yuan-sheng-mo-kuai-kai-fa-bing-fa-bu-androidpian/">ReactNative之原生模块开发并发布——android篇</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/05/02/reactnativezhi-yuan-sheng-mo-kuai-kai-fa-bing-fa-bu-iospian/">ReactNative之原生模块开发并发布——iOS篇</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/04/23/ubuntuxia-da-jian-vpn/">Ubuntu下搭建vpn历程</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+ <h1>Categories</h1>
+ <ul id="categories">
+  <li class='category'><a href='/blog/categories/git/'>git (1)</a></li>
+<li class='category'><a href='/blog/categories/gitbook/'>gitbook (1)</a></li>
+<li class='category'><a href='/blog/categories/ios/'>ios (10)</a></li>
+<li class='category'><a href='/blog/categories/mac/'>mac (1)</a></li>
+<li class='category'><a href='/blog/categories/octopress/'>octopress (1)</a></li>
+<li class='category'><a href='/blog/categories/reactnative/'>reactnative (3)</a></li>
+<li class='category'><a href='/blog/categories/web/'>web (3)</a></li>
+<li class='category'><a href='/blog/categories/年度总结/'>年度总结 (1)</a></li>
+
+ </ul>
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - 刘春桂 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

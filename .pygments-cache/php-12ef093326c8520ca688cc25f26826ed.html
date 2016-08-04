@@ -1,0 +1,43 @@
+<div class="highlight"><pre><span class="sd">/**</span>
+<span class="sd"> * 检查消息是否来自微信</span>
+<span class="sd"> * @return bool</span>
+<span class="sd"> */</span>
+<span class="k">private</span> <span class="k">function</span> <span class="nf">check_from_wx</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">//检查$_GET中的参数</span>
+    <span class="nx">param_check</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;signature&#39;</span><span class="p">,</span> <span class="s1">&#39;timestamp&#39;</span><span class="p">,</span> <span class="s1">&#39;nonce&#39;</span><span class="p">]);</span>
+
+    <span class="c1">//获取参数</span>
+    <span class="nv">$signature</span> <span class="o">=</span> <span class="nv">$_GET</span><span class="p">[</span><span class="s2">&quot;signature&quot;</span><span class="p">];</span>
+    <span class="nv">$timestamp</span> <span class="o">=</span> <span class="nv">$_GET</span><span class="p">[</span><span class="s2">&quot;timestamp&quot;</span><span class="p">];</span>
+    <span class="nv">$nonce</span> <span class="o">=</span> <span class="nv">$_GET</span><span class="p">[</span><span class="s2">&quot;nonce&quot;</span><span class="p">];</span>
+
+    <span class="nv">$token</span> <span class="o">=</span> <span class="nx">WX_APP_TOKEN</span><span class="p">;</span>
+    <span class="nv">$tmpArr</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span><span class="nv">$token</span><span class="p">,</span> <span class="nv">$timestamp</span><span class="p">,</span> <span class="nv">$nonce</span><span class="p">);</span>
+    <span class="c1">// use SORT_STRING rule</span>
+    <span class="nb">sort</span><span class="p">(</span><span class="nv">$tmpArr</span><span class="p">,</span> <span class="nx">SORT_STRING</span><span class="p">);</span>
+    <span class="nv">$tmpStr</span> <span class="o">=</span> <span class="nb">implode</span><span class="p">(</span><span class="nv">$tmpArr</span><span class="p">);</span>
+    <span class="nv">$tmpStr</span> <span class="o">=</span> <span class="nb">sha1</span><span class="p">(</span><span class="nv">$tmpStr</span><span class="p">);</span>
+    
+    <span class="c1">//验证</span>
+    <span class="k">if</span><span class="p">(</span><span class="nv">$tmpStr</span> <span class="o">==</span> <span class="nv">$signature</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="k">true</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">else</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="k">false</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="sd">/**</span>
+<span class="sd"> * 配合微信服务器验证是否有效</span>
+<span class="sd"> */</span>
+<span class="k">public</span> <span class="k">function</span> <span class="nf">check_get</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nv">$echoStr</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s2">&quot;echostr&quot;</span><span class="p">);</span>
+    <span class="k">if</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">check_from_wx</span><span class="p">())</span> <span class="p">{</span>
+       <span class="k">echo</span> <span class="nv">$echoStr</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">else</span> <span class="p">{</span>
+        <span class="k">echo</span> <span class="s2">&quot;验证不通过&quot;</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">exit</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>

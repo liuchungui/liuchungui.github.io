@@ -1,0 +1,40 @@
+<div class="highlight"><pre><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">testSourceForObservFile</span> <span class="p">{</span>
+    <span class="c1">//创建文件夹，写入文件，用来进行测试</span>
+    <span class="bp">NSString</span> <span class="o">*</span><span class="n">cacheDirectory</span> <span class="o">=</span> <span class="p">[</span><span class="n">NSSearchPathForDirectoriesInDomains</span><span class="p">(</span><span class="n">NSCachesDirectory</span><span class="p">,</span> <span class="n">NSUserDomainMask</span><span class="p">,</span> <span class="nb">YES</span><span class="p">)</span> <span class="n">firstObject</span><span class="p">];</span>
+    <span class="bp">NSString</span> <span class="o">*</span><span class="n">directory</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSString</span> <span class="nl">stringWithFormat</span><span class="p">:</span><span class="s">@&quot;%@/test&quot;</span><span class="p">,</span> <span class="n">cacheDirectory</span><span class="p">];</span>
+    <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="p">[[</span><span class="bp">NSFileManager</span> <span class="n">defaultManager</span><span class="p">]</span> <span class="nl">fileExistsAtPath</span><span class="p">:</span><span class="n">directory</span> <span class="nl">isDirectory</span><span class="p">:</span><span class="nb">nil</span><span class="p">])</span> <span class="p">{</span>
+        <span class="p">[[</span><span class="bp">NSFileManager</span> <span class="n">defaultManager</span><span class="p">]</span> <span class="nl">createDirectoryAtPath</span><span class="p">:</span><span class="n">directory</span> <span class="nl">withIntermediateDirectories</span><span class="p">:</span><span class="nb">YES</span> <span class="nl">attributes</span><span class="p">:</span><span class="nb">nil</span> <span class="nl">error</span><span class="p">:</span><span class="nb">nil</span><span class="p">];</span>
+    <span class="p">}</span>
+    <span class="bp">NSString</span> <span class="o">*</span><span class="n">filePath</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSString</span> <span class="nl">stringWithFormat</span><span class="p">:</span><span class="s">@&quot;%@/test.txt&quot;</span><span class="p">,</span> <span class="n">directory</span><span class="p">];</span>
+    <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="p">[[</span><span class="bp">NSFileManager</span> <span class="n">defaultManager</span><span class="p">]</span> <span class="nl">fileExistsAtPath</span><span class="p">:</span><span class="n">filePath</span><span class="p">])</span> <span class="p">{</span>
+        <span class="p">[</span><span class="s">@&quot;hello&quot;</span> <span class="nl">writeToFile</span><span class="p">:</span><span class="n">filePath</span> <span class="nl">atomically</span><span class="p">:</span><span class="nb">YES</span> <span class="nl">encoding</span><span class="p">:</span><span class="n">NSUTF8StringEncoding</span> <span class="nl">error</span><span class="p">:</span><span class="nb">nil</span><span class="p">];</span>
+    <span class="p">}</span>
+    
+    <span class="bp">NSURL</span> <span class="o">*</span><span class="n">directoryURL</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSURL</span> <span class="nl">URLWithString</span><span class="p">:</span><span class="n">directory</span><span class="p">];</span> <span class="c1">// assume this is set to a directory</span>
+    <span class="kt">int</span> <span class="k">const</span> <span class="n">fd</span> <span class="o">=</span> <span class="n">open</span><span class="p">([[</span><span class="n">directoryURL</span> <span class="n">path</span><span class="p">]</span> <span class="n">fileSystemRepresentation</span><span class="p">],</span> <span class="n">O_EVTONLY</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">fd</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kt">char</span> <span class="n">buffer</span><span class="p">[</span><span class="mi">80</span><span class="p">];</span>
+        <span class="n">strerror_r</span><span class="p">(</span><span class="n">errno</span><span class="p">,</span> <span class="n">buffer</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">buffer</span><span class="p">));</span>
+        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;Unable to open </span><span class="se">\&quot;</span><span class="s">%@</span><span class="se">\&quot;</span><span class="s">: %s (%d)&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">directoryURL</span> <span class="n">path</span><span class="p">],</span> <span class="n">buffer</span><span class="p">,</span> <span class="n">errno</span><span class="p">);</span>
+        <span class="k">return</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="c1">//设置源监听文件夹的变化，其中监听的是写入、删除、更改名字</span>
+    <span class="kt">dispatch_source_t</span> <span class="n">source</span> <span class="o">=</span> <span class="n">dispatch_source_create</span><span class="p">(</span><span class="n">DISPATCH_SOURCE_TYPE_VNODE</span><span class="p">,</span> <span class="n">fd</span><span class="p">,</span>
+                                                      <span class="n">DISPATCH_VNODE_WRITE</span> <span class="o">|</span> <span class="n">DISPATCH_VNODE_DELETE</span> <span class="o">|</span> <span class="n">DISPATCH_VNODE_RENAME</span><span class="p">,</span> <span class="n">DISPATCH_TARGET_QUEUE_DEFAULT</span><span class="p">);</span>
+    <span class="n">dispatch_source_set_event_handler</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="o">^</span><span class="p">(){</span>
+        <span class="c1">//获取源变化的具体标志</span>
+        <span class="kt">unsigned</span> <span class="kt">long</span> <span class="k">const</span> <span class="n">data</span> <span class="o">=</span> <span class="n">dispatch_source_get_data</span><span class="p">(</span><span class="n">source</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">data</span> <span class="o">&amp;</span> <span class="n">DISPATCH_VNODE_WRITE</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;The directory changed.&quot;</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">data</span> <span class="o">&amp;</span> <span class="n">DISPATCH_VNODE_DELETE</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;The directory has been deleted.&quot;</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">});</span>
+    <span class="n">dispatch_source_set_cancel_handler</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="o">^</span><span class="p">(){</span>
+        <span class="n">close</span><span class="p">(</span><span class="n">fd</span><span class="p">);</span>
+    <span class="p">});</span>
+    <span class="nb">self</span><span class="p">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">source</span><span class="p">;</span>
+    <span class="n">dispatch_resume</span><span class="p">(</span><span class="nb">self</span><span class="p">.</span><span class="n">source</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>

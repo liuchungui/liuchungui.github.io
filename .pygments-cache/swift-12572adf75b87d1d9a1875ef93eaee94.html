@@ -1,0 +1,6 @@
+<div class="highlight"><pre><span class="n">collectionView</span><span class="p">.</span><span class="n">performBatchUpdates</span><span class="p">({</span> <span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Void</span> <span class="k">in</span>
+            <span class="n">collectionView</span><span class="p">.</span><span class="n">insertItemsAtIndexPaths</span><span class="p">(</span><span class="n">insertIndexPaths</span><span class="p">)</span>
+            <span class="n">collectionView</span><span class="p">.</span><span class="n">moveItemAtIndexPath</span><span class="p">(</span><span class="n">currentIndexPath</span><span class="p">,</span> <span class="nl">toIndexPath</span><span class="p">:</span> <span class="n">toIndexPath</span><span class="p">)</span>
+            <span class="p">},</span> <span class="nl">completion</span><span class="p">:</span> <span class="p">{</span> <span class="p">(</span><span class="n">isFinish</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Void</span> <span class="k">in</span>
+        <span class="p">})</span>
+</pre></div>

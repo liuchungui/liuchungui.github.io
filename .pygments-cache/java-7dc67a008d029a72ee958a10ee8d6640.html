@@ -1,0 +1,28 @@
+<div class="highlight"><pre><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">liuchungui</span><span class="o">.</span><span class="na">nativemoduleexample</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">com.facebook.react.ReactPackage</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.facebook.react.bridge.JavaScriptModule</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.facebook.react.bridge.NativeModule</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.facebook.react.bridge.ReactApplicationContext</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.facebook.react.uimanager.ViewManager</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.util.Arrays</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.Collections</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">BGNativeExamplePackage</span> <span class="kd">implements</span> <span class="n">ReactPackage</span> <span class="o">{</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">NativeModule</span><span class="o">&gt;</span> <span class="nf">createNativeModules</span><span class="o">(</span><span class="n">ReactApplicationContext</span> <span class="n">reactContext</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="k">new</span> <span class="n">NativeModule</span><span class="o">[]{</span>
+                <span class="k">new</span> <span class="nf">BGNativeExampleModule</span><span class="o">(</span><span class="n">reactContext</span><span class="o">),</span>
+        <span class="o">});</span>
+    <span class="o">}</span>
+    <span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Class</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="n">JavaScriptModule</span><span class="o">&gt;&gt;</span> <span class="nf">createJSModules</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">Collections</span><span class="o">.</span><span class="na">emptyList</span><span class="o">();</span>
+    <span class="o">}</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">ViewManager</span><span class="o">&gt;</span> <span class="nf">createViewManagers</span><span class="o">(</span><span class="n">ReactApplicationContext</span> <span class="n">reactContext</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">Collections</span><span class="o">.</span><span class="na">emptyList</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>

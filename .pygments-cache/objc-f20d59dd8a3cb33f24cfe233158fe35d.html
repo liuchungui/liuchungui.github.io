@@ -1,0 +1,51 @@
+<div class="highlight"><pre><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">viewDidLoad</span> <span class="p">{</span>
+    <span class="p">[</span><span class="nb">super</span> <span class="n">viewDidLoad</span><span class="p">];</span>
+    <span class="c1">//导入客户端证书</span>
+    <span class="bp">NSString</span> <span class="o">*</span><span class="n">cerPath</span> <span class="o">=</span> <span class="p">[[</span><span class="bp">NSBundle</span> <span class="n">mainBundle</span><span class="p">]</span> <span class="nl">pathForResource</span><span class="p">:</span><span class="s">@&quot;ca&quot;</span> <span class="nl">ofType</span><span class="p">:</span><span class="s">@&quot;cer&quot;</span><span class="p">];</span>
+    <span class="bp">NSData</span> <span class="o">*</span><span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSData</span> <span class="nl">dataWithContentsOfFile</span><span class="p">:</span><span class="n">cerPath</span><span class="p">];</span>
+    <span class="n">SecCertificateRef</span> <span class="n">certificate</span> <span class="o">=</span> <span class="n">SecCertificateCreateWithData</span><span class="p">(</span><span class="nb">NULL</span><span class="p">,</span> <span class="p">(</span><span class="k">__bridge</span> <span class="n">CFDataRef</span><span class="p">)</span> <span class="n">data</span><span class="p">);</span>
+    <span class="nb">self</span><span class="p">.</span><span class="n">trustedCerArr</span> <span class="o">=</span> <span class="l">@[</span><span class="p">(</span><span class="k">__bridge_transfer</span> <span class="kt">id</span><span class="p">)</span><span class="n">certificate</span><span class="l">]</span><span class="p">;</span>
+    
+    <span class="c1">//发送请求</span>
+    <span class="bp">NSURL</span> <span class="o">*</span><span class="n">testURL</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSURL</span> <span class="nl">URLWithString</span><span class="p">:</span><span class="s">@&quot;https://casetree.cn/web/test/demo.php&quot;</span><span class="p">];</span>
+    <span class="bp">NSURLSession</span> <span class="o">*</span><span class="n">session</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSURLSession</span> <span class="nl">sessionWithConfiguration</span><span class="p">:[</span><span class="bp">NSURLSessionConfiguration</span> <span class="n">defaultSessionConfiguration</span><span class="p">]</span> <span class="nl">delegate</span><span class="p">:</span><span class="nb">self</span> <span class="nl">delegateQueue</span><span class="p">:[</span><span class="bp">NSOperationQueue</span> <span class="n">mainQueue</span><span class="p">]];</span>
+    <span class="bp">NSURLSessionDataTask</span> <span class="o">*</span><span class="n">task</span> <span class="o">=</span> <span class="p">[</span><span class="n">session</span> <span class="nl">dataTaskWithRequest</span><span class="p">:[</span><span class="bp">NSURLRequest</span> <span class="nl">requestWithURL</span><span class="p">:</span><span class="n">testURL</span><span class="p">]];</span>
+    <span class="p">[</span><span class="n">task</span> <span class="n">resume</span><span class="p">];</span>
+    <span class="c1">// Do any additional setup after loading the view, typically from a nib.</span>
+<span class="p">}</span>
+
+<span class="cp">#pragma mark - NSURLSessionDelegate</span>
+<span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">URLSession:</span><span class="p">(</span><span class="bp">NSURLSession</span> <span class="o">*</span><span class="p">)</span><span class="nv">session</span> <span class="nf">didReceiveChallenge:</span><span class="p">(</span><span class="bp">NSURLAuthenticationChallenge</span> <span class="o">*</span><span class="p">)</span><span class="nv">challenge</span>
+ <span class="nf">completionHandler:</span><span class="p">(</span><span class="kt">void</span> <span class="p">(</span><span class="o">^</span><span class="p">)(</span><span class="n">NSURLSessionAuthChallengeDisposition</span> <span class="n">disposition</span><span class="p">,</span> <span class="bp">NSURLCredential</span> <span class="o">*</span> <span class="n">__nullable</span> <span class="n">credential</span><span class="p">))</span><span class="nv">completionHandler</span><span class="p">{</span>
+    
+    <span class="n">OSStatus</span> <span class="n">err</span><span class="p">;</span>
+    <span class="n">NSURLSessionAuthChallengeDisposition</span> <span class="n">disposition</span> <span class="o">=</span> <span class="n">NSURLSessionAuthChallengePerformDefaultHandling</span><span class="p">;</span>
+    <span class="n">SecTrustResultType</span>  <span class="n">trustResult</span> <span class="o">=</span> <span class="n">kSecTrustResultInvalid</span><span class="p">;</span>
+    <span class="bp">NSURLCredential</span> <span class="o">*</span><span class="n">credential</span> <span class="o">=</span> <span class="nb">nil</span><span class="p">;</span>
+    
+    <span class="c1">//获取服务器的trust object</span>
+    <span class="n">SecTrustRef</span> <span class="n">serverTrust</span> <span class="o">=</span> <span class="n">challenge</span><span class="p">.</span><span class="n">protectionSpace</span><span class="p">.</span><span class="n">serverTrust</span><span class="p">;</span>
+    
+    <span class="c1">//将读取的证书设置为serverTrust的根证书</span>
+    <span class="n">err</span> <span class="o">=</span> <span class="n">SecTrustSetAnchorCertificates</span><span class="p">(</span><span class="n">serverTrust</span><span class="p">,</span> <span class="p">(</span><span class="k">__bridge</span> <span class="n">CFArrayRef</span><span class="p">)</span><span class="nb">self</span><span class="p">.</span><span class="n">trustedCerArr</span><span class="p">);</span>
+    
+    <span class="k">if</span><span class="p">(</span><span class="n">err</span> <span class="o">==</span> <span class="n">noErr</span><span class="p">){</span>
+        <span class="c1">//通过本地导入的证书来验证服务器的证书是否可信，如果将SecTrustSetAnchorCertificatesOnly设置为NO，则只要通过本地或者系统证书链任何一方认证就行</span>
+        <span class="n">err</span> <span class="o">=</span> <span class="n">SecTrustEvaluate</span><span class="p">(</span><span class="n">serverTrust</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">trustResult</span><span class="p">);</span>
+    <span class="p">}</span>
+    
+    <span class="k">if</span> <span class="p">(</span><span class="n">err</span> <span class="o">==</span> <span class="n">errSecSuccess</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">trustResult</span> <span class="o">==</span> <span class="n">kSecTrustResultProceed</span> <span class="o">||</span> <span class="n">trustResult</span> <span class="o">==</span> <span class="n">kSecTrustResultUnspecified</span><span class="p">)){</span>
+        <span class="c1">//认证成功，则创建一个凭证返回给服务器</span>
+        <span class="n">disposition</span> <span class="o">=</span> <span class="n">NSURLSessionAuthChallengeUseCredential</span><span class="p">;</span>
+        <span class="n">credential</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSURLCredential</span> <span class="nl">credentialForTrust</span><span class="p">:</span><span class="n">serverTrust</span><span class="p">];</span>
+    <span class="p">}</span>
+    <span class="k">else</span><span class="p">{</span>
+        <span class="n">disposition</span> <span class="o">=</span> <span class="n">NSURLSessionAuthChallengeCancelAuthenticationChallenge</span><span class="p">;</span>
+    <span class="p">}</span>
+    
+    <span class="c1">//回调凭证，传递给服务器</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">completionHandler</span><span class="p">){</span>
+        <span class="n">completionHandler</span><span class="p">(</span><span class="n">disposition</span><span class="p">,</span> <span class="n">credential</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>

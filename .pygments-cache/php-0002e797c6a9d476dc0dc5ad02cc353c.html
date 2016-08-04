@@ -1,0 +1,38 @@
+<div class="highlight"><pre><span class="k">public</span> <span class="k">function</span> <span class="nf">check_post</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">//检查消息是否来自微信</span>
+    <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">check_from_wx</span><span class="p">())</span> <span class="p">{</span>
+        <span class="c1">//非法</span>
+        <span class="k">echo</span> <span class="s2">&quot;非法操作&quot;</span><span class="p">;</span>
+    <span class="p">}</span>
+    
+    <span class="c1">//获取POST参数</span>
+    <span class="nv">$param</span> <span class="o">=</span> <span class="nb">file_get_contents</span><span class="p">(</span><span class="s2">&quot;php://input&quot;</span><span class="p">);</span>
+    <span class="c1">//获取xml中的数据</span>
+    <span class="nv">$param</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">format</span><span class="o">-&gt;</span><span class="na">factory</span><span class="p">(</span><span class="nv">$param</span><span class="p">,</span> <span class="s1">&#39;xml&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="na">to_array</span><span class="p">();</span>
+
+    <span class="c1">//选出参数</span>
+    <span class="nv">$msg_info</span> <span class="o">=</span> <span class="nx">array_choose</span><span class="p">(</span><span class="nv">$param</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;Content&#39;</span><span class="p">,</span> <span class="s1">&#39;ToUserName&#39;</span><span class="p">,</span> <span class="s1">&#39;FromUserName&#39;</span><span class="p">,</span> <span class="s1">&#39;MsgId&#39;</span><span class="p">,</span> <span class="s1">&#39;MsgType&#39;</span><span class="p">]);</span>
+    <span class="c1">//将消息插入数据库</span>
+    <span class="nv">$result</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">share_model</span><span class="o">-&gt;</span><span class="na">insert</span><span class="p">(</span><span class="nv">$msg_info</span><span class="p">,</span> <span class="s1">&#39;by_message&#39;</span><span class="p">);</span>
+
+    <span class="c1">//获取信息</span>
+    <span class="nv">$to_user</span> <span class="o">=</span> <span class="nv">$param</span><span class="p">[</span><span class="s1">&#39;ToUserName&#39;</span><span class="p">];</span>
+    <span class="nv">$from_user</span> <span class="o">=</span> <span class="nv">$param</span><span class="p">[</span><span class="s1">&#39;FromUserName&#39;</span><span class="p">];</span>
+    <span class="nv">$content</span> <span class="o">=</span> <span class="nv">$param</span><span class="p">[</span><span class="s1">&#39;Content&#39;</span><span class="p">];</span>
+
+    <span class="c1">//去掉消息id</span>
+    <span class="nb">unset</span><span class="p">(</span><span class="nv">$param</span><span class="p">[</span><span class="s1">&#39;MsgId&#39;</span><span class="p">]);</span>
+
+    <span class="c1">//回复的内容</span>
+    <span class="nv">$content</span> <span class="o">=</span> <span class="s1">&#39;http://xxxxxx.com/&#39;</span><span class="p">;</span>
+    <span class="nv">$response_text</span> <span class="o">=</span> <span class="s2">&quot;&lt;xml&gt;</span>
+<span class="s2">                        &lt;ToUserName&gt;&lt;![CDATA[%s]]&gt;&lt;/ToUserName&gt;</span>
+<span class="s2">                        &lt;FromUserName&gt;&lt;![CDATA[%s]]&gt;&lt;/FromUserName&gt;</span>
+<span class="s2">                        &lt;CreateTime&gt;%s&lt;/CreateTime&gt;</span>
+<span class="s2">                        &lt;MsgType&gt;&lt;![CDATA[%s]]&gt;&lt;/MsgType&gt;</span>
+<span class="s2">                        &lt;Content&gt;&lt;![CDATA[%s]]&gt;&lt;/Content&gt;</span>
+<span class="s2">                      &lt;/xml&gt;&quot;</span><span class="p">;</span>
+    <span class="nv">$response_text</span> <span class="o">=</span> <span class="nb">sprintf</span><span class="p">(</span><span class="nv">$response_text</span><span class="p">,</span> <span class="nv">$from_user</span><span class="p">,</span> <span class="nv">$to_user</span><span class="p">,</span> <span class="nb">time</span><span class="p">(),</span> <span class="nv">$param</span><span class="p">[</span><span class="s1">&#39;MsgType&#39;</span><span class="p">],</span> <span class="nv">$content</span><span class="p">);</span>
+    <span class="k">echo</span> <span class="nv">$response_text</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>

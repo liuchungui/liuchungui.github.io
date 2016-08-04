@@ -1,0 +1,29 @@
+<div class="highlight"><pre><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">testProtocolList</span> <span class="p">{</span>
+    <span class="c1">//添加协议</span>
+    <span class="n">Protocol</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="p">@</span><span class="n">protocol</span><span class="p">(</span><span class="n">StudentDataSource</span><span class="p">);</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">class_addProtocol</span><span class="p">([</span><span class="n">Student</span> <span class="k">class</span><span class="p">],</span> <span class="n">p</span><span class="p">))</span> <span class="p">{</span>
+        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;添加协议成功!&quot;</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">else</span> <span class="p">{</span>
+        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;添加协议失败!&quot;</span><span class="p">);</span>
+    <span class="p">}</span>
+    
+    <span class="c1">//判断是否实现了指定的协议</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">class_conformsToProtocol</span><span class="p">([</span><span class="n">Student</span> <span class="k">class</span><span class="p">],</span> <span class="n">p</span><span class="p">))</span> <span class="p">{</span>
+        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;遵循 %s协议&quot;</span><span class="p">,</span> <span class="n">protocol_getName</span><span class="p">(</span><span class="n">p</span><span class="p">));</span>
+    <span class="p">}</span>
+    <span class="k">else</span> <span class="p">{</span>
+        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;不遵循 %s协议&quot;</span><span class="p">,</span> <span class="n">protocol_getName</span><span class="p">(</span><span class="n">p</span><span class="p">));</span>
+    <span class="p">}</span>
+    
+    <span class="c1">//获取类的协议列表</span>
+    <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">outCount</span><span class="p">;</span>
+    <span class="n">Protocol</span> <span class="o">*</span> <span class="n">__unsafe_unretained</span> <span class="o">*</span><span class="n">protocolList</span> <span class="o">=</span> <span class="n">class_copyProtocolList</span><span class="p">([</span><span class="n">Student</span> <span class="k">class</span><span class="p">],</span> <span class="o">&amp;</span><span class="n">outCount</span><span class="p">);</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">outCount</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">Protocol</span> <span class="o">*</span><span class="n">protocol</span> <span class="o">=</span> <span class="n">protocolList</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+        <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span> <span class="o">=</span> <span class="n">protocol_getName</span><span class="p">(</span><span class="n">protocol</span><span class="p">);</span>
+        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%s&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="n">free</span><span class="p">(</span><span class="n">protocolList</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
