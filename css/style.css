@@ -236,7 +236,11 @@ div {
         display: inline-block;
         margin: 0 5px;
         padding: 0 5px;
-        background: #f7f8f8; }
+        background: #f7f8f8;
+        border-style: solid;
+        border-color: #e0e0e0;
+        border-radius: 5px;
+        border-width: 0.1px; }
       .post .post-content p a {
         color: #01579f;
         padding-bottom: 2px;
@@ -268,8 +272,12 @@ div {
       .post .post-content ul code, .post .post-content ol code {
         display: inline-block;
         margin: 0 5px;
-        padding: 0px 5px;
-        background: #f7f8f8; }
+        padding: 0 5px;
+        background: #f7f8f8;
+        border-style: solid;
+        border-color: #e0e0e0;
+        border-radius: 5px;
+        border-width: 0.1px; }
       .post .post-content ul a, .post .post-content ol a {
         color: #01579f;
         padding-bottom: 2px;
@@ -1430,6 +1438,8 @@ table {
     font-weight: bold;
     padding: 5px 10px;
     border-bottom: 2px solid #909ba2; }
+  table td {
+    padding: 5px 10px; }
   table tr:nth-child(2n) {
     background: #f7f8f8; }
 
