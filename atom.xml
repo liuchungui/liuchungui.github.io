@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://www.liuchungui.com/"/>
-  <updated>2016-08-08T17:06:51.000Z</updated>
+  <updated>2016-08-08T17:13:09.000Z</updated>
   <id>http://www.liuchungui.com/</id>
   
   <author>
@@ -20,9 +20,9 @@
     <link href="http://www.liuchungui.com/2016/08/09/%E6%90%AD%E5%BB%BAHexo%E5%8D%9A%E5%AE%A2/"/>
     <id>http://www.liuchungui.com/2016/08/09/搭建Hexo博客/</id>
     <published>2016-08-08T17:04:57.000Z</published>
-    <updated>2016-08-08T17:06:51.000Z</updated>
+    <updated>2016-08-08T17:13:09.000Z</updated>
     
-    <content type="html"><![CDATA[<p>前端时间看到唐巧大大将博客从Octopress迁移到了Hexo，当时顿觉新奇，在本地搭建了下hexo。发现搭建起来确实简单方便，而且npm的安装方式也特别顺手，当然这是因为开发<code>react-native</code>久了就有这么个感觉。不过，当时只是在本地搭建了，并没有什么其他想法。但是，不久之后，硬盘被锁，无力回天，只能施展重装系统大法才解决。但是，此法有一后遗症，那就是电脑上的软件都没有了，博客系统也没有了。<br><a id="more"></a></p>
+    <content type="html"><![CDATA[<p>前段时间看到唐巧大大将博客从Octopress迁移到了Hexo，当时顿觉新奇，在本地搭建了下hexo。发现搭建起来确实简单方便，而且npm的安装方式也特别顺手，当然这是因为开发<code>react-native</code>久了就有这么个感觉。不过，当时只是在本地搭建了，并没有什么其他想法。但是，不久之后，硬盘被锁，无力回天，只能施展重装系统大法才解决。但是，此法有一后遗症，那就是电脑上的软件都没有了，博客系统也没有了。<br><a id="more"></a></p>
 <p>至此之后，耽搁了一段时间没有写博客，最近想捡回来，重装了Octopress之后发现评论、百度SEO不见了，不想折腾Octopress，随之换了个Hexo试试，下面是一篇简单总结。</p>
 <h2 id="一、安装Hexo"><a href="#一、安装Hexo" class="headerlink" title="一、安装Hexo"></a>一、安装Hexo</h2><p>Hexo的安装主要参考Hexo的官方文档<a href="https://hexo.io/zh-cn" target="_blank" rel="external">https://hexo.io/zh-cn</a>，这里只列出简单的安装方式。</p>
 <p>在安装<code>Hexo</code>之前，你需要首先安装<code>Node.js</code>，这我们可以不翻墙到<a href="http://nodejs.cn/" target="_blank" rel="external">http://nodejs.cn/</a>下载。</p>
@@ -72,7 +72,7 @@
     
     <summary type="html">
     
-      &lt;p&gt;前端时间看到唐巧大大将博客从Octopress迁移到了Hexo，当时顿觉新奇，在本地搭建了下hexo。发现搭建起来确实简单方便，而且npm的安装方式也特别顺手，当然这是因为开发&lt;code&gt;react-native&lt;/code&gt;久了就有这么个感觉。不过，当时只是在本地搭建了，并没有什么其他想法。但是，不久之后，硬盘被锁，无力回天，只能施展重装系统大法才解决。但是，此法有一后遗症，那就是电脑上的软件都没有了，博客系统也没有了。&lt;br&gt;
+      &lt;p&gt;前段时间看到唐巧大大将博客从Octopress迁移到了Hexo，当时顿觉新奇，在本地搭建了下hexo。发现搭建起来确实简单方便，而且npm的安装方式也特别顺手，当然这是因为开发&lt;code&gt;react-native&lt;/code&gt;久了就有这么个感觉。不过，当时只是在本地搭建了，并没有什么其他想法。但是，不久之后，硬盘被锁，无力回天，只能施展重装系统大法才解决。但是，此法有一后遗症，那就是电脑上的软件都没有了，博客系统也没有了。&lt;br&gt;
     
     </summary>
     
