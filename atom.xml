@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://www.liuchungui.com/"/>
-  <updated>2016-08-04T16:04:02.000Z</updated>
+  <updated>2016-08-08T17:06:51.000Z</updated>
   <id>http://www.liuchungui.com/</id>
   
   <author>
@@ -14,6 +14,72 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>搭建Hexo博客</title>
+    <link href="http://www.liuchungui.com/2016/08/09/%E6%90%AD%E5%BB%BAHexo%E5%8D%9A%E5%AE%A2/"/>
+    <id>http://www.liuchungui.com/2016/08/09/搭建Hexo博客/</id>
+    <published>2016-08-08T17:04:57.000Z</published>
+    <updated>2016-08-08T17:06:51.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>前端时间看到唐巧大大将博客从Octopress迁移到了Hexo，当时顿觉新奇，在本地搭建了下hexo。发现搭建起来确实简单方便，而且npm的安装方式也特别顺手，当然这是因为开发<code>react-native</code>久了就有这么个感觉。不过，当时只是在本地搭建了，并没有什么其他想法。但是，不久之后，硬盘被锁，无力回天，只能施展重装系统大法才解决。但是，此法有一后遗症，那就是电脑上的软件都没有了，博客系统也没有了。<br><a id="more"></a></p>
+<p>至此之后，耽搁了一段时间没有写博客，最近想捡回来，重装了Octopress之后发现评论、百度SEO不见了，不想折腾Octopress，随之换了个Hexo试试，下面是一篇简单总结。</p>
+<h2 id="一、安装Hexo"><a href="#一、安装Hexo" class="headerlink" title="一、安装Hexo"></a>一、安装Hexo</h2><p>Hexo的安装主要参考Hexo的官方文档<a href="https://hexo.io/zh-cn" target="_blank" rel="external">https://hexo.io/zh-cn</a>，这里只列出简单的安装方式。</p>
+<p>在安装<code>Hexo</code>之前，你需要首先安装<code>Node.js</code>，这我们可以不翻墙到<a href="http://nodejs.cn/" target="_blank" rel="external">http://nodejs.cn/</a>下载。</p>
+<p>安装完<code>node.js</code>之后，使用下面命令全局安装<code>Hexo</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ npm install -g hexo-cli</div></pre></td></tr></table></figure>
+<p>到此，我们安装好了<code>Hexo</code>，之后我们开始搭建博客。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">#初始化博客</div><div class="line">hexo init myblog</div><div class="line">cd myblog</div><div class="line">npm install</div></pre></td></tr></table></figure>
+<p>安装完这一切之后，我们就可以查看<code>Hexo</code>效果了</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$ hexo server</div><div class="line">INFO  Start processing</div><div class="line">INFO  Hexo is running at http://localhost:4000/. Press Ctrl+C to stop.</div></pre></td></tr></table></figure>
+<p>在浏览器里面输入<code>localhost:4000</code>，我们就看到了效果。这样，Hexo就安装好了，是不是很简单？</p>
+<h2 id="二、配置"><a href="#二、配置" class="headerlink" title="二、配置"></a>二、配置</h2><p>Hexo安装之后，我们当然要做一些配置，这一步特别简单，只需要在<code>myblog</code>目录下编辑<code>_config.yml</code>文件，修改下相关配置就行了。这里，我只列出修改的选项：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"># Site</div><div class="line">title: 刘春桂的博客 #博客的标题</div><div class="line">author: liuchungui #博客的作者</div><div class="line">language: zh-CN #博客的语言，zh-CN代表中文</div><div class="line"></div><div class="line"># URL</div><div class="line">url: http://www.liuchungui.com #博客域名</div><div class="line"></div><div class="line"># Writing</div><div class="line">new_post_name: :year-:month-:day-:title.md #新建博客时的命名方式</div><div class="line">highlight:</div><div class="line">  auto_detect: false #是否自动检测代码高亮</div><div class="line"></div><div class="line"># Pagination</div><div class="line">per_page: 20 #每一页20条博客</div><div class="line"></div><div class="line"># Extensions</div><div class="line">theme: landscape #主题</div></pre></td></tr></table></figure>
+<h2 id="三、修改主题"><a href="#三、修改主题" class="headerlink" title="三、修改主题"></a>三、修改主题</h2><h3 id="1、安装主题"><a href="#1、安装主题" class="headerlink" title="1、安装主题"></a>1、安装主题</h3><p>如果你觉得默认的主题不符合胃口，可以到<a href="https://hexo.io/themes/" target="_blank" rel="external">https://hexo.io/themes/</a>找一个你喜欢的。主题找来找去，我最后选择了<a href="https://github.com/tufu9441/maupassant-hexo" target="_blank" rel="external">maupassant</a>这个主题，感觉它非常的简洁美观。</p>
+<p>按照<code>maupassant</code>作者的一篇博客<a href="https://www.haomwei.com/technology/maupassant-hexo.html" target="_blank" rel="external">大道至简——Hexo简洁主题推荐</a>进行了安装，步骤如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">#将主题安装到themes/maupassant目录下</div><div class="line">$ git clone https://github.com/tufu9441/maupassant-hexo.git themes/maupassant</div><div class="line">$ npm install hexo-renderer-jade --save</div><div class="line">$ npm install hexo-renderer-sass --save</div></pre></td></tr></table></figure>
+<p>需要注意的是，安装上面的内容是在<code>myblog</code>目录下进行的。</p>
+<p>在<code>npm install hexo-renderer-sass --save</code>安装时，我失败了，然后使用<code>cnpm</code>进行了安装就没有了问题。</p>
+<p>安装好之后，在<code>themes</code>目录下多了个<code>maupassant</code>，然后我们编辑<code>Hexo的配置文件_config.yml</code>，将<code>theme</code>的值改为<code>maupassant</code>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"># Extensions</div><div class="line">## Plugins: https://hexo.io/plugins/</div><div class="line">## Themes: https://hexo.io/themes/</div><div class="line">theme: maupassant</div><div class="line"># theme: landscape</div></pre></td></tr></table></figure>
+<p>注：Hexo的配置文件和主题的配置文件名字都是_config.yml，我们需要区别开来。下面我称主题的配置文件为<code>maupassant的_config.yml</code>。</p>
+<p>安装好这一切之后，我们使用<code>hexo server</code>开启服务器，刷新本地的页面，我们就看到了简洁的博客页面出现我们眼前。</p>
+<h3 id="2、修改主题配置"><a href="#2、修改主题配置" class="headerlink" title="2、修改主题配置"></a>2、修改主题配置</h3><p>整个主题，有些东西我觉得它还不够简洁，于是我在maupassant的_config.yml文件中注释了一些东西，去掉了菜单的<code>about</code>和<code>rss</code>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">menu:</div><div class="line">  - page: home</div><div class="line">    directory: .</div><div class="line">    icon: fa-home</div><div class="line">  - page: archive</div><div class="line">    directory: archives/</div><div class="line">    icon: fa-archive</div><div class="line">  # - page: about #去掉about页面</div><div class="line">  #   directory: about/</div><div class="line">  #   icon: fa-user</div><div class="line">  # - page: rss #去掉rss页面</div><div class="line">  #   directory: atom.xml</div><div class="line">  #   icon: fa-rss</div></pre></td></tr></table></figure>
+<p>关闭<code>友情链接</code>和<code>tag</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">widgets: ## Six widgets in sidebar provided: search, category, tag, recent_posts, rencent_comments and links.</div><div class="line">  - search</div><div class="line">  - category</div><div class="line">  # - tag #去掉tag</div><div class="line">  - recent_posts</div><div class="line">  - recent_comments</div><div class="line">  # - links #关闭友情链接</div></pre></td></tr></table></figure>
+<p>加上多说评论和百度统计</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">duoshuo: liuchungui</div><div class="line">baidu_analytics: ## Your Baidu Analytics tracking id, e.g. 8006843039519956000</div></pre></td></tr></table></figure>
+<p>之后，主题就看起来简洁多了。</p>
+<h2 id="三、将Octopress迁移到Hexo"><a href="#三、将Octopress迁移到Hexo" class="headerlink" title="三、将Octopress迁移到Hexo"></a>三、将Octopress迁移到Hexo</h2><p>迁移这个非常简单，将以前Octopress博客中<code>source/_posts</code>目录下的所有markdown文件复制到Hexo目录下的<code>source/_posts</code>就行了。</p>
+<p>不过，在迁移中就说说碰到的一些问题：</p>
+<ol>
+<li>在有一篇博客中英文太长导致不换行，然后出现了排列不是特别好看，这里我的解决的办法是修改maupassant主题下的css/style.scss文件中<code>.post-content</code>样式的<code>text-align</code>样式，将<code>justify</code>改成<code>left</code>就行了</li>
+<li>对html写的table适配的不是特别好，会出现一大片空白，问题见<a href="https://github.com/hexojs/hexo/issues/1388" target="_blank" rel="external">https://github.com/hexojs/hexo/issues/1388</a>。暂时没有什么解决的办法，最后是将表格截了一张图放在上面显示。</li>
+<li><code>#</code>后面没有空格，导致标示标题的<code>#</code>出现文中，最后将整个博客调了一遍，改成<code>## + 空格 + 标题</code>的方式。</li>
+<li>三个反引号里面放一段代码时，由于结尾的反引号后面有空格，导致代码和正文排版混乱。最后删除了空格，就没什么问题了。</li>
+</ol>
+<h2 id="四、发布博客"><a href="#四、发布博客" class="headerlink" title="四、发布博客"></a>四、发布博客</h2><p>安装<a href="https://github.com/hexojs/hexo-deployer-git" target="_blank" rel="external">hexo-deployer-git</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ npm install hexo-deployer-git --save</div></pre></td></tr></table></figure>
+<p>然后修改Hexo中的配置，</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">deploy:</div><div class="line">  type: git #git的方式部署博客</div><div class="line">  repo: https://github.com/liuchungui/liuchungui.github.io.git #博客仓库地址</div><div class="line">  branch: master #存储在master分支下</div></pre></td></tr></table></figure>
+<p>最后，我们将博客上传到github上</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">#生成博客网页文件</div><div class="line">$ hexo generate</div><div class="line">#部署</div><div class="line">$ hexo deploy</div></pre></td></tr></table></figure>
+<p>注：如果我们是使用<code>github page</code>服务，注意在public文件中加上对应的<code>CNAME</code>文件。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://hexo.io/zh-cn/docs/commands.html" target="_blank" rel="external">https://hexo.io/zh-cn/docs/commands.html</a></p>
+<p><a href="https://www.haomwei.com/technology/maupassant-hexo.html" target="_blank" rel="external">大道至简——Hexo简洁主题推荐</a></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;前端时间看到唐巧大大将博客从Octopress迁移到了Hexo，当时顿觉新奇，在本地搭建了下hexo。发现搭建起来确实简单方便，而且npm的安装方式也特别顺手，当然这是因为开发&lt;code&gt;react-native&lt;/code&gt;久了就有这么个感觉。不过，当时只是在本地搭建了，并没有什么其他想法。但是，不久之后，硬盘被锁，无力回天，只能施展重装系统大法才解决。但是，此法有一后遗症，那就是电脑上的软件都没有了，博客系统也没有了。&lt;br&gt;
+    
+    </summary>
+    
+    
+      <category term="Hexo, Octopress, 博客, Hexo安装, Hexo搭建" scheme="http://www.liuchungui.com/tags/Hexo-Octopress-%E5%8D%9A%E5%AE%A2-Hexo%E5%AE%89%E8%A3%85-Hexo%E6%90%AD%E5%BB%BA/"/>
+    
+  </entry>
   
   <entry>
     <title>微信公众号开发总结</title>
@@ -1407,15 +1473,15 @@
       <category term="iOS" scheme="http://www.liuchungui.com/categories/iOS/"/>
     
     
-      <category term="HTTPS" scheme="http://www.liuchungui.com/tags/HTTPS/"/>
-    
-      <category term="openssl" scheme="http://www.liuchungui.com/tags/openssl/"/>
-    
       <category term="iOS9" scheme="http://www.liuchungui.com/tags/iOS9/"/>
+    
+      <category term="HTTPS" scheme="http://www.liuchungui.com/tags/HTTPS/"/>
     
       <category term="ATS" scheme="http://www.liuchungui.com/tags/ATS/"/>
     
       <category term="CA证书" scheme="http://www.liuchungui.com/tags/CA%E8%AF%81%E4%B9%A6/"/>
+    
+      <category term="openssl" scheme="http://www.liuchungui.com/tags/openssl/"/>
     
       <category term="nscurl" scheme="http://www.liuchungui.com/tags/nscurl/"/>
     
@@ -1495,130 +1561,6 @@
       <category term="HTTPS" scheme="http://www.liuchungui.com/tags/HTTPS/"/>
     
       <category term="openssl" scheme="http://www.liuchungui.com/tags/openssl/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>AutoLayout使用代码写约束</title>
-    <link href="http://www.liuchungui.com/2015/09/20/autolayoutshi-yong-dai-ma-xie-yue-shu/"/>
-    <id>http://www.liuchungui.com/2015/09/20/autolayoutshi-yong-dai-ma-xie-yue-shu/</id>
-    <published>2015-09-20T15:20:56.000Z</published>
-    <updated>2016-08-06T06:35:45.000Z</updated>
-    
-    <content type="html"><![CDATA[<h3 id="一、约束是什么？"><a href="#一、约束是什么？" class="headerlink" title="一、约束是什么？"></a>一、约束是什么？</h3><p>  约束是视图与视图之间一些属性关系。<br><a id="more"></a><br>  我们先来了解一下下面的内容：</p>
-<p>  <strong>视图属性</strong>：视图属性(attribute)有<code>left</code>, <code>right</code>, <code>top</code>, <code>bottom</code>, <code>leading</code>, <code>trailing</code>, <code>width</code>, <code>height</code>, <code>centerX</code>, <code>centerY</code> 和 <code>baseline</code>。(注：iOS8加上了<code>Margin</code>，所以实际上从iOS8开始不止这些)</p>
-<p>约束属性：每一个约束(Constraint)拥有的属性(Property)有：</p>
-<ul>
-<li><strong>Constant value</strong>: 偏移量</li>
-<li><strong>Relation</strong>: 属性之间的关系，和关系表达式对应，例如&gt;(大于),=(等于),&gt;=(大于等于)</li>
-<li><strong>Priority level</strong>: 优先级，优先级越高，越会满足此约束。</li>
-</ul>
-<p>一个普通约束表达式: <code>view1.attribute = view2.attribute + ConstantValue</code> </p>
-<p>例子：当你定义一个button的位置时，你可能会有这么一个要求：”按钮的左边距离父视图的左边20像素”。其实这句话用约束表达就是<code>button.left = (superView.left + 20)</code>。</p>
-<h3 id="二、VFL-Visual-Format-Language"><a href="#二、VFL-Visual-Format-Language" class="headerlink" title="二、VFL(Visual Format Language)"></a>二、VFL(Visual Format Language)</h3><h5 id="1、语法"><a href="#1、语法" class="headerlink" title="1、语法"></a>1、语法</h5><p>下面这是一些常用的VFL语法示例，如果想要知道更详细的语法规则，请查看<a href="https://developer.apple.com/library/prerelease/ios/documentation/UserExperience/Conceptual/AutolayoutPG/VisualFormatLanguage.html" target="_blank" rel="external">Auto Layout Guide</a></p>
-<p><img src="http://ww3.sinaimg.cn/large/7746cd07jw1f6jw5tljv7j20xo0t679h.jpg" alt=""></p>
-<h5 id="2、VFL使用"><a href="#2、VFL使用" class="headerlink" title="2、VFL使用"></a>2、VFL使用</h5><p>我们现在需要做这么一个UI需求：页面中有两个元素一张图片和一个文本。图片距左右两边和顶部10像素，而距底部100像素；文本距图片30像素。这个用代码如何实现？请看下面代码：</p>
-<figure class="highlight objc"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">UIImageView</span> *imageView = [[<span class="built_in">UIImageView</span> alloc] initWithImage:[<span class="built_in">UIImage</span> imageNamed:<span class="string">@"dog.jpg"</span>]];</div><div class="line">imageView.contentMode = <span class="built_in">UIViewContentModeScaleAspectFit</span>;</div><div class="line"><span class="comment">//注意：代码约束需要设置视图的translatesAutoresizingMaskIntoConstraints属性为NO</span></div><div class="line">imageView.translatesAutoresizingMaskIntoConstraints = <span class="literal">NO</span>;</div><div class="line">[<span class="keyword">self</span>.view addSubview:imageView];</div><div class="line"><span class="keyword">self</span>.imageView = imageView;</div><div class="line"></div><div class="line"><span class="built_in">UILabel</span> *label = [[<span class="built_in">UILabel</span> alloc] initWithFrame:<span class="built_in">CGRectZero</span>];</div><div class="line">label.textColor = [<span class="built_in">UIColor</span> darkGrayColor];</div><div class="line">label.text = <span class="string">@"This is a lovely dog"</span>;</div><div class="line">label.translatesAutoresizingMaskIntoConstraints = <span class="literal">NO</span>;</div><div class="line">[<span class="keyword">self</span>.view addSubview:label];</div><div class="line"></div><div class="line"><span class="built_in">NSDictionary</span> *viewsDictionary = <span class="built_in">NSDictionaryOfVariableBindings</span>(imageView, label);</div><div class="line"></div><div class="line"><span class="comment">//设置图片的水平方向距父视图左右两边都为10</span></div><div class="line"><span class="built_in">NSArray</span> *constraintArr1 = [<span class="built_in">NSLayoutConstraint</span> constraintsWithVisualFormat:<span class="string">@"H:|-10-[imageView]-10-|"</span> options:<span class="number">0</span> metrics:<span class="literal">nil</span> views:viewsDictionary];</div><div class="line">[<span class="keyword">self</span>.view addConstraints:constraintArr1];</div><div class="line"></div><div class="line"><span class="comment">//设置图片垂直方向距父视图顶部10，底部100</span></div><div class="line"><span class="built_in">NSArray</span> *constraintArr2 = [<span class="built_in">NSLayoutConstraint</span> constraintsWithVisualFormat:<span class="string">@"V:|-10-[imageView]-100-|"</span> options:<span class="number">0</span> metrics:<span class="literal">nil</span> views:viewsDictionary];</div><div class="line">[<span class="keyword">self</span>.view addConstraints:constraintArr2];</div><div class="line"></div><div class="line"><span class="comment">//设置label的约束</span></div><div class="line"><span class="built_in">NSArray</span> *constraintArr3 = [<span class="built_in">NSLayoutConstraint</span> constraintsWithVisualFormat:<span class="string">@"V:[imageView]-30-[label]"</span> options:<span class="number">0</span> metrics:<span class="literal">nil</span> views:viewsDictionary];</div><div class="line">[<span class="keyword">self</span>.view addConstraints:constraintArr3];</div></pre></td></tr></table></figure>
-<p>如下是运行的效果图：</p>
-<p><img src="http://ww4.sinaimg.cn/large/91c6e389jw1ew8yjnu80jj20yi1pcwj4.jpg" width="310" height="552"></p>
-<p>   到这里，我们已经使用VFL实现了需求。</p>
-<p>   假如有一天，我们的产品经理觉得这个效果不好看，需要改一改，然后UI设计师重新出了一套效果图。上面的页面已经修改成：图片距左右两边和顶部10像素，而图片宽与高比例为5:7；描述文本处于水平居中位置，并且处于图片的下方与屏幕上方居中位置。</p>
-<p>   此时，我们用代码如何实现？</p>
-<p>   查看VFL语法，明显图片宽与高比例为5:7这个需求没有直接对应的语法，实现起来有点复杂。这时，我们可以使用苹果为我们封装的另外一个创建约束的方法<code>constraintWithItem:attribute:relatedBy:toItem:attribute:multiplier:constant:</code>，就可以轻易实现我们的需求。如下，就是实现代码：</p>
-<figure class="highlight objc"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="built_in">UIImageView</span> *imageView = [[<span class="built_in">UIImageView</span> alloc] initWithImage:[<span class="built_in">UIImage</span> imageNamed:<span class="string">@"dog.jpg"</span>]];</div><div class="line">imageView.contentMode = <span class="built_in">UIViewContentModeScaleAspectFit</span>;</div><div class="line"><span class="comment">//注意：代码约束需要设置视图的translatesAutoresizingMaskIntoConstraints属性为NO</span></div><div class="line">imageView.translatesAutoresizingMaskIntoConstraints = <span class="literal">NO</span>;</div><div class="line">[<span class="keyword">self</span>.view addSubview:imageView];</div><div class="line"><span class="keyword">self</span>.imageView = imageView;</div><div class="line"></div><div class="line"><span class="built_in">UILabel</span> *label = [[<span class="built_in">UILabel</span> alloc] initWithFrame:<span class="built_in">CGRectZero</span>];</div><div class="line">label.textColor = [<span class="built_in">UIColor</span> darkGrayColor];</div><div class="line">label.text = <span class="string">@"This is a lovely dog"</span>;</div><div class="line">label.translatesAutoresizingMaskIntoConstraints = <span class="literal">NO</span>;</div><div class="line">[<span class="keyword">self</span>.view addSubview:label];</div><div class="line"></div><div class="line"><span class="built_in">NSDictionary</span> *viewsDictionary = <span class="built_in">NSDictionaryOfVariableBindings</span>(imageView, label);</div><div class="line"></div><div class="line"><span class="comment">//设置图片的水平方向距父视图左右两边都为10像素</span></div><div class="line"><span class="built_in">NSArray</span> *constraintArr1 = [<span class="built_in">NSLayoutConstraint</span> constraintsWithVisualFormat:<span class="string">@"H:|-10-[imageView]-10-|"</span> options:<span class="number">0</span> metrics:<span class="literal">nil</span> views:viewsDictionary];</div><div class="line">[<span class="keyword">self</span>.view addConstraints:constraintArr1];</div><div class="line"></div><div class="line"><span class="comment">/*</span></div><div class="line">//设置图片垂直方向距父视图顶部10像素，底部100像素</div><div class="line">NSArray *constraintArr2 = [NSLayoutConstraint constraintsWithVisualFormat:@"V:|-10-[imageView]-100-|" options:0 metrics:nil views:viewsDictionary];</div><div class="line">[self.view addConstraints:constraintArr2];</div><div class="line"></div><div class="line">//设置label的约束</div><div class="line">NSArray *constraintArr3 = [NSLayoutConstraint constraintsWithVisualFormat:@"V:[imageView]-30-[label]" options:0 metrics:nil views:viewsDictionary];</div><div class="line">[self.view addConstraints:constraintArr3];</div><div class="line">    */</div><div class="line"></div><div class="line"><span class="comment">//设置图片的宽与高的比例为5:7</span></div><div class="line"><span class="built_in">NSLayoutConstraint</span> *constraint1 = [<span class="built_in">NSLayoutConstraint</span> constraintWithItem:imageView attribute:<span class="built_in">NSLayoutAttributeHeight</span> relatedBy:<span class="built_in">NSLayoutRelationEqual</span> toItem:imageView attribute:<span class="built_in">NSLayoutAttributeWidth</span> multiplier:<span class="number">1.4</span> constant:<span class="number">0</span>];</div><div class="line">[<span class="keyword">self</span>.view addConstraint:constraint1];</div><div class="line"></div><div class="line"><span class="comment">//设置图片距顶部10像素，描述文字处于图片与屏幕底部中间</span></div><div class="line"><span class="built_in">NSArray</span> *constraintArr3 = [<span class="built_in">NSLayoutConstraint</span> constraintsWithVisualFormat:<span class="string">@"V:|-10-[imageView]-[label]-|"</span> options:<span class="number">0</span> metrics:<span class="literal">nil</span> views:viewsDictionary];</div><div class="line">[<span class="keyword">self</span>.view addConstraints:constraintArr3];</div><div class="line"></div><div class="line"><span class="comment">//描述文本水平居中</span></div><div class="line"><span class="built_in">NSLayoutConstraint</span> *constraint2 = [<span class="built_in">NSLayoutConstraint</span> constraintWithItem:label attribute:<span class="built_in">NSLayoutAttributeCenterX</span> relatedBy:<span class="built_in">NSLayoutRelationEqual</span> toItem:<span class="keyword">self</span>.view attribute:<span class="built_in">NSLayoutAttributeCenterX</span> multiplier:<span class="number">1.0</span> constant:<span class="number">0</span>];</div><div class="line">[<span class="keyword">self</span>.view addConstraint:constraint2];</div></pre></td></tr></table></figure>
-<p>运行效果如下：</p>
-<p><img src="http://ww4.sinaimg.cn/large/91c6e389jw1ew905ecso1j20yi1pc78y.jpg" width="310" height="552"></p>
-<p><code>constraintWithItem:attribute:relatedBy:toItem:attribute:multiplier:constant:</code>方法主要是为了创建视图约束属性之间的关系，而这个方法的精髓主要是这么一个表达式：<strong>view1.attribute = view2.attribute * multiplier + constant</strong>。这里与我们前面讲过的表达式类似，只是多了一个multiplier的系数。</p>
-<h3 id="三、Masnory写约束"><a href="#三、Masnory写约束" class="headerlink" title="三、Masnory写约束"></a>三、Masnory写约束</h3><p><a href="https://github.com/SnapKit/Masonry" target="_blank" rel="external">Masonry</a>是一个轻量级的布局框架，拥有自己的描述语法，采用更优雅的链式语法封装自动布局，简洁明了 并具有高可读性。</p>
-<p>上面的需求，我使用Masnory实现起来，代码简洁了很多，而且基本上不怎么需要学就能通过Masnory实现上面的需求，代码如下：</p>
-<figure class="highlight objc"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//注意：代码约束需要设置视图的translatesAutoresizingMaskIntoConstraints属性为NO</span></div><div class="line"><span class="built_in">UIImageView</span> *imageView = [[<span class="built_in">UIImageView</span> alloc] initWithImage:[<span class="built_in">UIImage</span> imageNamed:<span class="string">@"dog.jpg"</span>]];</div><div class="line">imageView.contentMode = <span class="built_in">UIViewContentModeScaleAspectFit</span>;</div><div class="line">imageView.translatesAutoresizingMaskIntoConstraints = <span class="literal">NO</span>;</div><div class="line">[<span class="keyword">self</span>.view addSubview:imageView];</div><div class="line"></div><div class="line"><span class="built_in">UILabel</span> *label = [[<span class="built_in">UILabel</span> alloc] initWithFrame:<span class="built_in">CGRectZero</span>];</div><div class="line">label.textColor = [<span class="built_in">UIColor</span> darkGrayColor];</div><div class="line">label.text = <span class="string">@"This is a lovely dog"</span>;</div><div class="line">label.translatesAutoresizingMaskIntoConstraints = <span class="literal">NO</span>;</div><div class="line">[<span class="keyword">self</span>.view addSubview:label];</div><div class="line"></div><div class="line"><span class="comment">//设置图片的水平方向距父视图左右两边都为10像素，图片的宽与高的比例为5:7</span></div><div class="line">[imageView mas_makeConstraints:^(MASConstraintMaker *make) &#123;</div><div class="line">    make.left.equalTo(<span class="keyword">self</span>.view.mas_left).with.offset(<span class="number">10</span>);</div><div class="line">    make.right.equalTo(<span class="keyword">self</span>.view.mas_right).with.offset(<span class="number">-10</span>);</div><div class="line">    make.top.equalTo(<span class="keyword">self</span>.view.mas_top).with.offset(<span class="number">10</span>);</div><div class="line">    make.height.equalTo(imageView.mas_width).with.multipliedBy(<span class="number">1.4</span>);</div><div class="line">&#125;];</div><div class="line"></div><div class="line"><span class="comment">//文字描述水平居中，并且处于图片与屏幕底部中间</span></div><div class="line">[label mas_makeConstraints:^(MASConstraintMaker *make) &#123;</div><div class="line">    make.centerX.equalTo(<span class="keyword">self</span>.view.mas_centerX);</div><div class="line">    make.top.equalTo(imageView.mas_bottom);</div><div class="line">    make.bottom.equalTo(<span class="keyword">self</span>.view.mas_bottom);</div><div class="line">&#125;];</div></pre></td></tr></table></figure>
-<p>  效果如下：</p>
-<p>  <img src="http://ww4.sinaimg.cn/large/91c6e389jw1ew905ecso1j20yi1pc78y.jpg" width="310" height="552"></p>
-<p>  示例代码已经放到github上了，<a href="https://github.com/liuchungui/VFLDemo.git" target="_blank" rel="external">github代码示例</a></p>
-<h3 id="四、使用AutoLayout时，如何添加动画？"><a href="#四、使用AutoLayout时，如何添加动画？" class="headerlink" title="四、使用AutoLayout时，如何添加动画？"></a>四、使用AutoLayout时，如何添加动画？</h3><p> 使用VFL时，动画改变尺寸或位置时，很简单只需要将对应的约束保存成全局变量，然后改变约束当中的属性就行了。</p>
-<p> 使用Autolayout动画改变尺寸、位置的官方模板如下：</p>
-<pre><code class="objc">[containerView layoutIfNeeded]; <span class="comment">// Ensures that all pending layout operations have been completed</span>
-[<span class="built_in">UIView</span> animateWithDuration:<span class="number">1.0</span> animations:^{
-    <span class="comment">// Make all constraint changes here</span>
-[containerView layoutIfNeeded]; <span class="comment">// Forces the layout of the subtree animation block and then captures all of the frame changes</span>
-}];
-</code></pre>
-<p>那如果使用的是Masnory框架，怎么添加动画？</p>
-<p>我这里有个Demo，请看代码：</p>
-<pre><code>- (void)viewDidLoad {
-    [super viewDidLoad];
-
-    //创建displayView
-    UIView *displayView = [[UIView alloc] init];
-    displayView.backgroundColor = [UIColor purpleColor];
-    [self.view addSubview:displayView];
-    self.displayView = displayView;
-
-    UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
-    [button setTitle:@&quot;点击&quot; forState:UIControlStateNormal];
-    [button setTitleColor:[UIColor darkGrayColor] forState:UIControlStateHighlighted];
-    [button setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
-    [button addTarget:self action:@selector(buttonAction:) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:button];
-
-    //添加约束
-    [displayView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(self.view.mas_top).offset(100);
-        make.size.mas_equalTo(CGSizeMake(50, 50));
-        make.centerX.equalTo(self.view.mas_centerX);
-    }];
-
-    [button mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.centerX.equalTo(self.view.mas_centerX);
-        make.size.mas_equalTo(CGSizeMake(200, 50));
-        make.bottom.mas_equalTo(self.view.mas_bottom).offset(-50);
-    }];
-    // Do any additional setup after loading the view, typically from a nib.
-} 
-
-
-- (void)buttonAction:(UIButton *)butt    on{
-    //动    画改变
-    [self.view layoutIfNeeded];
-    [UIView animateWithDuration:1.0 animations:^{
-        [self.displayView mas_updateConstraints:^(MASConstraintMaker *make) {
-            make.size.mas_equalTo(CGSizeMake(300, 300));
-            }];
-        [self.view layoutIfNeeded];
-    }];
-}
-</code></pre><p>示例代码已经放到github上了，<a href="https://github.com/liuchungui/AnimationForAutoLayoutDemo.git" target="_blank" rel="external">github代码示例</a></p>
-<h3 id="五、什么时候使用代码写约束？"><a href="#五、什么时候使用代码写约束？" class="headerlink" title="五、什么时候使用代码写约束？"></a>五、什么时候使用代码写约束？</h3><p>  使用Xib写约束，可以很直观、快捷的搭建界面，让我们的开发速度提升很快。但，Xib开发有时候不是很灵活，这个时候我们就得考虑使用代码来实现约束。</p>
-<p>  以下几种情况，我觉得使用代码写约束比较适合：</p>
-<ul>
-<li>运行时改变视图尺寸、位置的时候，应该使用代码写约束   </li>
-<li>封装一个控件时，使其能够有足够的灵活性，应该使用代码写约束   </li>
-<li>添加动画的时候，使用代码写约束。   </li>
-<li>一些复杂的UI，使用IB很难实现的场景，使用代码写约束</li>
-</ul>
-<h3 id="六、总结"><a href="#六、总结" class="headerlink" title="六、总结"></a>六、总结</h3><p>这篇文章主要讲了下面一些东西</p>
-<ul>
-<li>约束是什么</li>
-<li>VFL相关语法</li>
-<li>VFL的使用</li>
-<li>Masnory框架的使用</li>
-<li>使用Autolayout时，添加动画</li>
-<li>哪些场景下使用代码来写约束</li>
-</ul>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;h3 id=&quot;一、约束是什么？&quot;&gt;&lt;a href=&quot;#一、约束是什么？&quot; class=&quot;headerlink&quot; title=&quot;一、约束是什么？&quot;&gt;&lt;/a&gt;一、约束是什么？&lt;/h3&gt;&lt;p&gt;  约束是视图与视图之间一些属性关系。&lt;br&gt;
-    
-    </summary>
-    
-      <category term="iOS" scheme="http://www.liuchungui.com/categories/iOS/"/>
-    
-    
-      <category term="AutoLayout" scheme="http://www.liuchungui.com/tags/AutoLayout/"/>
-    
-      <category term="代码写约束" scheme="http://www.liuchungui.com/tags/%E4%BB%A3%E7%A0%81%E5%86%99%E7%BA%A6%E6%9D%9F/"/>
     
   </entry>
   
