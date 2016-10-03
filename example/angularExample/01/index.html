@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="demoApp">
+<head>
+    <meta charset="UTF-8">
+    <title>Hello World</title>
+    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.css">
+    <link rel="stylesheet" href="demoApp.css">
+    <script src="node_modules/angular/angular.js"></script>
+    <script src="node_modules/jquery/dist/jquery.js"></script>
+    <script src="demoApp.js"></script>
+</head>
+<body ng-controller="demoController">
+<div class="row">
+    <div class="col-sm-4 col-xs-12">
+        <div class="btn-group pull-left">
+            <button type="button" class="btn btn-default" ng-class="{'btn-primary': !search.type}" ng-click="selectType()">全部</button>
+            <button type="button" class="btn btn-default" ng-class="{'btn-primary': search.type == 1}" ng-click="selectType(1)">人物</button>
+            <button type="button" class="btn btn-default" ng-class="{'btn-primary': search.type == 2}" ng-click="selectType(2)">动物</button>
+            <button type="button" class="btn btn-default" ng-class="{'btn-primary': search.type == 3}" ng-click="selectType(3)">风景</button>
+        </div>
+    </div>
+    <div class="col-sm-4 col-xs-12" style="margin: 10px 0; height: 40px">
+        <input class="form-control" ng-model="search.keyword" placeholder="搜索内容"/>
+    </div>
+    <div class="col-sm-4 col-xs-12" style="line-height: 50px">
+        搜索:{{search.keyword}}
+    </div>
+</div>
+
+<div class="photos">
+    <div class="photoItem" ng-repeat="info in imageList | filter:search" ng-if="!info.is_hide">
+        <img ng-src="{{info.imageUrl}}" ng-style="imageStyle(info.width)"/>
+        <div class="block">
+            <button class="btn btn-default gap" ng-click="removePhoto(info)"><span>删除</span></button>
+        </div>
+    </div>
+</div>
+</body>
+</html>

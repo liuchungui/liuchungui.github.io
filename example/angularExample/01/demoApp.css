@@ -1,0 +1,44 @@
+.photos {
+    margin: 10px;
+}
+.photoItem {
+    display: inline-block;
+    margin: 2px;
+    padding: 0;
+}
+
+.block {
+    display: block;
+    margin: 15px;
+}
+
+.gap {
+    margin: 0px;
+}
+
+.btn-group {
+    margin: 10px;
+}
+
+.btn {
+    outline: none;
+}
+
+.btn-default {
+    outline: none;
+}
+
+.btn:focus,
+.btn:active,
+.btn:visited {
+    outline: none;
+    color: white;
+    border-color: rgba(47, 112, 177, 1.0);
+    background-color: rgba(47, 112, 177, 1.0);
+}
+
+.btn:hover {
+    outline: none;
+    color: white;
+    background-color: rgba(35, 94, 166, 0.6);
+}
