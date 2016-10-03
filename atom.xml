@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://www.liuchungui.com/"/>
-  <updated>2016-10-03T09:22:19.000Z</updated>
+  <updated>2016-10-03T09:36:21.000Z</updated>
   <id>http://www.liuchungui.com/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="http://www.liuchungui.com/2016/10/03/angular-%E5%85%A5%E9%97%A8%E4%B9%8B%E5%B8%B8%E7%94%A8%E6%8C%87%E4%BB%A4%E4%BD%BF%E7%94%A8/"/>
     <id>http://www.liuchungui.com/2016/10/03/angular-入门之常用指令使用/</id>
     <published>2016-10-03T06:40:09.000Z</published>
-    <updated>2016-10-03T09:22:19.000Z</updated>
+    <updated>2016-10-03T09:36:21.000Z</updated>
     
     <content type="html"><![CDATA[<p>Angular使用了应该有一个月了，一直想总结来着，但是比较懒，所以一直拖着。这次正好趁着分享，写一篇相关内容的文章，来总结下Angular的基本使用和常用指令。本来打算写的是入门教程，发现入门教程怎么写都感觉不如官网，所以放弃了，可以把这一篇当做入门教程的补充版。如果大家要看入门教程可以看官方的<a href="https://docs.angularjs.org/tutorial" target="_blank" rel="external">angular tutorial</a>，中文版的话1.5版本的没找到，大家可以看<code>angular 1.4</code>的<a href="http://www.apjs.net/#dir31" target="_blank" rel="external">angular 教程</a>。</p>
 <p>这里以一个简单的图片列表应用为demo，查看效果可以点击：<a href="http://www.liuchungui.com/example/angularExample/01/">http://www.liuchungui.com/example/angularExample/01/</a>查看，github地址是<a href="https://github.com/liuchungui/angularExample" target="_blank" rel="external">angularExample 01</a>。</p>
@@ -143,6 +143,10 @@
     
     </summary>
     
+      <category term="angular" scheme="http://www.liuchungui.com/categories/angular/"/>
+    
+    
+      <category term="angular, angular 常用指令, angular 使用" scheme="http://www.liuchungui.com/tags/angular-angular-%E5%B8%B8%E7%94%A8%E6%8C%87%E4%BB%A4-angular-%E4%BD%BF%E7%94%A8/"/>
     
   </entry>
   
@@ -867,7 +871,7 @@
     <link href="http://www.liuchungui.com/2016/03/14/runtimezhi-lei-yu-dui-xiang-zong-jie/"/>
     <id>http://www.liuchungui.com/2016/03/14/runtimezhi-lei-yu-dui-xiang-zong-jie/</id>
     <published>2016-03-14T15:30:27.000Z</published>
-    <updated>2016-08-06T05:48:25.000Z</updated>
+    <updated>2016-10-03T09:38:24.000Z</updated>
     
     <content type="html"><![CDATA[<p>以前在使用<a href="https://github.com/elado/jastor" target="_blank" rel="external">jastor</a>解析Json成model的时候里面涉及到了Runtime里面的知识，所以专门看了<a href="http://blog.jobbole.com/79566/" target="_blank" rel="external">Objective-C Runtime 运行时之一到六</a>这一系列的文章，整个Jastor也就懂了，现在非常出名的框架<a href="https://github.com/Mantle/Mantle" target="_blank" rel="external">Mantle</a>，<a href="https://github.com/icanzilb/JSONModel" target="_blank" rel="external">JSONModel</a>也都是差不多的原理。但是，一年之后的今天重新再看的时候，发现大概思路知道，但是具体的一些细节实现需要写的时候，却一时上不了手，所以重新看了<a href="http://blog.jobbole.com/79566/" target="_blank" rel="external">Objective-C Runtime 运行时</a>一系列，然后整理了一下，细节部分附上一些代码，方便以后查找。<br><a id="more"></a></p>
 <h2 id="一、对象、类、元类之间的关系"><a href="#一、对象、类、元类之间的关系" class="headerlink" title="一、对象、类、元类之间的关系"></a>一、对象、类、元类之间的关系</h2><ul>
@@ -950,7 +954,7 @@
     
     </summary>
     
-      <category term="ios" scheme="http://www.liuchungui.com/categories/ios/"/>
+      <category term="iOS" scheme="http://www.liuchungui.com/categories/iOS/"/>
     
     
       <category term="Runtime, Runtime总结, Runtime调用代码" scheme="http://www.liuchungui.com/tags/Runtime-Runtime%E6%80%BB%E7%BB%93-Runtime%E8%B0%83%E7%94%A8%E4%BB%A3%E7%A0%81/"/>
@@ -962,7 +966,7 @@
     <link href="http://www.liuchungui.com/2016/03/04/bgsession/"/>
     <id>http://www.liuchungui.com/2016/03/04/bgsession/</id>
     <published>2016-03-04T08:35:38.000Z</published>
-    <updated>2016-08-06T05:50:22.000Z</updated>
+    <updated>2016-10-03T09:37:57.000Z</updated>
     
     <content type="html"><![CDATA[<p><a href="https://github.com/liuchungui/BGSession" target="_blank" rel="external">BGSession</a>是一个基于NSUserDefaults实现的轻量级数据存储，你只需要简单的继承它，给它添加属性，设置属性的值，就能通过NSUserDefaults同步到本地。<br><a id="more"></a></p>
 <h2 id="BGSession的由来"><a href="#BGSession的由来" class="headerlink" title="BGSession的由来"></a>BGSession的由来</h2><p>在昨天以前，对于一些轻量级数据，我一共使用过三种方案。</p>
@@ -993,7 +997,7 @@
     
     </summary>
     
-      <category term="ios" scheme="http://www.liuchungui.com/categories/ios/"/>
+      <category term="iOS" scheme="http://www.liuchungui.com/categories/iOS/"/>
     
     
       <category term="BGSession" scheme="http://www.liuchungui.com/tags/BGSession/"/>
@@ -1478,7 +1482,7 @@
     <link href="http://www.liuchungui.com/2015/10/19/cocoapodschuang-jian-si-you-pods/"/>
     <id>http://www.liuchungui.com/2015/10/19/cocoapodschuang-jian-si-you-pods/</id>
     <published>2015-10-19T13:54:54.000Z</published>
-    <updated>2016-09-03T08:34:50.000Z</updated>
+    <updated>2016-10-03T09:37:10.000Z</updated>
     
     <content type="html"><![CDATA[<p>创建Pod私有源步骤：<br>1、创建两个git仓库，一个用来做私有的Spec Repo，一个是我们自己的公共组件<br>2、添加私有的repo到CocoaPods<br>3、制作Podspec，并且推送到你创建的私有repo<br>4、使用Pod，在Podfile添加私有源来搭建项目<br><a id="more"></a> </p>
 <h2 id="一、创建两个git仓库，一个用来做私有的Spec-Repo，一个是我们自己的公共组件"><a href="#一、创建两个git仓库，一个用来做私有的Spec-Repo，一个是我们自己的公共组件" class="headerlink" title="一、创建两个git仓库，一个用来做私有的Spec Repo，一个是我们自己的公共组件"></a>一、创建两个git仓库，一个用来做私有的Spec Repo，一个是我们自己的公共组件</h2><p>在这一步当中需要git服务器用来创建仓库，我这里只是作为一个例子，所以直接使用github来当做我的服务器，我创建的这些项目都是public的。你如果是练手的话，也可以仿照我一样在github上面创建仓库。如果是为公司建立私有的公共组件库，你可以在github等平台上面创建私有仓库，或者直接搭建一个git服务器来创建仓库。搭建服务器可以参考<a href="http://www.liuchungui.com/blog/2015/10/23/gitzong-jie/">Git简单总结</a>的第一部分，里面有Mac搭建也有Linux搭建的链接。<br>在这里，我们需要搭建两个git仓库。<br>第一个仓库名称是<a href="https://github.com/liuchungui/first.git" target="_blank" rel="external">first</a>，专门用来做私有Spec Repo。<br>第二个仓库名称是<a href="https://github.com/liuchungui/BGNetwork" target="_blank" rel="external">BGNetwork</a>，这个就是我们公共组件库。<br>在这里，我们来说一下什么是Spec Repo?</p>
@@ -1530,7 +1534,7 @@
     
     </summary>
     
-      <category term="ios" scheme="http://www.liuchungui.com/categories/ios/"/>
+      <category term="iOS" scheme="http://www.liuchungui.com/categories/iOS/"/>
     
     
       <category term="cocoapods" scheme="http://www.liuchungui.com/tags/cocoapods/"/>
