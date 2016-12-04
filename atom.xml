@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://www.liuchungui.com/"/>
-  <updated>2016-11-28T16:17:59.000Z</updated>
+  <updated>2016-12-04T18:13:12.000Z</updated>
   <id>http://www.liuchungui.com/</id>
   
   <author>
@@ -14,6 +14,82 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Angular中使用webpack基础篇</title>
+    <link href="http://www.liuchungui.com/2016/12/05/Angular%E4%B8%AD%E4%BD%BF%E7%94%A8webpack%E5%9F%BA%E7%A1%80%E7%AF%87/"/>
+    <id>http://www.liuchungui.com/2016/12/05/Angular中使用webpack基础篇/</id>
+    <published>2016-12-04T17:45:09.000Z</published>
+    <updated>2016-12-04T18:13:12.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>最近，在开发公司项目的时候，由于组件太多，发出请求太多，导致网站速度太慢，所以我们就有一种强烈的需求，那就是对开发的js进行打包。在对比了各种打包工具之后，最后我们选定了webpack。所以，在这一周除了研究了下如何跨域请求，最主要的时间都去研究webpack去了，虽然没有达到理想中的状态，但是基本的需求应该算是满足了，现在分享出来。</p>
+<p>我们今天分享的是webpack在Angular中的应用，至于webpack的入门教程，我推荐官方的<a href="http://webpack.github.io/docs/tutorials/getting-started/" target="_blank" rel="external">getting-started</a>，英文都比较简单，阅读肯定不会有很大障碍。</p>
+<p>在正文之前，我先说下，我要分享的内容有：</p>
+<ul>
+<li>webpack在Angular中使用</li>
+<li>建立开发环境与生产环境</li>
+<li>优化打包性能，将第三方库与开发的代码分离</li>
+<li>对代码进行压缩</li>
+<li>一些第三方框架的集成</li>
+<li>webpack解决缓存问题，上线后自动使用最新的js文件</li>
+</ul>
+<p>不过，由于时间关系，暂时先分享<code>webpack在Angular中使用</code>的内容，后续补上两篇应该差不多了。</p>
+<p>在分享使用<code>webpack</code>时，我们以<a href="https://github.com/liuchungui/angularWebpackDemo" target="_blank" rel="external">angularWebpackDemo</a>来作为例子演示。</p>
+<h3 id="首先，克隆demo项目，并安装依赖"><a href="#首先，克隆demo项目，并安装依赖" class="headerlink" title="首先，克隆demo项目，并安装依赖"></a>首先，克隆demo项目，并安装依赖</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">git clone https://github.com/liuchungui/angularWebpackDemo.git</div><div class="line">cd angularWebpackDemo</div><div class="line">git checkout -f step0</div><div class="line">npm install</div></pre></td></tr></table></figure>
+<h3 id="然后，编写webpack配置文件"><a href="#然后，编写webpack配置文件" class="headerlink" title="然后，编写webpack配置文件"></a>然后，编写webpack配置文件</h3><p>创建webpack.config.js文件，并且编写如下内容：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line">const webpack = require(&quot;webpack&quot;);</div><div class="line"></div><div class="line">module.exports = &#123;</div><div class="line">    //入口文件</div><div class="line">    entry: &quot;./demoApp.js&quot;,</div><div class="line">    //生成的文件配置</div><div class="line">    output: &#123;</div><div class="line">        //生成文件的路径,__dirname是当前项目路径,与webpack.config.js同级</div><div class="line">        path: __dirname,</div><div class="line">        //文件名</div><div class="line">        filename: &quot;bundle.js&quot;</div><div class="line">    &#125;,</div><div class="line">    module: &#123;</div><div class="line">        //将css文件打包进去</div><div class="line">        loaders: [</div><div class="line">            &#123; test: /\.css$/, loader: &quot;style!css&quot; &#125;</div><div class="line">        ]</div><div class="line">    &#125;,</div><div class="line">    plugins: [</div><div class="line">        /**</div><div class="line">         * 此插件会自动加载jquery,解决jquery无法引用的问题</div><div class="line">         */</div><div class="line">        new webpack.ProvidePlugin(&#123;</div><div class="line">            $: &quot;jquery&quot;,</div><div class="line">            jQuery: &quot;jquery&quot;</div><div class="line">        &#125;)</div><div class="line">    ]</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>上面用到的配置选项大概说一下：</p>
+<ul>
+<li>entry：入口文件，可以传字符串，那说明入口文件只有一个；也可以传数组或对象，指定多个入口文件</li>
+<li>output: 生成打包文件的配置，可以指定path（路径），当有多个入口文件时，还可以使用[name]、[hash]、[chunkhash]等值，来对应替换为入口的文件的配置，详情请参考<a href="http://webpack.github.io/docs/configuration.html#output" target="_blank" rel="external">webpack ouput</a>。</li>
+<li>loaders: 它可以转换项目中的资源文件，例如，上面就是css样式文件转换为style标签插入到html当中，更多内容参考<a href="http://webpack.github.io/docs/using-loaders.html" target="_blank" rel="external">WHAT ARE LOADERS?</a></li>
+<li>plugins: 插件，它可以干很多很多的事情，非常强大，官方提供了很多插件，第三方也可以写插件。上面的<code>ProvidePlugin</code>插件的作用是自动加载jquery模块，也就是说将jquery变成了全局的模块，当然我们需要在index.html中使用script标签导入。</li>
+</ul>
+<h3 id="随后，导入使用"><a href="#随后，导入使用" class="headerlink" title="随后，导入使用"></a>随后，导入使用</h3><p>首先，我们在<code>index.html</code>中导入<code>bundle.js</code>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&lt;script src=&quot;bundle.js&quot;&gt;&lt;/script&gt;</div></pre></td></tr></table></figure>
+<p>然后，我们不需要在index.html中导入js文件了，只需要使用<code>require</code>导入模块就行，webpack会自己解决它们之间的依赖。例如，我们在demo项目中的demoApp.js中导入<code>angular</code>和<code>bootstrap</code>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&apos;use strict&apos;;</div><div class="line">require(&quot;angular&quot;);</div><div class="line">require(&quot;bootstrap&quot;);</div><div class="line"></div><div class="line">var demoApp = angular.module(&apos;demoApp&apos;, []);</div></pre></td></tr></table></figure>
+<p>当然，上面的require(“angular”)导入的是<code>node_modules</code>中的angular模块，如果我们要导入本地的js文件，怎么办？如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">require(&quot;./test&quot;);</div></pre></td></tr></table></figure>
+<p>这种方式还有一个用法，那就是我们可以将共用的第三方库、组件写入一个文件中，然后其它文件只需要导入这个文件一次就行了。</p>
+<p>例如，上面我们可以建立一个<code>common.js</code>文件，然后导入<code>angular</code>和<code>bootstrap</code>，common.js内容如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">require(&quot;angular&quot;);</div><div class="line">require(&quot;bootstrap&quot;);</div></pre></td></tr></table></figure>
+<p>然后在<code>demoApp.js</code>中使用：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&apos;use strict&apos;;</div><div class="line">require(&apos;./common&apos;);</div><div class="line"></div><div class="line">var demoApp = angular.module(&apos;demoApp&apos;, []);</div></pre></td></tr></table></figure>
+<p>效果是一样的，但这种方式解决了非常的棒，解决了我曾经的一个痛点，那就是我们项目分角色有很多个端，每个端有共同的内容，当写一个组件时，我们需要每个端都在index.html中导入一遍，非常的不方便。</p>
+<p><strong>注：</strong> 由于jquery没有模块化的概念，也没有适配webpack，所以我们使用jquery时，需要在index.html中导入，然后使用<code>ProvidePlugin</code>插件使其自动加载。</p>
+<h4 id="最后，打包运行"><a href="#最后，打包运行" class="headerlink" title="最后，打包运行"></a>最后，打包运行</h4><p>打包只需要在项目根目录下运行：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">webpack --progress --color</div></pre></td></tr></table></figure>
+<p>它默认会使用当前目录下的<code>webpack.config.js</code>配置文件，运行成功之后，它会生成一个<code>bundle.js</code>打包文件。</p>
+<p>我们可以在浏览器访问，就可以看到效果，这就说明OK了。</p>
+<p>当然，我们开发时，需要实时看到改变代码的效果，这个时候每次都打包生成就太麻烦了。那么就可以用到webpack专门为我们准备的调试命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">webpack-dev-server</div></pre></td></tr></table></figure>
+<p>然后在浏览器中输入<code>http://localhost:8080/</code>就可以看到效果了。</p>
+<p>其实，除了这种，还有另外一种也可以进行调试，那就是监听模式：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">webpack --progress --color --watch</div></pre></td></tr></table></figure>
+<p>监听模式下，我们的js文件发生改变时，它会监听到，然后重新打包。</p>
+<h4 id="另外，多个客户端，配置多个入口文件"><a href="#另外，多个客户端，配置多个入口文件" class="headerlink" title="另外，多个客户端，配置多个入口文件"></a>另外，多个客户端，配置多个入口文件</h4><p>在我们公司项目中，有很多个客户端，我把它们配置成了多个入口文件，那么如何配置多个入口文件？如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">const webpack = require(&quot;webpack&quot;);</div><div class="line"></div><div class="line">module.exports = &#123;</div><div class="line">    //入口文件</div><div class="line">    entry: &#123;</div><div class="line">        demoApp: &quot;./demoApp.js&quot;,</div><div class="line">        vendor: &quot;./vendor.js&quot;</div><div class="line">    &#125;,</div><div class="line">    //生成的文件配置</div><div class="line">    output: &#123;</div><div class="line">        //生成文件的路径,__dirname是当前项目路径,与webpack.config.js同级</div><div class="line">        path: __dirname,</div><div class="line">        //文件名</div><div class="line">        filename: &quot;[name].bundle.js&quot;</div><div class="line">    &#125;</div><div class="line"> &#125;;</div></pre></td></tr></table></figure>
+<p>它们将生成<code>demoApp.bundle.js</code>和<code>vendor.bundle.js</code>两个打包文件。</p>
+<h4 id="查看最终效果"><a href="#查看最终效果" class="headerlink" title="查看最终效果"></a>查看最终效果</h4><p>如果想查看demo的最终效果，如下运行命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">git checkout -f step1</div><div class="line">npm install</div><div class="line">webpack --progress --color</div></pre></td></tr></table></figure>
+<h4 id="推荐"><a href="#推荐" class="headerlink" title="推荐"></a>推荐</h4><p>如果想自己实践更多的配置，可以去看阮一峰老师的一个项目<a href="https://github.com/ruanyf/webpack-demos" target="_blank" rel="external">webpack-demos</a>。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>刚开始看了官方文档入门之后，感觉自己会用了，但是却不知道如何用在Angular上面。后来查看了别人的代码之后，发现与<code>react-native</code>类似，都是使用<code>require</code>语法使用（CommonJS语法），豁然开朗。之后，发现很多第三方框架都适配了<code>webpack</code>，唯独jquery不行，找了<code>stackoverflow</code>上面的解决方案顺利解决。就这么折腾下来，然后产生了这么一篇文章，希望对大家能有所帮助。当然，东西不止这么点，后续再更新出来。而且，我也会继续，直到整个webpack配置达到我理想中的状态。</p>
+<h2 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h2><p><a href="http://webpack.github.io/docs/" target="_blank" rel="external">webpack 官方文档</a></p>
+<p><a href="https://github.com/ruanyf/webpack-demos" target="_blank" rel="external">https://github.com/ruanyf/webpack-demos</a></p>
+<p><a href="https://segmentfault.com/a/1190000002551952" target="_blank" rel="external">Webpack 入门指迷</a></p>
+<p><a href="https://segmentfault.com/a/1190000006863968" target="_blank" rel="external">webpack多页应用架构系列（二）：webpack配置常用部分有哪些？</a></p>
+<p><a href="http://stackoverflow.com/questions/37651015/webpack-using-bootstrap-jquery-is-not-defined" target="_blank" rel="external">http://stackoverflow.com/questions/37651015/webpack-using-bootstrap-jquery-is-not-defined</a></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;最近，在开发公司项目的时候，由于组件太多，发出请求太多，导致网站速度太慢，所以我们就有一种强烈的需求，那就是对开发的js进行打包。在对比了各种打包工具之后，最后我们选定了webpack。所以，在这一周除了研究了下如何跨域请求，最主要的时间都去研究webpack去了，虽然没有
+    
+    </summary>
+    
+    
+  </entry>
   
   <entry>
     <title>CI+Angular之CORS跨域请求实践篇</title>
@@ -1500,73 +1576,6 @@
       <category term="搭建git服务器" scheme="http://www.liuchungui.com/tags/%E6%90%AD%E5%BB%BAgit%E6%9C%8D%E5%8A%A1%E5%99%A8/"/>
     
       <category term="Mac环境下搭建Git服务器" scheme="http://www.liuchungui.com/tags/Mac%E7%8E%AF%E5%A2%83%E4%B8%8B%E6%90%AD%E5%BB%BAGit%E6%9C%8D%E5%8A%A1%E5%99%A8/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Mac环境下Nginx实现反向代理</title>
-    <link href="http://www.liuchungui.com/2015/10/21/mhuan-jing-xia-nginxshi-xian-fan-xiang-dai-li/"/>
-    <id>http://www.liuchungui.com/2015/10/21/mhuan-jing-xia-nginxshi-xian-fan-xiang-dai-li/</id>
-    <published>2015-10-21T02:16:01.000Z</published>
-    <updated>2016-08-06T06:01:10.000Z</updated>
-    
-    <content type="html"><![CDATA[<h2 id="1、安装"><a href="#1、安装" class="headerlink" title="1、安装"></a>1、安装</h2><p>首先，我们需要搭建Nginx环境，我这里是通过homebrew一键式搭建，步骤如下：<br>1、安装homebrew</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ ruby -e &quot;$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)&quot;</div></pre></td></tr></table></figure>
-<p>以<a href="brew.sh">官网homebrew</a>为准</p>
-<p>2、安装nginx</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ brew install nginx</div></pre></td></tr></table></figure>
-<p>查看Nginx安装的版本<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ nginx -v</div></pre></td></tr></table></figure></p>
-<p>Nginx常用的命令有</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">#查看版本，以及配置文件地址</div><div class="line">nginx -V</div><div class="line">#查看版本 </div><div class="line">nginx -v</div><div class="line">#指定配置文件</div><div class="line">nginx -c filename</div><div class="line">#帮助</div><div class="line">nginx -h</div><div class="line">#重新加载配置|重启|停止|退出 nginx</div><div class="line">nginx -s reload|reopen|stop|quit</div><div class="line">#打开 nginx</div><div class="line">sudo nginx</div><div class="line">#测试配置是否有语法错误</div><div class="line">sudo nginx -t</div></pre></td></tr></table></figure>
-<a id="more"></a>
-<h2 id="2、Nginx配置WEB服务器"><a href="#2、Nginx配置WEB服务器" class="headerlink" title="2、Nginx配置WEB服务器"></a>2、Nginx配置WEB服务器</h2><p>使用Nginx做反向代理，我们需要了解一下Nginx中http模块的配置。     </p>
-<h4 id="编辑Nginx配置文件"><a href="#编辑Nginx配置文件" class="headerlink" title="编辑Nginx配置文件"></a>编辑Nginx配置文件</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ sudo vim /usr/local/etc/nginx/nginx.conf</div></pre></td></tr></table></figure>
-<p>找到http模块，修改http模块中的listen为80，如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line">http &#123;</div><div class="line">    #导入类型配置文件</div><div class="line">    include       mime.types;</div><div class="line">    #设定默认类型为二进制流</div><div class="line">    default_type  application/octet-stream;</div><div class="line">    #启用sendfile()函数</div><div class="line">    sendfile        on;</div><div class="line">    #客户端与服务器连接的超时时间为65秒，超过65秒，服务器关闭连接</div><div class="line">    keepalive_timeout  65;</div><div class="line">    #是否开启gzip，默认关闭</div><div class="line">    #gzip  on;</div><div class="line">    #一个server块</div><div class="line">    server &#123;</div><div class="line">        #服务器监听的端口为80</div><div class="line">        listen       80;</div><div class="line">        #服务器名称为localhost，我们可以通过localhost来访问这个server块的服务</div><div class="line">        server_name  localhost;</div><div class="line">        #location块，它存放在server块当中，location会尝试根据用户请求中的URI来匹配上面的/uri表达式，如果可以匹配，就选择location &#123;&#125;块中的配置来处理用户请求。</div><div class="line">        location / &#123;</div><div class="line">            #以root方式设置资源路径，它与alias的不同请见下面的 http模块中文件路径定义</div><div class="line">            root   html;</div><div class="line">            #默认访问的页面，从左依次找到右，直到找到这个文件，然后返回结束请求</div><div class="line">            index  index.html index.htm;</div><div class="line">            #设置错误页面，对应的错误码是404，错误页面是/Users/user/Sites/404.html</div><div class="line">            error_page 404  /404.html;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    include servers/*;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h4 id="http模块中文件路径定义："><a href="#http模块中文件路径定义：" class="headerlink" title="http模块中文件路径定义："></a>http模块中文件路径定义：</h4><p>1、以<strong>root</strong>方式设置资源路径<br>语法: root path;<br>默认: root html;<br>配置块: http, server, location, if<br>例如，定义资源文件相对于HTTP请求的根目录。    </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">location /download/ &#123;</div><div class="line">	root /opt/web/html;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>在上面的配置中，如果有一个请求的URI是/download/index/test.html，那么Web服务器将会返回服务器上/opt/web/html/download/index/test.html文件的内容。</p>
-<p>2、以<strong>alias</strong>方式设置资源路径<br>语法：alias path;<br>配置块：location<br>alias也是用来设置文件资源路径的，它与root的不同点主要在于如何解读紧跟location后面的uri参数，这将会致使alias与root以不同的方式将用户请求映射到真正的磁盘文件上。<br>例如，如果有一个请求的URI是/conf/nginx.conf，而用户实际想访问的文件在/usr/local/nginx/conf/nginx.conf，那么想要使用alias来进行设置的话，可以采用如下方式：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">location /conf &#123;</div><div class="line">	alias /usr/local/nginx/conf/;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>如果用root设置，那么语句如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">location /conf &#123;</div><div class="line">	alias /usr/local/nginx/;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>使用alias时，在URI向实际文件路径的映射过程中，已经把location后配置的/conf这部分字符串丢弃掉，因此，/conf/nginx.conf请求将根据alias path映射为path/nginx.conf。root则不然，它会根据完整的URI请求来映射，因此/conf/nginx.conf请求会根据root path映射为path/conf/nginx.conf。这也是root可以放置到http、server、location或if块中，而alias只能放置到location块中的原因。<br>alias后面还可以添加正则表达式，例如：     </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">location ~ ^/test/(\w+)\.(\w+)$ &#123;</div><div class="line">	alias /usr/local/nginx/$2/$1.$2;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>这样，请求在访问/test/nginx.conf时，Nginx会返回/usr/local/nginx/conf/nginx.conf文件中的内容。</p>
-<h4 id="开启Nginx的Web服务"><a href="#开启Nginx的Web服务" class="headerlink" title="开启Nginx的Web服务"></a>开启Nginx的Web服务</h4><p>开启Nginx服务之前，如果我们开启了Apache服务，那么我需要先关闭Apache服务</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">#开启Nginx</div><div class="line">$ sudo nginx</div></pre></td></tr></table></figure>
-<p>使用localhost来访问，若是出现nginx欢迎页，说明成功。</p>
-<h2 id="3、使用Nginx做反向代理"><a href="#3、使用Nginx做反向代理" class="headerlink" title="3、使用Nginx做反向代理"></a>3、使用Nginx做反向代理</h2><p>反向代理（reverse proxy）方式是指用代理服务器来接受Internet上的连接请求，然后将请求转发给内部网络中的上游服务器，并将从上游服务器上得到的结果返回给Internet上请求连接的客户端，此时代理服务器对外的表现就是一个Web服务器。<br>这里，我是在本机搭建，通过修改host来模拟多个域名访问本机的nginx。</p>
-<h4 id="1、修改hosts文件"><a href="#1、修改hosts文件" class="headerlink" title="1、修改hosts文件"></a>1、修改hosts文件</h4><p>$ vim /etc/hosts<br>在内部添加域名解析</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">127.0.0.1 pinger.com www.pinger.com</div><div class="line">127.0.0.1 test.com www.test.com</div><div class="line">127.0.0.1 chungui.com www.chungui.com</div></pre></td></tr></table></figure>
-<h4 id="2、修改nginx配置文件"><a href="#2、修改nginx配置文件" class="headerlink" title="2、修改nginx配置文件"></a>2、修改nginx配置文件</h4><p>$ sudo vim /usr/local/etc/nginx/nginx.conf<br>在后面添加server模块，内部通过<code>proxy_pass</code>设置反向代理</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">server &#123;</div><div class="line">    listen  80;</div><div class="line">    server_name  *.pinger.com pinger.com;</div><div class="line">    location / &#123;</div><div class="line">        proxy_pass http://www.baidu.com;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line">server &#123;</div><div class="line">    listen 80;</div><div class="line">    server_name *.chungui.com chungui.com;</div><div class="line">    location / &#123;</div><div class="line">        proxy_pass http://www.renren.com;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line">server &#123;</div><div class="line">    listen 80;</div><div class="line">    server_name test.com;</div><div class="line">    location / &#123;</div><div class="line">        proxy_pass http://www.zhihu.com;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>其中，server_name可以指向多个域名值</p>
-<h4 id="3、重启nginx服务"><a href="#3、重启nginx服务" class="headerlink" title="3、重启nginx服务"></a>3、重启nginx服务</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">#重启服务</div><div class="line">$ sudo nginx -s reload</div></pre></td></tr></table></figure>
-<p>这时，反向代理已经搭建成功。你可以在本地通过<code>chungui.com</code>访问到人人网，<code>test.com</code>访问到知乎。不过，设置<code>pinger.com</code>访问的<code>http://www.baidu.com</code>站点，而百度服务器内部会自动跳转到<code>https://www.baidu.com</code>站点，所以我们通过<code>pinger.com</code>会跳转到<code>https://www.baidu.com</code>，这个时候我们可以将百度的替换成https就行了，修改配置如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">server &#123;</div><div class="line">    listen       80;</div><div class="line">    server_name  *.pinger.com pinger.com;</div><div class="line">    location / &#123;</div><div class="line">        proxy_pass https://www.baidu.com;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>这个时候，再使用<code>pinger.com</code>在浏览器里访问时就不会出现跳转的问题了。</p>
-<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="http://manual.51yip.com/nginx/" target="_blank" rel="external">Nginx中文参考手册,教程</a><br><a href="http://blog.csdn.net/dracotianlong/article/details/21817097" target="_blank" rel="external">mac 安装 nginx 环境</a><br><a href="http://segmentfault.com/a/1190000002963355" target="_blank" rel="external">Mac OS使用brew安装Nginx、MySQL、PHP-FPM的LAMP开发环境</a>     </p>
-]]></content>
-    
-    <summary type="html">
-    
-      Mac环境下Nginx实现反向代理
-    
-    </summary>
-    
-      <category term="web" scheme="http://www.liuchungui.com/categories/web/"/>
-    
-    
-      <category term="Mac环境下安装Nginx" scheme="http://www.liuchungui.com/tags/Mac%E7%8E%AF%E5%A2%83%E4%B8%8B%E5%AE%89%E8%A3%85Nginx/"/>
-    
-      <category term="Nginx" scheme="http://www.liuchungui.com/tags/Nginx/"/>
-    
-      <category term="反向代理" scheme="http://www.liuchungui.com/tags/%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86/"/>
-    
-      <category term="Nginx反向代理" scheme="http://www.liuchungui.com/tags/Nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86/"/>
-    
-      <category term="Mac" scheme="http://www.liuchungui.com/tags/Mac/"/>
     
   </entry>
   
