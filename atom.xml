@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://www.liuchungui.com/"/>
-  <updated>2016-12-04T18:13:12.000Z</updated>
+  <updated>2016-12-04T18:14:22.000Z</updated>
   <id>http://www.liuchungui.com/</id>
   
   <author>
@@ -20,10 +20,10 @@
     <link href="http://www.liuchungui.com/2016/12/05/Angular%E4%B8%AD%E4%BD%BF%E7%94%A8webpack%E5%9F%BA%E7%A1%80%E7%AF%87/"/>
     <id>http://www.liuchungui.com/2016/12/05/Angular中使用webpack基础篇/</id>
     <published>2016-12-04T17:45:09.000Z</published>
-    <updated>2016-12-04T18:13:12.000Z</updated>
+    <updated>2016-12-04T18:14:22.000Z</updated>
     
     <content type="html"><![CDATA[<p>最近，在开发公司项目的时候，由于组件太多，发出请求太多，导致网站速度太慢，所以我们就有一种强烈的需求，那就是对开发的js进行打包。在对比了各种打包工具之后，最后我们选定了webpack。所以，在这一周除了研究了下如何跨域请求，最主要的时间都去研究webpack去了，虽然没有达到理想中的状态，但是基本的需求应该算是满足了，现在分享出来。</p>
-<p>我们今天分享的是webpack在Angular中的应用，至于webpack的入门教程，我推荐官方的<a href="http://webpack.github.io/docs/tutorials/getting-started/" target="_blank" rel="external">getting-started</a>，英文都比较简单，阅读肯定不会有很大障碍。</p>
+<p>我们今天分享的是webpack在Angular中的应用，至于webpack的入门教程，我推荐官方的<a href="http://webpack.github.io/docs/tutorials/getting-started/" target="_blank" rel="external">getting-started</a>，英文都比较简单，阅读不会有很大障碍。</p>
 <p>在正文之前，我先说下，我要分享的内容有：</p>
 <ul>
 <li>webpack在Angular中使用</li>
