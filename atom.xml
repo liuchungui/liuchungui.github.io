@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://www.liuchungui.com/"/>
-  <updated>2017-09-03T14:23:58.000Z</updated>
+  <updated>2017-09-03T14:26:03.000Z</updated>
   <id>http://www.liuchungui.com/</id>
   
   <author>
@@ -20,12 +20,11 @@
     <link href="http://www.liuchungui.com/2017/09/03/Jupyter-notebook%E5%AE%89%E8%A3%85%E4%BD%BF%E7%94%A8/"/>
     <id>http://www.liuchungui.com/2017/09/03/Jupyter-notebook安装使用/</id>
     <published>2017-09-03T14:17:56.000Z</published>
-    <updated>2017-09-03T14:23:58.000Z</updated>
+    <updated>2017-09-03T14:26:03.000Z</updated>
     
-    <content type="html"><![CDATA[<p>Jupyter notebook 是一种 Web 应用，能让用户将说明文本、数学方程、代码和可视化内容全部组合到一个易于共享的文档中。</p>
+    <content type="html"><![CDATA[<p>Jupyter notebook 是一种 Web 应用，能让用户将说明文本、数学方程、代码和可视化内容全部组合到一个易于共享的文档中。<br><a id="more"></a></p>
 <h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>这里使用的是Anaconda的方式安装<code>jupyter notebook</code>，不熟悉Anaconda可以看下<a href="http://www.liuchungui.com/2017/09/03/Anaconda%E5%AE%89%E8%A3%85%E4%BD%BF%E7%94%A8/">Anaconda安装使用笔记</a>。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">$ conda install jupyter notebook</div><div class="line"></div><div class="line"># 开启web服务，会自动在浏览器中打开，也可以输入localhost:8888查看</div><div class="line">$ jupyter notebook</div></pre></td></tr></table></figure>
-<a id="more"></a>
 <h2 id="操作单元格"><a href="#操作单元格" class="headerlink" title="操作单元格"></a>操作单元格</h2><h4 id="1、执行单元格"><a href="#1、执行单元格" class="headerlink" title="1、执行单元格"></a>1、执行单元格</h4><ul>
 <li><code>shift+Enter</code>: 执行单元格代码，并跳到下一步</li>
 <li><code>control+Enter</code>: 执行单元格代码，但仍停留当前选中的单元格</li>
@@ -71,9 +70,7 @@
     
     <summary type="html">
     
-      &lt;p&gt;Jupyter notebook 是一种 Web 应用，能让用户将说明文本、数学方程、代码和可视化内容全部组合到一个易于共享的文档中。&lt;/p&gt;
-&lt;h2 id=&quot;安装&quot;&gt;&lt;a href=&quot;#安装&quot; class=&quot;headerlink&quot; title=&quot;安装&quot;&gt;&lt;/a&gt;安装&lt;/h2&gt;&lt;p&gt;这里使用的是Anaconda的方式安装&lt;code&gt;jupyter notebook&lt;/code&gt;，不熟悉Anaconda可以看下&lt;a href=&quot;http://www.liuchungui.com/2017/09/03/Anaconda%E5%AE%89%E8%A3%85%E4%BD%BF%E7%94%A8/&quot;&gt;Anaconda安装使用笔记&lt;/a&gt;。&lt;/p&gt;
-&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;$ conda install jupyter notebook&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;# 开启web服务，会自动在浏览器中打开，也可以输入localhost:8888查看&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;$ jupyter notebook&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+      &lt;p&gt;Jupyter notebook 是一种 Web 应用，能让用户将说明文本、数学方程、代码和可视化内容全部组合到一个易于共享的文档中。&lt;br&gt;
     
     </summary>
     
