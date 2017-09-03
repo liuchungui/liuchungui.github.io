@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://www.liuchungui.com/"/>
-  <updated>2017-09-03T13:41:45.000Z</updated>
+  <updated>2017-09-03T14:23:58.000Z</updated>
   <id>http://www.liuchungui.com/</id>
   
   <author>
@@ -16,19 +16,96 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>Jupyter notebook安装使用</title>
+    <link href="http://www.liuchungui.com/2017/09/03/Jupyter-notebook%E5%AE%89%E8%A3%85%E4%BD%BF%E7%94%A8/"/>
+    <id>http://www.liuchungui.com/2017/09/03/Jupyter-notebook安装使用/</id>
+    <published>2017-09-03T14:17:56.000Z</published>
+    <updated>2017-09-03T14:23:58.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>Jupyter notebook 是一种 Web 应用，能让用户将说明文本、数学方程、代码和可视化内容全部组合到一个易于共享的文档中。</p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>这里使用的是Anaconda的方式安装<code>jupyter notebook</code>，不熟悉Anaconda可以看下<a href="http://www.liuchungui.com/2017/09/03/Anaconda%E5%AE%89%E8%A3%85%E4%BD%BF%E7%94%A8/">Anaconda安装使用笔记</a>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">$ conda install jupyter notebook</div><div class="line"></div><div class="line"># 开启web服务，会自动在浏览器中打开，也可以输入localhost:8888查看</div><div class="line">$ jupyter notebook</div></pre></td></tr></table></figure>
+<a id="more"></a>
+<h2 id="操作单元格"><a href="#操作单元格" class="headerlink" title="操作单元格"></a>操作单元格</h2><h4 id="1、执行单元格"><a href="#1、执行单元格" class="headerlink" title="1、执行单元格"></a>1、执行单元格</h4><ul>
+<li><code>shift+Enter</code>: 执行单元格代码，并跳到下一步</li>
+<li><code>control+Enter</code>: 执行单元格代码，但仍停留当前选中的单元格</li>
+</ul>
+<p><strong>注意：</strong> 这两个执行方法，只会显示最后的结果值。若是要打印，请使用<code>print</code>。</p>
+<h4 id="2、代码补全"><a href="#2、代码补全" class="headerlink" title="2、代码补全"></a>2、代码补全</h4><p>和其它IDE一样，使用<code>Tab</code>键进行代码补全。</p>
+<h4 id="3、查看系统中方法的说明"><a href="#3、查看系统中方法的说明" class="headerlink" title="3、查看系统中方法的说明"></a>3、查看系统中方法的说明</h4><ul>
+<li><code>shift+Tab</code>: 查看库、方法等简要的说明信息</li>
+<li><code>shift+Tab两次</code>：查看更详细的说明信息</li>
+</ul>
+<h2 id="键盘快捷键（操作不区分大小写）"><a href="#键盘快捷键（操作不区分大小写）" class="headerlink" title="键盘快捷键（操作不区分大小写）"></a>键盘快捷键（操作不区分大小写）</h2><p>1、通过<code>Esc</code>切换到命令行模式，<code>Enter</code>或<code>Return</code>切换到编辑模式命令行模式。当选中单元格时，命令行模式，右边是<code>蓝线</code>；编辑模式，右边是<code>绿色线</code>，并且有光标在选中单元格闪动。</p>
+<p>2、创建单元格（命令行模式）</p>
+<ul>
+<li><code>A</code>: 在单元格上面创建单元格</li>
+<li><code>B</code>: 在单元格下面创建单元格</li>
+</ul>
+<p>3、代码与markdown相互切换：</p>
+<ul>
+<li><code>M</code>: 切换到markdown</li>
+<li><code>Y</code>: 切换到代码</li>
+</ul>
+<p>4、显示行号</p>
+<ul>
+<li><code>L</code>: 显示或隐藏行号</li>
+</ul>
+<p>5、删除单元格，连续两次按<code>D</code>，和vim一样</p>
+<p>6、保存笔记本<br>按<code>S</code>保存</p>
+<p>7、搜索没有快捷键命令</p>
+<p><code>P</code>: 搜索，然后选中对应命令操作</p>
+<h2 id="Magic关键字"><a href="#Magic关键字" class="headerlink" title="Magic关键字"></a>Magic关键字</h2><p>Magic关键字是可以在单元格中运行的特殊命令，能让你控制notebook本身或执行系统调用（例如更改目录）。</p>
+<p><strong>注意：</strong></p>
+<ul>
+<li>一个百分号（%）：对应行的Magic命令</li>
+<li>两个百分号（%%）：对应整个单元格的Magic命令（也就是对应多行）</li>
+</ul>
+<p>用途：</p>
+<h4 id="1、代码计时，使用-timeit"><a href="#1、代码计时，使用-timeit" class="headerlink" title="1、代码计时，使用%timeit"></a>1、代码计时，使用<code>%timeit</code></h4><p>代码示例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">%timeit fibo1(20)</div><div class="line">%%timeit </div><div class="line">fibo1(30)</div><div class="line">fibo2(30)</div></pre></td></tr></table></figure>
+<h4 id="2、在notebook中嵌入可视化内容，使用-matlotlib"><a href="#2、在notebook中嵌入可视化内容，使用-matlotlib" class="headerlink" title="2、在notebook中嵌入可视化内容，使用%matlotlib"></a>2、在notebook中嵌入可视化内容，使用<code>%matlotlib</code></h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">%matplotlib inline</div><div class="line">%config InlineBackend.figure_format = &apos;retina&apos;</div><div class="line">import matplotlib.pyplot as plt</div><div class="line">import numpy as np</div><div class="line">x = np.linspace(0, 1, 300)</div><div class="line">for w in range(2, 6, 2):</div><div class="line">    plt.plot(x, np.sin(np.pi*x)*np.sin(2*w*np.pi*x))</div></pre></td></tr></table></figure>
+<h4 id="3、在notebook中进行调试，使用-pdf"><a href="#3、在notebook中进行调试，使用-pdf" class="headerlink" title="3、在notebook中进行调试，使用%pdf"></a>3、在notebook中进行调试，使用<code>%pdf</code></h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">%pdb</div><div class="line">numbers = &apos;hello&apos;</div><div class="line">sum(numbers)</div></pre></td></tr></table></figure>
+<h2 id="导出文件"><a href="#导出文件" class="headerlink" title="导出文件"></a>导出文件</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"># 导出html</div><div class="line">jupyter nbconvert --to html notebook.ipynb</div><div class="line"># 导出markdown</div><div class="line">jupyter nbconvert --to markdown notebook.ipynb</div></pre></td></tr></table></figure>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;Jupyter notebook 是一种 Web 应用，能让用户将说明文本、数学方程、代码和可视化内容全部组合到一个易于共享的文档中。&lt;/p&gt;
+&lt;h2 id=&quot;安装&quot;&gt;&lt;a href=&quot;#安装&quot; class=&quot;headerlink&quot; title=&quot;安装&quot;&gt;&lt;/a&gt;安装&lt;/h2&gt;&lt;p&gt;这里使用的是Anaconda的方式安装&lt;code&gt;jupyter notebook&lt;/code&gt;，不熟悉Anaconda可以看下&lt;a href=&quot;http://www.liuchungui.com/2017/09/03/Anaconda%E5%AE%89%E8%A3%85%E4%BD%BF%E7%94%A8/&quot;&gt;Anaconda安装使用笔记&lt;/a&gt;。&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;$ conda install jupyter notebook&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;# 开启web服务，会自动在浏览器中打开，也可以输入localhost:8888查看&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;$ jupyter notebook&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+    
+    </summary>
+    
+      <category term="Python" scheme="http://www.liuchungui.com/categories/Python/"/>
+    
+    
+      <category term="Anaconda" scheme="http://www.liuchungui.com/tags/Anaconda/"/>
+    
+      <category term="conda" scheme="http://www.liuchungui.com/tags/conda/"/>
+    
+      <category term="python" scheme="http://www.liuchungui.com/tags/python/"/>
+    
+      <category term="Jupyter notebook" scheme="http://www.liuchungui.com/tags/Jupyter-notebook/"/>
+    
+      <category term="Jupyter" scheme="http://www.liuchungui.com/tags/Jupyter/"/>
+    
+  </entry>
+  
+  <entry>
     <title>Anaconda安装使用笔记</title>
     <link href="http://www.liuchungui.com/2017/09/03/Anaconda%E5%AE%89%E8%A3%85%E4%BD%BF%E7%94%A8/"/>
     <id>http://www.liuchungui.com/2017/09/03/Anaconda安装使用/</id>
     <published>2017-09-03T13:32:07.000Z</published>
-    <updated>2017-09-03T13:41:45.000Z</updated>
+    <updated>2017-09-03T13:44:10.000Z</updated>
     
     <content type="html"><![CDATA[<p><a href="https://www.anaconda.com" target="_blank" rel="external">Anaconda</a>实际上是一个软件发行版，它附带了conda、Python和150多个科学包及其依赖项。其中，conda是一个开源的软件包管理系统和环境管理系统，和<a href="https://github.com/pypa/virtualenv" target="_blank" rel="external">virtualenv</a>功能差不多，可以在电脑上同时安装Python2和Python3。</p>
 <a id="more"></a>
-<h2 id="安装："><a href="#安装：" class="headerlink" title="安装："></a>安装：</h2><p>试了下，不能使用pip安装。需要到官网下载，然后安装。地址：<a href="https://www.anaconda.com/download/" target="_blank" rel="external">https://www.anaconda.com/download/</a></p>
+<h2 id="安装："><a href="#安装：" class="headerlink" title="安装："></a>安装：</h2><p>试了下，不能使用pip安装，需要到<a href="https://www.anaconda.com/download/" target="_blank" rel="external">官网下载</a>，然后安装。</p>
 <h2 id="conda使用"><a href="#conda使用" class="headerlink" title="conda使用"></a>conda使用</h2><h4 id="通过conda管理包"><a href="#通过conda管理包" class="headerlink" title="通过conda管理包"></a>通过conda管理包</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"># 安装pandas</div><div class="line">$ conda install pandas</div><div class="line"># 更新pandas</div><div class="line">$ conda update pandas</div><div class="line"># 删除pandas</div><div class="line">$ conda remove pandas</div><div class="line"># 搜索</div><div class="line">$ conda search pandas</div></pre></td></tr></table></figure>
-<h5 id="管理环境："><a href="#管理环境：" class="headerlink" title="管理环境："></a>管理环境：</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"># 创建py2的python2环境，自带pandas和numpy</div><div class="line">$ conda create -n py2 python=2 pandas numpy</div><div class="line"># 激活py2环境，通过python -V可以看到是python2.7</div><div class="line">$ source activate py2</div><div class="line"># 退出py2环境</div><div class="line">$ source deactivate</div><div class="line"># 创建py3的Python3环境</div><div class="line">$ conda create -n py3 python=3 pandas numpy</div><div class="line"># 激活py3环境</div><div class="line">$ source activate py3</div><div class="line"># py3环境中安装相关包</div><div class="line">$ conda install pandas</div></pre></td></tr></table></figure>
+<h4 id="管理环境："><a href="#管理环境：" class="headerlink" title="管理环境："></a>管理环境：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"># 创建py2的python2环境，自带pandas和numpy</div><div class="line">$ conda create -n py2 python=2 pandas numpy</div><div class="line"># 激活py2环境，通过python -V可以看到是python2.7</div><div class="line">$ source activate py2</div><div class="line"># 退出py2环境</div><div class="line">$ source deactivate</div><div class="line"># 创建py3的Python3环境</div><div class="line">$ conda create -n py3 python=3 pandas numpy</div><div class="line"># 激活py3环境</div><div class="line">$ source activate py3</div><div class="line"># py3环境中安装相关包</div><div class="line">$ conda install pandas</div></pre></td></tr></table></figure>
 <p><strong>注意：</strong>在py3中安装的包，在py2中是看不到的，py2与py3的环境完全是隔离的。</p>
-<h5 id="保存、加载、删除环境"><a href="#保存、加载、删除环境" class="headerlink" title="保存、加载、删除环境"></a>保存、加载、删除环境</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"># 将当前环境导出到environment.yaml</div><div class="line">$ conda env export &gt; environment.yaml</div><div class="line"># 通过environment创建环境，这样可以通过导出环境然后给别人备份你一样的环境</div><div class="line">$ conda env create -f environment.yaml</div><div class="line"># 删除环境</div><div class="line">$ conda env remove -n env_name</div></pre></td></tr></table></figure>
+<h4 id="保存、加载、删除环境"><a href="#保存、加载、删除环境" class="headerlink" title="保存、加载、删除环境"></a>保存、加载、删除环境</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"># 将当前环境导出到environment.yaml</div><div class="line">$ conda env export &gt; environment.yaml</div><div class="line"># 通过environment创建环境，这样可以通过导出环境然后给别人备份你一样的环境</div><div class="line">$ conda env create -f environment.yaml</div><div class="line"># 删除环境</div><div class="line">$ conda env remove -n env_name</div></pre></td></tr></table></figure>
 <h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="http://www.jianshu.com/p/d592527c5903" target="_blank" rel="external">Anaconda简易使用教程
 </a></p>
 <p><a href="https://baike.baidu.com/item/Conda/4500060?fr=aladdin" target="_blank" rel="external">Conda</a></p>
@@ -1457,87 +1534,6 @@
       <category term="Gitbook" scheme="http://www.liuchungui.com/tags/Gitbook/"/>
     
       <category term="Gitbook安装使用" scheme="http://www.liuchungui.com/tags/Gitbook%E5%AE%89%E8%A3%85%E4%BD%BF%E7%94%A8/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>UICollectionView动画</title>
-    <link href="http://www.liuchungui.com/2015/11/24/uicollectionviewdong-hua/"/>
-    <id>http://www.liuchungui.com/2015/11/24/uicollectionviewdong-hua/</id>
-    <published>2015-11-23T16:00:26.000Z</published>
-    <updated>2016-08-06T05:53:45.000Z</updated>
-    
-    <content type="html"><![CDATA[<h2 id="一、简单使用"><a href="#一、简单使用" class="headerlink" title="一、简单使用"></a>一、简单使用</h2><p>UICollectionView更新事件有四种分别是<code>插入</code>、<code>删除</code>、<code>刷新</code>、<code>移动</code>，<br>api使用起来和UITableView类似，具体可以自己在代码中找，如果需要执行多个更新事件，可以放到performBatchUpdates中的updates闭包中作为一组动画，然后全部执行完之后通过completion调回。</p>
-<figure class="highlight swift"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">collectionView.performBatchUpdates(&#123; () -&gt; <span class="type">Void</span> <span class="keyword">in</span></div><div class="line">            collectionView.insertItemsAtIndexPaths(insertIndexPaths)</div><div class="line">            collectionView.moveItemAtIndexPath(currentIndexPath, toIndexPath: toIndexPath)</div><div class="line">            &#125;, completion: &#123; (isFinish) -&gt; <span class="type">Void</span> <span class="keyword">in</span></div><div class="line">        &#125;)</div></pre></td></tr></table></figure>
-<h2 id="二、UICollectionView动画"><a href="#二、UICollectionView动画" class="headerlink" title="二、UICollectionView动画"></a>二、UICollectionView动画</h2><p>四种不同的更新事件，系统默认会带有动画，不过是比较简单的。我们可以自定义layout或者继承flowLayout，在内部实现我们自己想要的动画。下面，我们来说说动画的流程，以及系统默认的四种动画内部是如何的，并且通过代码来修改达到自己想要的动画。<br><a id="more"></a></p>
-<h4 id="CollectionView动画流程"><a href="#CollectionView动画流程" class="headerlink" title="CollectionView动画流程"></a>CollectionView动画流程</h4><p>当我们在外部调用CollectionView相关的api去<code>插入</code>、<code>删除</code>、<code>刷新</code>、<code>移动</code>cell时，首先会通过layout中的<code>layoutAttributesForElementsInRect</code>方法获取更新以后的布局信息，然后通过<code>prepareForCollectionViewUpdates</code>方法来通知layout哪些内容将会发生改变。之后，通过调用layout中的<code>initialLayoutAttributesForAppearingItemAtIndexPath</code>、<code>finalLayoutAttributesForDisappearingItemAtIndexPath</code>方法获取对应indexPath的<code>刚出现时最初布局属性</code>和<code>消失时最终布局属性</code>。而后形成两个动画过程分别是<code>刚出现时最初布局-&gt;更新后布局的出现动画</code>和<code>更新前布局-&gt;消失时最终布局的消失动画</code>，而collectionView中’插入’、’删除’、’刷新’和’移动’动画都是基于这两个动画组合形成的。最后，等这一系列动画执行完之后，最后会调用layout中<code>finalizeCollectionViewUpdates</code>方法，这个方法仍然放在动画块中，我们可以在这个方法当中添加额外的动画。</p>
-<p>从上面流程可以看出，在更新的时候，由于<code>更新前布局</code>和<code>更新后布局</code>都是在更新动画前已经设置好了，我们不能去胡乱更改布局，所以我们只能通过<code>initialLayoutAttributesForAppearingItemAtIndexPath</code>和<code>finalLayoutAttributesForDisappearingItemAtIndexPath</code>两个方法来更改<code>刚出现时最初布局属性</code>和<code>消失时最终布局属性</code>，即我们只能更改<code>出现动画的起点</code>和<code>消失动画的终点</code>。</p>
-<p>为了更方面的下面说明，引申出两个名词：</p>
-<ul>
-<li>出现动画：initialLayoutAttributesForAppearingItemAtIndexPath获取对应indexPath的<code>刚出现时最初布局</code>-&gt;更新后布局变化过程</li>
-<li>消失动画：更新之前的布局-&gt;finalLayoutAttributesForDisappearingItemAtIndexPath方法获取对应indexPath的<code>消失时最终布局</code>的变化过程</li>
-</ul>
-<p>注意，出现动画和消失动画针对的是一个cell单元。</p>
-<p>下面我们通过代码示例来实现插入、删除、刷新、移动动画。<br>代码示例工程：<a href="https://github.com/liuchungui/UICollectionViewAnimationDemo" target="_blank" rel="external">UICollectionViewAnimationDemo</a></p>
-<p>在这个Demo工程中有一个<code>BGSelectImageLayout</code>，它是CollectionView的layout，它的布局方式是水平横向滑动，并且只有一组，每一个普通的cell大小都是<code>itemSize</code>，而选中的cell则宽度是<code>itemSize*2</code>。</p>
-<h4 id="插入动画："><a href="#插入动画：" class="headerlink" title="插入动画："></a>插入动画：</h4><p>在当前的布局下，每插入一个cell时，都会影响它后面所有cell布局变化。<br>例如CollectionView有一行三个cell，为了更好的说明将indexPath是(0,0),(0,1),(0,2)标记为0，1，2。当在第1个位置插入一个cell时，如下图</p>
-<p><img src="http://ww2.sinaimg.cn/large/7746cd07jw1eyba1ih4nvj20re0fs75l.jpg" alt=""></p>
-<p>而在这个插入过程中，视觉上会有三个动画过程。new插入到位置1为<code>过程1</code>，1移动一个单位到2为<code>过程2</code>，2移动一个单位到一个新的位置3为<code>过程3</code>，如下图：</p>
-<p><img src="http://ww3.sinaimg.cn/large/7746cd07jw1eyba58t45gj20yc0g6760.jpg" alt=""></p>
-<p>虽然视觉上只有三个动画过程，但其实有五个动画。其中，过程1是1位置的<code>出现动画</code>；过程2是1位置的<code>消失动画</code>和2位置的<code>出现动画</code>重合而成；过程3是2位置的<code>消失动画</code>和3位置的<code>出现动画</code>。</p>
-<p>其中值得注意的三点，一是除了最后一个，前面的cell消失动画与它后面cell出现动画重合，这样看起来就是当前位置的cell向后平移了一个位置；二是最后一个cell只有出现动画，没有消失动画，整个过程<code>出现动画会多一个</code>；三是插入的cell的出现动画是默认是alpha从0到1的淡入效果。</p>
-<p>在代码中，想获得一个插入的cell从小变大的出现效果和其它cell整体向后移动一个位置的动画效果，可以如下实现：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">    override func initialLayoutAttributesForAppearingItemAtIndexPath(itemIndexPath: NSIndexPath) -&gt; UICollectionViewLayoutAttributes? &#123;</div><div class="line">        let attributes = super.initialLayoutAttributesForAppearingItemAtIndexPath(itemIndexPath)?.copy() as? UICollectionViewLayoutAttributes</div><div class="line">        if self.insertIndexPathArr.contains(itemIndexPath) &#123;</div><div class="line">            attributes?.transform = CGAffineTransformMakeScale(0.0, 0.0)</div><div class="line">            attributes?.alpha = 0</div><div class="line">        &#125;</div><div class="line">        else &#123;</div><div class="line">            //设置为前一个item的frame</div><div class="line">            attributes?.frame = self.currentFrameWithIndexPath(NSIndexPath(forRow: itemIndexPath.row-1, inSection: itemIndexPath.section))</div><div class="line">        &#125;</div><div class="line">        return attributes</div><div class="line">&#125;</div><div class="line">override func finalLayoutAttributesForDisappearingItemAtIndexPath(itemIndexPath: NSIndexPath) -&gt; UICollectionViewLayoutAttributes? &#123;</div><div class="line">    	 let attributes = super.finalLayoutAttributesForDisappearingItemAtIndexPath(itemIndexPath)?.copy() as? UICollectionViewLayoutAttributes</div><div class="line">         attributes?.frame = self.currentFrameWithIndexPath(NSIndexPath(forRow: itemIndexPath.row+1, inSection: itemIndexPath.section))</div><div class="line">         return attributes</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>这里为了看到效果，我在模拟器的Debug模式下勾选了Slow Animations调慢了动画:<br><img src="http://ww3.sinaimg.cn/large/7746cd07jw1eyaa2ommv4g208j0frab5.gif" alt=""></p>
-<h4 id="删除动画："><a href="#删除动画：" class="headerlink" title="删除动画："></a>删除动画：</h4><p>在上面的位置1插入一个cell后，cell的数量变成了4个，分别是0、1、2、3，它们对应的indexPath为(0,0)、(0,1)、(0,2)、(0,3)。当要删除位置1的cell时，与插入类似，系统默认也会有三个动画过程，如下图：</p>
-<p><img src="http://ww3.sinaimg.cn/large/7746cd07jw1eybbqnkm4cj20xo0dita5.jpg" alt=""></p>
-<p>其中，动画过程1是在位置1执行一个消失动画；过程2是位置1的出现动画和位置2的消失动画重合而成；过程3是位置2的出现动画和位置3的消失动画重合而成。     </p>
-<p><strong>需要注意的是</strong>，一是与插入不同，重合后的效果是cell向前平移了一个位置；二是最后一个位置只有消失动画没有出现动画，整个过程消失动画数会多一个；三是删除的cell的出现动画默认是从1到0的淡出效果。</p>
-<p>在代码中，实现一个与插入相对应的动画，即删除的cell从大到小的淡出效果和其它cell整体向前移动一个位置的效果，可以如下实现：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">override func initialLayoutAttributesForAppearingItemAtIndexPath(itemIndexPath: NSIndexPath) -&gt; UICollectionViewLayoutAttributes? &#123;</div><div class="line">    let attributes = super.initialLayoutAttributesForAppearingItemAtIndexPath(itemIndexPath)?.copy() as? UICollectionViewLayoutAttributes</div><div class="line">    attributes?.frame = self.currentFrameWithIndexPath(NSIndexPath(forRow: itemIndexPath.row+1, inSection: itemIndexPath.section))</div><div class="line">    return attributes</div><div class="line">&#125;</div><div class="line">override func finalLayoutAttributesForDisappearingItemAtIndexPath(itemIndexPath: NSIndexPath) -&gt; UICollectionViewLayoutAttributes? &#123;</div><div class="line">        let attributes = super.finalLayoutAttributesForDisappearingItemAtIndexPath(itemIndexPath)?.copy() as? UICollectionViewLayoutAttributes</div><div class="line">    if self.deleteIndexPathArr.contains(itemIndexPath) &#123;</div><div class="line">        //这里写成缩放成(0，0)直接就不见了</div><div class="line">        attributes?.transform = CGAffineTransformMakeScale(0.1, 0.1)</div><div class="line">        attributes?.alpha = 0.0</div><div class="line">    &#125;</div><div class="line">    else &#123;</div><div class="line">        attributes?.frame = self.currentFrameWithIndexPath(NSIndexPath(forRow: itemIndexPath.row-1, inSection: itemIndexPath.section))</div><div class="line">    &#125;</div><div class="line">    return attributes</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>效果如下：</p>
-<p><img src="http://ww2.sinaimg.cn/large/7746cd07jw1eyaqorep4rg208j0g9wgw.gif" alt=""></p>
-<h4 id="刷新动画："><a href="#刷新动画：" class="headerlink" title="刷新动画："></a>刷新动画：</h4><p>在官方的解释中，刷新是先删除然后插入。其实它就是先执行所有cell的消失动画；在此之后，它又会执行所有cell的出现动画。<br>在系统当中，需要注意的是默认出现动画是一个alpha从0到1的淡入效果，而消失动画则是alpha从1到0的淡入效果；与插入动画和删除动画不同的是，刷新动画会成对存在，即消失动画与出现动画数量相等。</p>
-<p>在这里，实现一个点击某个cell时，当前选中的cell变大的效果，而它旁边的cell被推开的动画效果。在这里我不需要淡入和淡出效果，所以修改了消失时alpha为1.0，代码如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">override func initialLayoutAttributesForAppearingItemAtIndexPath(itemIndexPath: NSIndexPath) -&gt; UICollectionViewLayoutAttributes? &#123;</div><div class="line">    let attributes = super.initialLayoutAttributesForAppearingItemAtIndexPath(itemIndexPath)?.copy() as? UICollectionViewLayoutAttributes</div><div class="line">    attributes?.frame = self.lastFrameWithIndexPath(itemIndexPath)</div><div class="line">    return attributes</div><div class="line">&#125;</div><div class="line">override func finalLayoutAttributesForDisappearingItemAtIndexPath(itemIndexPath: NSIndexPath) -&gt; UICollectionViewLayoutAttributes? &#123;</div><div class="line">    let attributes = super.finalLayoutAttributesForDisappearingItemAtIndexPath(itemIndexPath)?.copy() as? UICollectionViewLayoutAttributes</div><div class="line">    //注意，这里alpha设置为不透明，系统默认返回是0，即一个淡出的效果</div><div class="line">    attributes?.alpha = 1.0</div><div class="line">    attributes?.frame = self.currentFrameWithIndexPath(itemIndexPath)</div><div class="line">    return attributes</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>效果如下：</p>
-<p><img src="http://ww2.sinaimg.cn/large/7746cd07jw1eyb04xye32g208j0g9755.gif" alt=""></p>
-<h4 id="移动动画："><a href="#移动动画：" class="headerlink" title="移动动画："></a>移动动画：</h4><p>移动一个cell到另一个位置时，会引起当前cell到目标位置之间所有cell布局发生变化，从而形成一系列的动画。在这个动画过程中，每个indexPath都会有一个出现动画和一个消失动画。</p>
-<p>例如，在系统默认情况下，0位置cell移动到2位置cell的时候，我们会看到三个动画过程，如下图：</p>
-<p><img src="http://ww1.sinaimg.cn/large/7746cd07jw1eyazemzgkzj20qa0bqt9u.jpg" alt=""></p>
-<p>但是，其实它内部执行了六个动画，只是其中两两之间动画重合了而已。其中动画过程1是1位置的消失动画和0位置出现动画重合；动画过程2是0位置的消失动画和2位置的出现动画重合；动画过程3是2位置的消失动画和1位置的出现动画重合。</p>
-<p><strong>其中值得注意的有两点：</strong><br>1、消失动画和出现动画数量相等<br>2、动画的重合与刷新动画不同，与插入和删除动画类似，它们不同位置之间的消失动画与出现动画重合。</p>
-<p>在这里，实现一个移动cell时旋转180°到目标位置效果，实现如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"> override func initialLayoutAttributesForAppearingItemAtIndexPath(itemIndexPath: NSIndexPath) -&gt; UICollectionViewLayoutAttributes? &#123;</div><div class="line">    let attributes = super.initialLayoutAttributesForAppearingItemAtIndexPath(itemIndexPath)?.copy() as? UICollectionViewLayoutAttributes</div><div class="line">    if itemIndexPath == self.afterMoveIndexPath &#123;</div><div class="line">        //afterMoveIndexPath的消失动画和beforeMoveIndexPath的出现动画重合</div><div class="line">        //init是设置起点，而final设置终点，理论是不重合的</div><div class="line">        attributes?.transform3D = CATransform3DMakeRotation(-1*CGFloat(M_PI), 0, 0, -1)</div><div class="line">    &#125;</div><div class="line">    return attributes</div><div class="line">&#125;</div><div class="line">override func finalLayoutAttributesForDisappearingItemAtIndexPath(itemIndexPath: NSIndexPath) -&gt; UICollectionViewLayoutAttributes? &#123;</div><div class="line">    let attributes = super.finalLayoutAttributesForDisappearingItemAtIndexPath(itemIndexPath)?.copy() as? UICollectionViewLayoutAttributes</div><div class="line">    if self.beforeMoveIndexPath == itemIndexPath &#123;</div><div class="line">        //afterMoveIndexPath的消失动画和beforeMoveIndexPath的出现动画重合，设置他们旋转的角度一样，方向相反</div><div class="line">        attributes?.transform3D = CATransform3DMakeRotation(-1*CGFloat(M_PI), 0, 0, -1)</div><div class="line">    &#125;</div><div class="line">    return attributes</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>效果如下：</p>
-<p><img src="http://ww1.sinaimg.cn/large/7746cd07jw1eyb0375fz7g208j0g9go4.gif" alt=""></p>
-<p>上面都是纯颜色，在示例工程<a href="https://github.com/liuchungui/UICollectionViewAnimationDemo" target="_blank" rel="external">UICollectionViewAnimationDemo</a>中，我还添加了一个图片的<code>BGSimpleImageSelectCollectionViewDemo2</code>。布局基本上相同，唯一不同的是图片因为上下不可以倒转，没办法做到统一的旋转180°。</p>
-<p>效果如下：</p>
-<p><img src="http://ww3.sinaimg.cn/large/7746cd07jw1eybewu3qyxg208j0g9k2r.gif" alt=""></p>
-<h2 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h2><p>1、CollectionView更新时，执行动画的时候会访问layout中哪些api，整个流程是如何形成的<br>2、修改CollectionView动画就是修改出现动画的起点和消失动画的终点，即layout当中的initialLayoutAttributesForAppearingItemAtIndexPath和finalLayoutAttributesForDisappearingItemAtIndexPath方法进行修改。<br>3、插入、删除、刷新、移动内部执行哪些动画，我们如何去修改。    </p>
-<h2 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h2><p><a href="http://objccn.io/issue-12-5/" target="_blank" rel="external">Collection View 动画</a>   </p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;h2 id=&quot;一、简单使用&quot;&gt;&lt;a href=&quot;#一、简单使用&quot; class=&quot;headerlink&quot; title=&quot;一、简单使用&quot;&gt;&lt;/a&gt;一、简单使用&lt;/h2&gt;&lt;p&gt;UICollectionView更新事件有四种分别是&lt;code&gt;插入&lt;/code&gt;、&lt;code&gt;删除&lt;/code&gt;、&lt;code&gt;刷新&lt;/code&gt;、&lt;code&gt;移动&lt;/code&gt;，&lt;br&gt;api使用起来和UITableView类似，具体可以自己在代码中找，如果需要执行多个更新事件，可以放到performBatchUpdates中的updates闭包中作为一组动画，然后全部执行完之后通过completion调回。&lt;/p&gt;
-&lt;figure class=&quot;highlight swift&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;collectionView.performBatchUpdates(&amp;#123; () -&amp;gt; &lt;span class=&quot;type&quot;&gt;Void&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;in&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;            collectionView.insertItemsAtIndexPaths(insertIndexPaths)&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;            collectionView.moveItemAtIndexPath(currentIndexPath, toIndexPath: toIndexPath)&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;            &amp;#125;, completion: &amp;#123; (isFinish) -&amp;gt; &lt;span class=&quot;type&quot;&gt;Void&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;in&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        &amp;#125;)&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
-&lt;h2 id=&quot;二、UICollectionView动画&quot;&gt;&lt;a href=&quot;#二、UICollectionView动画&quot; class=&quot;headerlink&quot; title=&quot;二、UICollectionView动画&quot;&gt;&lt;/a&gt;二、UICollectionView动画&lt;/h2&gt;&lt;p&gt;四种不同的更新事件，系统默认会带有动画，不过是比较简单的。我们可以自定义layout或者继承flowLayout，在内部实现我们自己想要的动画。下面，我们来说说动画的流程，以及系统默认的四种动画内部是如何的，并且通过代码来修改达到自己想要的动画。&lt;br&gt;
-    
-    </summary>
-    
-      <category term="iOS" scheme="http://www.liuchungui.com/categories/iOS/"/>
-    
-    
-      <category term="UICollectionView" scheme="http://www.liuchungui.com/tags/UICollectionView/"/>
-    
-      <category term="UICollectionViewLayout" scheme="http://www.liuchungui.com/tags/UICollectionViewLayout/"/>
-    
-      <category term="CustomLayout，CollectionView" scheme="http://www.liuchungui.com/tags/CustomLayout%EF%BC%8CCollectionView/"/>
-    
-      <category term="CollectionView动画" scheme="http://www.liuchungui.com/tags/CollectionView%E5%8A%A8%E7%94%BB/"/>
-    
-      <category term="动画" scheme="http://www.liuchungui.com/tags/%E5%8A%A8%E7%94%BB/"/>
     
   </entry>
   
