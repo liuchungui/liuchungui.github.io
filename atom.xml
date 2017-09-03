@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://www.liuchungui.com/"/>
-  <updated>2017-09-03T14:26:03.000Z</updated>
+  <updated>2017-09-03T16:07:38.000Z</updated>
   <id>http://www.liuchungui.com/</id>
   
   <author>
@@ -14,6 +14,67 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>word2vec初体验</title>
+    <link href="http://www.liuchungui.com/2017/09/04/word2vec%E5%88%9D%E4%BD%93%E9%AA%8C/"/>
+    <id>http://www.liuchungui.com/2017/09/04/word2vec初体验/</id>
+    <published>2017-09-03T16:05:07.000Z</published>
+    <updated>2017-09-03T16:07:38.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>上周，有缘接触到word2vec，了解了它的强大，这篇文章就写写它吧！</p>
+<p>实现word2vec的方式有很多，我所知道的就有手搓、使用tensorflow和gensim。本篇文章是以<a href="https://github.com/RaRe-Technologies/gensim/blob/develop/docs/notebooks/word2vec.ipynb" target="_blank" rel="external">gensim实现</a>，代码很简单。如果想看tensorflow实现的参考<a href="https://www.tensorflow.org/tutorials/word2vec" target="_blank" rel="external">Vector Representations of Words</a>。</p>
+<p>想直接跑代码查看效果，可点击<a href="https://github.com/liuchungui/Word2VecDemo" target="_blank" rel="external">Word2VecDemo</a>下载。</p>
+<a id="more"></a>
+<p>整篇文章分成四部分：</p>
+<ul>
+<li>第一步：获得数据，建立语料库</li>
+<li>第二步：分词</li>
+<li>第三步：训练</li>
+<li>第四步：查看效果</li>
+</ul>
+<h2 id="第一步：获得数据，建立语料库"><a href="#第一步：获得数据，建立语料库" class="headerlink" title="第一步：获得数据，建立语料库"></a>第一步：获得数据，建立语料库</h2><p>本打算下载<a href="https://dumps.wikimedia.org/zhwiki/" target="_blank" rel="external">维基百科中文语料库</a>来跑一下，但由于时间原因，还没试。当前，使用的是我从一个法律网站爬下来30万条数据。爬数据的框架，是使用<a href="https://github.com/scrapy/scrapy" target="_blank" rel="external">scrapy</a>。</p>
+<h2 id="第二步：分词"><a href="#第二步：分词" class="headerlink" title="第二步：分词"></a>第二步：分词</h2><p>在之前，我一个同学盼哥跟我说过，他跑过tensorflow中word2vec的例子，需要注意的是英文不需要分词，而中文需要分词。当时没明白过来，但真正看到示例代码的时候，才知道真这样。<br>然后，我就在github中搜到了<a href="https://github.com/fxsjy/jieba" target="_blank" rel="external">jieba</a>，看到<code>9k+ star</code>，分词就用它了。</p>
+<p>之后，就从数据库中取出数据，使用<code>jieba</code>分词，存储到<code>data/case.txt</code>中。</p>
+<h2 id="第三步：训练"><a href="#第三步：训练" class="headerlink" title="第三步：训练"></a>第三步：训练</h2><p><code>gensim</code>训练特别简单，就是一个方法，代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line">#coding: utf-8</div><div class="line">#中文版处理的word2vec</div><div class="line"></div><div class="line">from gensim import models</div><div class="line"># 引入日志配置</div><div class="line">import logging</div><div class="line"></div><div class="line">logging.basicConfig(format=&apos;%(asctime)s : %(levelname)s : %(message)s&apos;, level=logging.INFO)</div><div class="line"></div><div class="line">file_path = &quot;./data/case.txt&quot;</div><div class="line"></div><div class="line">class MySentences(object):</div><div class="line">    def __init__(self, file_path):</div><div class="line">        self.file_path = file_path</div><div class="line"></div><div class="line">    def __iter__(self):</div><div class="line">        for line in open(file_path):</div><div class="line">            # split当只有一个的时候,返回单个字符串,多个则返回数组</div><div class="line">            words = line.split(&quot; &quot;)</div><div class="line">            result_word = []</div><div class="line">            for word in words:</div><div class="line">                if word and word != &apos;\n&apos;:</div><div class="line">                    result_word.append(word)</div><div class="line">            yield result_word</div><div class="line"></div><div class="line">sentences = MySentences(file_path)</div><div class="line">model = models.Word2Vec(sentences, workers=20, min_count=5, size=200)</div><div class="line"></div><div class="line"># 保存模型</div><div class="line">model.save(&quot;./cache/zh_word2vec&quot;)</div></pre></td></tr></table></figure>
+<p>需要注意的是：</p>
+<h4 id="1、models-Word2Vec中的参数："><a href="#1、models-Word2Vec中的参数：" class="headerlink" title="1、models.Word2Vec中的参数："></a>1、models.Word2Vec中的参数：</h4><ul>
+<li>sentences: 可以是个二维数组，例如：[[‘今天’, ‘是’, ‘星期天’], [‘明天’, ‘是’, ‘星期一’]]，但一般语料库都比较大，所以都是使用yield方式。</li>
+<li>workers: 训练数据的线程数</li>
+<li>min_count: 当某个词出现的平率少于这个数，就会被忽视</li>
+<li>size: 存储向量的维度，维度越大存储的信息越多，越准确</li>
+</ul>
+<p>####2、保存训练好的模型到<code>./cache/zh_word2vec</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">model.save(&quot;./cache/zh_word2vec&quot;)</div></pre></td></tr></table></figure></p>
+<p>后面查看效果的时候，会用到。</p>
+<h2 id="第四步，查看效果"><a href="#第四步，查看效果" class="headerlink" title="第四步，查看效果"></a>第四步，查看效果</h2><p>代码实现流程很简单，就是使用<code>models.Word2Vec.load</code>加载训练好的模型，然后使用<code>model</code>模块下的API进行操作。</p>
+<p>代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div></pre></td><td class="code"><pre><div class="line">#coding: utf-8</div><div class="line">#中文版处理的word2vec使用</div><div class="line"></div><div class="line">from gensim import models</div><div class="line"># 引入日志配置</div><div class="line">import logging</div><div class="line"></div><div class="line">logging.basicConfig(format=&apos;%(asctime)s : %(levelname)s : %(message)s&apos;, level=logging.INFO)</div><div class="line"></div><div class="line">model = models.Word2Vec.load(&quot;./cache/zh_word2vec&quot;)</div><div class="line"></div><div class="line">print &apos;\n女人 + 丈夫 - 男人:&apos;</div><div class="line">result = model.most_similar(positive=[&apos;女人&apos;, &apos;丈夫&apos;], negative=[&apos;男人&apos;], topn=1)</div><div class="line">print result[0][0], result[0][1]</div><div class="line"></div><div class="line">print &apos;\n抢夺和抢劫相近程度:&apos;</div><div class="line">print model.similarity(&apos;抢夺&apos;, &apos;抢劫&apos;)</div><div class="line"></div><div class="line">print &quot;\n抢劫的近义词&quot;</div><div class="line">result = model.most_similar([&apos;抢劫&apos;])</div><div class="line">for value in result:</div><div class="line">    print value[0], value[1]</div><div class="line"></div><div class="line">print &apos;\n公司法的近义词:&apos;</div><div class="line">result = model.most_similar([&apos;公司法&apos;])</div><div class="line">for value in result:</div><div class="line">    print value[0], value[1]</div><div class="line"></div><div class="line">print &apos;\n公司法和协议组成的近义词:&apos;</div><div class="line">result = model.most_similar([&apos;公司法&apos;, &apos;协议&apos;])</div><div class="line">for value in result:</div><div class="line">    print value[0], value[1]</div><div class="line"></div><div class="line">print &apos;\n委托书的近义词:&apos;</div><div class="line">result = model.most_similar([&apos;委托书&apos;])</div><div class="line">for value in result:</div><div class="line">    print value[0], value[1]</div><div class="line"></div><div class="line">print &apos;\n投资的近义词:&apos;</div><div class="line">result = model.most_similar([&apos;投资&apos;])</div><div class="line">for value in result:</div><div class="line">    print value[0], value[1]</div><div class="line"></div><div class="line"></div><div class="line">print &quot;\n找出投资、抢劫、强奸、盗窃中,哪个词不是一组的:&quot;</div><div class="line">result = model.doesnt_match([&apos;投资&apos;, &apos;抢劫&apos;, &apos;强奸&apos;, &apos;盗窃&apos;])</div><div class="line">print result</div></pre></td></tr></table></figure>
+<p>结果为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div></pre></td><td class="code"><pre><div class="line">女人 + 丈夫 - 男人:</div><div class="line">妻子 0.638504564762</div><div class="line"></div><div class="line">抢夺和抢劫相近程度:</div><div class="line">0.80240327463</div><div class="line"></div><div class="line">抢劫的近义词</div><div class="line">抢夺 0.802403330803</div><div class="line">盗窃 0.800097942352</div><div class="line">作案 0.797169923782</div><div class="line">抢劫犯罪 0.74809718132</div><div class="line">敲诈勒索 0.745306968689</div><div class="line">诈骗 0.706851243973</div><div class="line">行窃 0.706330060959</div><div class="line">强奸 0.685930252075</div><div class="line">共谋 0.683236837387</div><div class="line">飞车 0.653475642204</div><div class="line"></div><div class="line">公司法的近义词:</div><div class="line">继承法 0.759847998619</div><div class="line">行政处罚法 0.738676190376</div><div class="line">土地管理法 0.73749756813</div><div class="line">票据法 0.735802054405</div><div class="line">物权法 0.734579086304</div><div class="line">产品质量法 0.702591955662</div><div class="line">保险法 0.695441961288</div><div class="line">著作权法 0.683708071709</div><div class="line">消防法 0.682392597198</div><div class="line">劳动法 0.670343637466</div><div class="line"></div><div class="line">公司法和协议组成的近义词:</div><div class="line">协议书 0.666539371014</div><div class="line">消防法 0.601478874683</div><div class="line">拍卖法 0.584682762623</div><div class="line">合同 0.582781195641</div><div class="line">继承法 0.573017239571</div><div class="line">公司章程 0.572464048862</div><div class="line">票据法 0.560360312462</div><div class="line">补充协议 0.551261663437</div><div class="line">物权法 0.549430251122</div><div class="line">土地管理法 0.548958778381</div><div class="line"></div><div class="line">委托书的近义词:</div><div class="line">授权书 0.733257114887</div><div class="line">书面材料 0.667756915092</div><div class="line">声明书 0.649828374386</div><div class="line">声明 0.635425388813</div><div class="line">承诺函 0.623859405518</div><div class="line">承诺书 0.614668488503</div><div class="line">担保书 0.598217010498</div><div class="line">确认函 0.597471117973</div><div class="line">便条 0.589580059052</div><div class="line">函件 0.586620807648</div><div class="line"></div><div class="line">投资的近义词:</div><div class="line">出资 0.632706165314</div><div class="line">入股 0.615086615086</div><div class="line">投入 0.525379896164</div><div class="line">利润分配 0.503669142723</div><div class="line">股票 0.50173163414</div><div class="line">资金 0.495302915573</div><div class="line">回报 0.493470430374</div><div class="line">开发 0.492733627558</div><div class="line">增资 0.49268245697</div><div class="line">顾问 0.490810781717</div><div class="line"></div><div class="line">找出投资、抢劫、强奸、盗窃中,哪个词不是一组的:</div><div class="line">投资</div></pre></td></tr></table></figure>
+<p>可以看出来，整个模型已经有点效果出来了。若是，整个语料库再扩大十倍，应该会更准确很多。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>gensim实现的word2vec，使用特别简单，效果也很不错。不过，后期打算深入了解原理，然后使用tensorflow的方式进行训练，看效果能否更好。</p>
+<p>本来，打算再写一篇doc2vec的，不过，因为至今未看到很大的效果，所以留待以后吧。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;上周，有缘接触到word2vec，了解了它的强大，这篇文章就写写它吧！&lt;/p&gt;
+&lt;p&gt;实现word2vec的方式有很多，我所知道的就有手搓、使用tensorflow和gensim。本篇文章是以&lt;a href=&quot;https://github.com/RaRe-Technologies/gensim/blob/develop/docs/notebooks/word2vec.ipynb&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;gensim实现&lt;/a&gt;，代码很简单。如果想看tensorflow实现的参考&lt;a href=&quot;https://www.tensorflow.org/tutorials/word2vec&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Vector Representations of Words&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;想直接跑代码查看效果，可点击&lt;a href=&quot;https://github.com/liuchungui/Word2VecDemo&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Word2VecDemo&lt;/a&gt;下载。&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="Python" scheme="http://www.liuchungui.com/categories/Python/"/>
+    
+    
+      <category term="python" scheme="http://www.liuchungui.com/tags/python/"/>
+    
+      <category term="word2vec" scheme="http://www.liuchungui.com/tags/word2vec/"/>
+    
+      <category term="word2vec实践" scheme="http://www.liuchungui.com/tags/word2vec%E5%AE%9E%E8%B7%B5/"/>
+    
+  </entry>
   
   <entry>
     <title>Jupyter notebook安装使用</title>
@@ -77,15 +138,15 @@
       <category term="Python" scheme="http://www.liuchungui.com/categories/Python/"/>
     
     
+      <category term="Jupyter notebook" scheme="http://www.liuchungui.com/tags/Jupyter-notebook/"/>
+    
+      <category term="Jupyter" scheme="http://www.liuchungui.com/tags/Jupyter/"/>
+    
       <category term="Anaconda" scheme="http://www.liuchungui.com/tags/Anaconda/"/>
     
       <category term="conda" scheme="http://www.liuchungui.com/tags/conda/"/>
     
       <category term="python" scheme="http://www.liuchungui.com/tags/python/"/>
-    
-      <category term="Jupyter notebook" scheme="http://www.liuchungui.com/tags/Jupyter-notebook/"/>
-    
-      <category term="Jupyter" scheme="http://www.liuchungui.com/tags/Jupyter/"/>
     
   </entry>
   
@@ -1470,67 +1531,6 @@
     
       <category term="年度总结" scheme="http://www.liuchungui.com/categories/%E5%B9%B4%E5%BA%A6%E6%80%BB%E7%BB%93/"/>
     
-    
-  </entry>
-  
-  <entry>
-    <title>Gitbook安装使用</title>
-    <link href="http://www.liuchungui.com/2015/12/26/gitbookan-zhuang-shi-yong/"/>
-    <id>http://www.liuchungui.com/2015/12/26/gitbookan-zhuang-shi-yong/</id>
-    <published>2015-12-26T09:15:07.000Z</published>
-    <updated>2016-08-06T05:52:13.000Z</updated>
-    
-    <content type="html"><![CDATA[<blockquote>
-<p>GitBook 是一个基于 Node.js 的命令行工具，可使用 Github/Git 和 Markdown 来制作精美的电子书。</p>
-</blockquote>
-<p>在这篇博客中，记录了一下gitbook的安装使用，更详细的使用请查看下面内容：<br>gitbook详细使用文档：<a href="help.gitbook.com">help.gitbook.com</a><br>gitbook官网:<a href="https://www.gitbook.com" target="_blank" rel="external">https://www.gitbook.com</a><br>github地址:<a href="https://github.com/GitbookIO/gitbook" target="_blank" rel="external">https://github.com/GitbookIO/gitbook</a></p>
-<h3 id="1、安装"><a href="#1、安装" class="headerlink" title="1、安装"></a>1、安装</h3><p>首先到<a href="http://nodejs.cn/" target="_blank" rel="external">nodejs</a>下载，安装Node.js的包管理器npm。<br>然后，通过<code>sudo npm install -g gitbook-cli</code>命令安装gitbook<br><a id="more"></a></p>
-<h3 id="2、初始化gitbook"><a href="#2、初始化gitbook" class="headerlink" title="2、初始化gitbook"></a>2、初始化gitbook</h3><p>创建一个文件夹，然后初始化</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">mkdir test</div><div class="line">gitbook init</div></pre></td></tr></table></figure>
-<p>初始化之后会有两个文件README.md和SUMMARY.md,README.md 是作品的介绍，SUMMARY.md 是作品的目录结构，里面要包含一个章节标题和文件索引的列表。</p>
-<p>下面是一个SUMMARY.md文件的内容：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"># Summary</div><div class="line"></div><div class="line">This is the summary of my book.</div><div class="line"></div><div class="line">* [section 1](section1/README.md)</div><div class="line">    * [example 1](section1/example1.md)</div><div class="line">    * [example 2](section1/example2.md)</div><div class="line">* [section 2](section2/README.md)</div><div class="line">    * [example 1](section2/example1.md)</div></pre></td></tr></table></figure>
-<p>在这里，我们可以先创建对应的文件夹，然后在里面编辑对应的内容，之后更新SUMMARY.md这个目录文件；如果在编辑之前我们已经确定好了内容标题和目录，也可以先编辑SUMMARY.md文件，然后通过<code>gitbook init</code>来初始化一遍，它会自动创建文件目录和对应的md文件。</p>
-<h3 id="3、编辑内容，并查看"><a href="#3、编辑内容，并查看" class="headerlink" title="3、编辑内容，并查看"></a>3、编辑内容，并查看</h3><p>初始化书以后，我们就可以对我们的内容进行编辑了。<br>例如：<br>我要将本篇博客放入目录为gitbook下，首先在test目录建立一个gitbook文件夹，然后建立一个<code>gitbook安装使用.md</code>文件，目录如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">|____gitbook</div><div class="line">| |____gitbook安装使用.md</div><div class="line">|____README.md</div><div class="line">|____section1</div><div class="line">| |____example1.md</div><div class="line">| |____example2.md</div><div class="line">| |____README.md</div><div class="line">| |____test.md</div><div class="line">|____section2</div><div class="line">| |____example1.md</div><div class="line">| |____README.md</div><div class="line">|____SUMMARY.md</div></pre></td></tr></table></figure>
-<p>之后，我们像写博客一样，使用markdown语言编辑<code>gitbook安装使用.md</code>中的内容。<br>编辑完之后，需要将<code>gitbook安装使用.md</code>这篇文章放入SUMMARY.md目录中。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"># Summary</div><div class="line">* [gitbook]</div><div class="line">    * [gitbook安装使用](gitbook/gitbook安装使用.md)</div><div class="line">* [section 1](section1/README.md)</div><div class="line">    * [example 1](section1/example1.md)</div><div class="line">    * [example 2](section1/example2.md)</div><div class="line">* [section 2](section2/README.md)</div></pre></td></tr></table></figure>
-<p>这样，就加入了<code>gitbook安装使用.md</code>这篇文章。之后，可以使用下面命令启动一个本地web服务，来预览本地的内容。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">gitbook serve</div></pre></td></tr></table></figure>
-<p>这个时候，简洁、优雅的界面就出来了。<br><img src="http://ww1.sinaimg.cn/large/7746cd07gw1eynt17tm6yj20zh0ey0ua.jpg" alt=""></p>
-<p>注意：</p>
-<ul>
-<li>在查看的时候没有看到刚刚加入的文章，查看一下<code>SUMMARY.md</code>是否添加</li>
-<li>在预览的时候能看到文章，但是点击不起作用，查看是否目录正确 </li>
-</ul>
-<p><strong>如果想将gitbook放到web服务器作为网站浏览，先使用gitbook build命令，之后会生成静态网页到_book目录下，只要将_book目录copy到web服务器上就行了。</strong></p>
-<h3 id="4、发布电子书gitbook官网"><a href="#4、发布电子书gitbook官网" class="headerlink" title="4、发布电子书gitbook官网"></a>4、发布电子书gitbook官网</h3><p>到<a href="https://www.gitbook.com/" target="_blank" rel="external">gitbook官网</a>创建一个账号，创建一本<code>test</code>电子书，创建电子书的时候，gitbook会创建git仓库<a href="https://git.gitbook.liuchungui/test.git。" target="_blank" rel="external">https://git.gitbook.liuchungui/test.git。</a></p>
-<p>然后下载<a href="https://www.gitbook.com/editor" target="_blank" rel="external">gitbook editor</a>，登陆账号，将电子书clone一份下来，将前面新建电子书将前面编辑的内容拖到这个电子书下，然后同步到官网就可以看到内容了，例如我的<a href="https://liuchungui.gitbooks.io/test/content/" target="_blank" rel="external">test</a>。</p>
-<p>上面的操作我们也可以用命令行进行操作。先在官网建立一个电子书，然后clone下来，之后编写我们的电子书内容和目录，然后使用<a href="http://www.liuchungui.com/blog/2015/10/23/gitzong-jie/">git命令</a>将内容Push到git仓库就行了。</p>
-<h3 id="5、导出电子书"><a href="#5、导出电子书" class="headerlink" title="5、导出电子书"></a>5、导出电子书</h3><p>其实，上面建立的<code>test</code>已经在官网上可以进行电子书下载了，有三种格式<code>PDF</code>、<code>EPUB</code>、<code>MOBI</code>。<br>而在本地，使用下面命令导出</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">pdf [options] [source_dir] 构建 pdf 格式的电子书</div><div class="line">epub [options] [source_dir] 构建 ePub 格式的电子书</div><div class="line">mobi [options] [source_dir] 构建 mobi 格式的电子书</div></pre></td></tr></table></figure>
-<p>如果导出失败，需要我们下载<a href="http://calibre-ebook.com/" target="_blank" rel="external">Calibre</a>进行电子书转换。</p>
-<h3 id="gitbook的相关命令"><a href="#gitbook的相关命令" class="headerlink" title="gitbook的相关命令"></a>gitbook的相关命令</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">build [options] [source_dir] 根据文档目录构建书籍</div><div class="line">serve [options] [source_dir] 构建并且提供书籍的 web 托管</div><div class="line">install [options] [source_dir] 安装 GitBook 插件</div><div class="line">pdf [options] [source_dir] 构建 pdf 格式的电子书</div><div class="line">epub [options] [source_dir] 构建 ePub 格式的电子书</div><div class="line">mobi [options] [source_dir] 构建 mobi 格式的电子书</div><div class="line">init [source_dir]      根据 SUMARRY.md 文件的内容生成相应的目录和文件</div><div class="line">publish [source_dir]   如果已绑定 GitBook.io，该命令可以直接发布书籍</div><div class="line"></div><div class="line">-h, --help     输出命令的使用说明</div><div class="line">-V, --version  输出程序的版本号</div></pre></td></tr></table></figure>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>gitbook操作其实就分为两个方面内容，一个是建立git仓库对内容进行管理，另外一个就是使用markdown对内容进行编辑，然后使用SUMARRY.md生成书的目录。<br>而gitbook这么优雅大方的页面，我们喜欢的话，完全可以将它做成我们的技术博客。而它还具有简单标题检索功能，我甚至想过将它做成一个api接口管理页面。</p>
-<h3 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h3><p><a href="http://zhaoda.net/2015/11/09/gitbook-plugins/" target="_blank" rel="external">Gitbook 的使用和常用插件</a><br><a href="http://liaoer.net/2015/04/30/Mac%E4%B8%8BGitBook%E5%88%B6%E4%BD%9C%E7%94%B5%E5%AD%90%E4%B9%A6/" target="_blank" rel="external">Mac下GitBook制作电子书</a><br><a href="http://blog.windrunner.info/app/gitbook-tutorial.html" target="_blank" rel="external">使用GitBook</a>    </p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;blockquote&gt;
-&lt;p&gt;GitBook 是一个基于 Node.js 的命令行工具，可使用 Github/Git 和 Markdown 来制作精美的电子书。&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;在这篇博客中，记录了一下gitbook的安装使用，更详细的使用请查看下面内容：&lt;br&gt;gitbook详细使用文档：&lt;a href=&quot;help.gitbook.com&quot;&gt;help.gitbook.com&lt;/a&gt;&lt;br&gt;gitbook官网:&lt;a href=&quot;https://www.gitbook.com&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;https://www.gitbook.com&lt;/a&gt;&lt;br&gt;github地址:&lt;a href=&quot;https://github.com/GitbookIO/gitbook&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;https://github.com/GitbookIO/gitbook&lt;/a&gt;&lt;/p&gt;
-&lt;h3 id=&quot;1、安装&quot;&gt;&lt;a href=&quot;#1、安装&quot; class=&quot;headerlink&quot; title=&quot;1、安装&quot;&gt;&lt;/a&gt;1、安装&lt;/h3&gt;&lt;p&gt;首先到&lt;a href=&quot;http://nodejs.cn/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;nodejs&lt;/a&gt;下载，安装Node.js的包管理器npm。&lt;br&gt;然后，通过&lt;code&gt;sudo npm install -g gitbook-cli&lt;/code&gt;命令安装gitbook&lt;br&gt;
-    
-    </summary>
-    
-      <category term="Gitbook" scheme="http://www.liuchungui.com/categories/Gitbook/"/>
-    
-    
-      <category term="Gitbook" scheme="http://www.liuchungui.com/tags/Gitbook/"/>
-    
-      <category term="Gitbook安装使用" scheme="http://www.liuchungui.com/tags/Gitbook%E5%AE%89%E8%A3%85%E4%BD%BF%E7%94%A8/"/>
     
   </entry>
   
