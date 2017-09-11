@@ -270,11 +270,11 @@
   </entry>
   
   <entry>
-    <title>word2vec初体验</title>
+    <title>word2vec实践：gensim实现</title>
     <link href="http://www.liuchungui.com/2017/09/04/word2vec%E5%88%9D%E4%BD%93%E9%AA%8C/"/>
     <id>http://www.liuchungui.com/2017/09/04/word2vec初体验/</id>
     <published>2017-09-03T16:05:07.000Z</published>
-    <updated>2017-09-05T04:38:04.000Z</updated>
+    <updated>2017-09-11T02:35:24.000Z</updated>
     
     <content type="html"><![CDATA[<p>上周，有缘接触到word2vec，了解了它的强大，这篇文章就写写它吧！</p>
 <p>实现word2vec的方式有很多，我所知道的就有手搓、使用tensorflow和gensim。本篇文章是以<a href="https://github.com/RaRe-Technologies/gensim/blob/develop/docs/notebooks/word2vec.ipynb" target="_blank" rel="external">gensim实现</a>，代码很简单。如果想看tensorflow实现的参考<a href="https://www.tensorflow.org/tutorials/word2vec" target="_blank" rel="external">Vector Representations of Words</a>。</p>
@@ -331,6 +331,8 @@
       <category term="word2vec实践" scheme="http://www.liuchungui.com/tags/word2vec%E5%AE%9E%E8%B7%B5/"/>
     
       <category term="word2vec中文实践" scheme="http://www.liuchungui.com/tags/word2vec%E4%B8%AD%E6%96%87%E5%AE%9E%E8%B7%B5/"/>
+    
+      <category term="gensim" scheme="http://www.liuchungui.com/tags/gensim/"/>
     
   </entry>
   
@@ -396,15 +398,15 @@
       <category term="Python" scheme="http://www.liuchungui.com/categories/Python/"/>
     
     
-      <category term="Jupyter notebook" scheme="http://www.liuchungui.com/tags/Jupyter-notebook/"/>
-    
-      <category term="Jupyter" scheme="http://www.liuchungui.com/tags/Jupyter/"/>
-    
       <category term="Anaconda" scheme="http://www.liuchungui.com/tags/Anaconda/"/>
     
       <category term="conda" scheme="http://www.liuchungui.com/tags/conda/"/>
     
       <category term="python" scheme="http://www.liuchungui.com/tags/python/"/>
+    
+      <category term="Jupyter notebook" scheme="http://www.liuchungui.com/tags/Jupyter-notebook/"/>
+    
+      <category term="Jupyter" scheme="http://www.liuchungui.com/tags/Jupyter/"/>
     
   </entry>
   
