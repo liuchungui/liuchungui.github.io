@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://www.liuchungui.com/"/>
-  <updated>2017-09-11T02:08:39.000Z</updated>
+  <updated>2017-09-11T02:49:10.000Z</updated>
   <id>http://www.liuchungui.com/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="http://www.liuchungui.com/2017/09/11/Numpy%E4%B8%8EPandas%E4%BD%BF%E7%94%A8/"/>
     <id>http://www.liuchungui.com/2017/09/11/Numpy与Pandas使用/</id>
     <published>2017-09-10T17:05:01.000Z</published>
-    <updated>2017-09-11T02:08:39.000Z</updated>
+    <updated>2017-09-11T02:49:10.000Z</updated>
     
     <content type="html"><![CDATA[<h2 id="它们是什么？"><a href="#它们是什么？" class="headerlink" title="它们是什么？"></a>它们是什么？</h2><blockquote>
 <p>NumPy是Python语言的一个扩充程序库。支持高级大量的维度数组与矩阵运算，此外也针对数组运算提供大量的数学函数库。</p>
@@ -106,12 +106,13 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[ 6 24 11]</div></pre></td></tr></table></figure>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#mean函数也可以设置axis</span></div><div class="line"><span class="keyword">print</span> p1.mean(axis=<span class="number">0</span>)</div></pre></td></tr></table></figure>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[ 3.33333333  4.66666667  5.66666667]</div></pre></td></tr></table></figure>
-<h2 id="Pandas使用"><a href="#Pandas使用" class="headerlink" title="Pandas使用"></a>Pandas使用</h2><p>Pandas的Series拥有Numpy的所有功能，而且Pandas还拥有DataFrame，它拥有更强大的功能，咱们主要梳理下Numpy没有的功能：</p>
+<h2 id="Pandas使用"><a href="#Pandas使用" class="headerlink" title="Pandas使用"></a>Pandas使用</h2><p>Pandas有两种结构，分别是Series和DataFrame。其中Series拥有Numpy的所有功能，可以认为是简单的一维数组；而DataFrame是将多个Series按列合并而成的二维数据结构，每一列单独取出来是一个Series。</p>
+<p>咱们主要梳理下Numpy没有的功能：</p>
 <h4 id="1、简单基本使用"><a href="#1、简单基本使用" class="headerlink" title="1、简单基本使用"></a>1、简单基本使用</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</div><div class="line"></div><div class="line">pd1 = pd.Series([<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>])</div><div class="line"><span class="keyword">print</span> pd1</div></pre></td></tr></table></figure>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">0    1</div><div class="line">1    2</div><div class="line">2    3</div><div class="line">dtype: int64</div></pre></td></tr></table></figure>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#也可以求和和标准偏差</span></div><div class="line"><span class="keyword">print</span> pd1.sum()</div><div class="line"><span class="keyword">print</span> pd1.std()</div></pre></td></tr></table></figure>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">6</div><div class="line">1.0</div></pre></td></tr></table></figure>
-<h4 id="2、索引数组"><a href="#2、索引数组" class="headerlink" title="2、索引数组"></a>2、索引数组</h4><p>（1）简单的Seris索引数组</p>
+<h4 id="2、索引"><a href="#2、索引" class="headerlink" title="2、索引"></a>2、索引</h4><p>（1）Series中的索引</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">p1 = pd.Series(</div><div class="line">    [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>],</div><div class="line">    index = [<span class="string">'a'</span>, <span class="string">'b'</span>, <span class="string">'c'</span>]</div><div class="line">)</div><div class="line"><span class="keyword">print</span> p1</div></pre></td></tr></table></figure>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">a    1</div><div class="line">b    2</div><div class="line">c    3</div><div class="line">dtype: int64</div></pre></td></tr></table></figure>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">print</span> p1[<span class="string">'a'</span>]</div></pre></td></tr></table></figure>
@@ -159,6 +160,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">a    2.0</div><div class="line">b    2.0</div><div class="line">c    5.0</div><div class="line">d    3.0</div><div class="line">dtype: float64</div></pre></td></tr></table></figure>
 <p>同样，它可以应用在Pandas的dataFrame中，只是需要注意列与行都要对应起来。</p>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>这一周学习了优达学城上分析基础的课程，使用的是Numpy与Pandas。对于Numpy，以前在Tensorflow中用过，但是很不明白，这次学习之后，才知道那么简单，算是有一定的收获。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="http://blkstone.github.io/2015/11/21/pandas-tutorial-1/" target="_blank" rel="external">Pandas 使用指南(上) 基本数据结构</a></p>
 ]]></content>
     
     <summary type="html">
