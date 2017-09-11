@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://www.liuchungui.com/"/>
-  <updated>2017-09-10T17:09:08.000Z</updated>
+  <updated>2017-09-11T02:08:39.000Z</updated>
   <id>http://www.liuchungui.com/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="http://www.liuchungui.com/2017/09/11/Numpy%E4%B8%8EPandas%E4%BD%BF%E7%94%A8/"/>
     <id>http://www.liuchungui.com/2017/09/11/Numpy与Pandas使用/</id>
     <published>2017-09-10T17:05:01.000Z</published>
-    <updated>2017-09-10T17:09:08.000Z</updated>
+    <updated>2017-09-11T02:08:39.000Z</updated>
     
     <content type="html"><![CDATA[<h2 id="它们是什么？"><a href="#它们是什么？" class="headerlink" title="它们是什么？"></a>它们是什么？</h2><blockquote>
 <p>NumPy是Python语言的一个扩充程序库。支持高级大量的维度数组与矩阵运算，此外也针对数组运算提供大量的数学函数库。</p>
@@ -50,104 +50,82 @@
 </ul>
 <p>不同之处：Pandas拥有Numpy一些没有的方法，例如describe函数。其主要区别是：Numpy就像增强版的List，而Pandas就像列表和字典的合集，Pandas有索引。</p>
 <h2 id="Numpy使用"><a href="#Numpy使用" class="headerlink" title="Numpy使用"></a>Numpy使用</h2><h4 id="1、基本操作"><a href="#1、基本操作" class="headerlink" title="1、基本操作"></a>1、基本操作</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</div><div class="line"></div><div class="line"><span class="comment">#创建Numpy</span></div><div class="line">p1 = np.array([<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>])</div><div class="line"><span class="keyword">print</span> p1</div><div class="line"><span class="keyword">print</span> p1.dtype</div></pre></td></tr></table></figure>
-<pre><code>[1 2 3]
-int64
-</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#求平均值</span></div><div class="line"><span class="keyword">print</span> p1.mean()</div></pre></td></tr></table></figure>
-<pre><code>2.0
-</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#求标准差</span></div><div class="line"><span class="keyword">print</span> p1.std()</div></pre></td></tr></table></figure>
-<pre><code>0.816496580928
-</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#求和、求最大值、求最小值</span></div><div class="line"><span class="keyword">print</span> p1.sum()</div><div class="line"><span class="keyword">print</span> p1.max()</div><div class="line"><span class="keyword">print</span> p1.min()</div></pre></td></tr></table></figure>
-<pre><code>6
-3
-1
-</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#求最大值所在位置</span></div><div class="line"><span class="keyword">print</span> p1.argmax()</div></pre></td></tr></table></figure>
-<pre><code>2
-</code></pre><h4 id="2、向量运算"><a href="#2、向量运算" class="headerlink" title="2、向量运算"></a>2、向量运算</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">p1 = np.array([<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>])</div><div class="line">p2 = np.array([<span class="number">2</span>, <span class="number">5</span>, <span class="number">7</span>])</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">[1 2 3]</div><div class="line">int64</div></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#求平均值</span></div><div class="line"><span class="keyword">print</span> p1.mean()</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">2.0</div></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#求标准差</span></div><div class="line"><span class="keyword">print</span> p1.std()</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">0.816496580928</div></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#求和、求最大值、求最小值</span></div><div class="line"><span class="keyword">print</span> p1.sum()</div><div class="line"><span class="keyword">print</span> p1.max()</div><div class="line"><span class="keyword">print</span> p1.min()</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">6</div><div class="line">3</div><div class="line">1</div></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#求最大值所在位置</span></div><div class="line"><span class="keyword">print</span> p1.argmax()</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">2</div></pre></td></tr></table></figure>
+<h4 id="2、向量运算"><a href="#2、向量运算" class="headerlink" title="2、向量运算"></a>2、向量运算</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">p1 = np.array([<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>])</div><div class="line">p2 = np.array([<span class="number">2</span>, <span class="number">5</span>, <span class="number">7</span>])</div></pre></td></tr></table></figure>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#向量相加，各个元素相加</span></div><div class="line"><span class="keyword">print</span> p1 + p2</div></pre></td></tr></table></figure>
-<pre><code>[ 3  7 10]
-</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#向量乘以1个常数</span></div><div class="line"><span class="keyword">print</span> p1 * <span class="number">2</span></div></pre></td></tr></table></figure>
-<pre><code>[2 4 6]
-</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#向量相减</span></div><div class="line"><span class="keyword">print</span> p1 - p2</div></pre></td></tr></table></figure>
-<pre><code>[-1 -3 -4]
-</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#向量相乘，各个元素之间做运算</span></div><div class="line"><span class="keyword">print</span> p1 * p2</div></pre></td></tr></table></figure>
-<pre><code>[ 2 10 21]
-</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#向量与一个常数比较</span></div><div class="line"><span class="keyword">print</span> p1 &gt; <span class="number">2</span></div></pre></td></tr></table></figure>
-<pre><code>[False False  True]
-</code></pre><h4 id="3、索引数组"><a href="#3、索引数组" class="headerlink" title="3、索引数组"></a>3、索引数组</h4><p>首先，看下面一幅图，理解下<br><img src="http://ww1.sinaimg.cn/large/7746cd07ly1fjew15myc4j20ra0d9tcy.jpg" alt=""><br>然后，咱们用代码实现看下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[ 3  7 10]</div></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#向量乘以1个常数</span></div><div class="line"><span class="keyword">print</span> p1 * <span class="number">2</span></div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[2 4 6]</div></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#向量相减</span></div><div class="line"><span class="keyword">print</span> p1 - p2</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[-1 -3 -4]</div></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#向量相乘，各个元素之间做运算</span></div><div class="line"><span class="keyword">print</span> p1 * p2</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[ 2 10 21]</div></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#向量与一个常数比较</span></div><div class="line"><span class="keyword">print</span> p1 &gt; <span class="number">2</span></div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[False False  True]</div></pre></td></tr></table></figure>
+<h4 id="3、索引数组"><a href="#3、索引数组" class="headerlink" title="3、索引数组"></a>3、索引数组</h4><p>首先，看下面一幅图，理解下<br><img src="http://ww1.sinaimg.cn/large/7746cd07ly1fjew15myc4j20ra0d9tcy.jpg" alt=""><br>然后，咱们用代码实现看下</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">a = np.array([<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>])</div><div class="line"><span class="keyword">print</span> a</div></pre></td></tr></table></figure>
-<pre><code>[1 2 3 4 5]
-</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">b = a &gt; <span class="number">2</span></div><div class="line"><span class="keyword">print</span> b</div></pre></td></tr></table></figure>
-<pre><code>[False False  True  True  True]
-</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">print</span> a[b]</div></pre></td></tr></table></figure>
-<pre><code>[3 4 5]
-</code></pre><p>a[b]中，只会保留a中所对应的b位置为True的元素</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[1 2 3 4 5]</div></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">b = a &gt; <span class="number">2</span></div><div class="line"><span class="keyword">print</span> b</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[False False  True  True  True]</div></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">print</span> a[b]</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[3 4 5]</div></pre></td></tr></table></figure>
+<p>a[b]中，只会保留a中所对应的b位置为True的元素</p>
 <h4 id="4、原地与非原地"><a href="#4、原地与非原地" class="headerlink" title="4、原地与非原地"></a>4、原地与非原地</h4><p>咱们先来看一组运算：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">a = np.array([<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>])</div><div class="line">b = a</div><div class="line">a += np.array([<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>])</div><div class="line"><span class="keyword">print</span> b</div></pre></td></tr></table></figure>
-<pre><code>[2 3 4 5]
-</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">a = np.array([<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>])</div><div class="line">b = a</div><div class="line">a = a + np.array([<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>])</div><div class="line"><span class="keyword">print</span> b</div></pre></td></tr></table></figure>
-<pre><code>[1 2 3 4]
-</code></pre><p>从上面结果可以看出来，+=改变了原来数组，而+没有。这是因为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[2 3 4 5]</div></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">a = np.array([<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>])</div><div class="line">b = a</div><div class="line">a = a + np.array([<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>])</div><div class="line"><span class="keyword">print</span> b</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[1 2 3 4]</div></pre></td></tr></table></figure>
+<p>从上面结果可以看出来，+=改变了原来数组，而+没有。这是因为：</p>
 <ul>
 <li>+=：它是原地计算，不会创建一个新的数组，在原始数组中更改元素</li>
 <li>+：它是非原地计算，会创建一个新的数组，不会修改原始数组中的元素</li>
 </ul>
 <h4 id="5、Numpy中的切片与List的切片"><a href="#5、Numpy中的切片与List的切片" class="headerlink" title="5、Numpy中的切片与List的切片"></a>5、Numpy中的切片与List的切片</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">l1 = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">5</span>]</div><div class="line">l2 = l1[<span class="number">0</span>:<span class="number">2</span>]</div><div class="line">l2[<span class="number">0</span>] = <span class="number">5</span></div><div class="line"><span class="keyword">print</span> l2</div><div class="line"><span class="keyword">print</span> l1</div></pre></td></tr></table></figure>
-<pre><code>[5, 2]
-[1, 2, 3, 5]
-</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">p1 = np.array([<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">5</span>])</div><div class="line">p2 = p1[<span class="number">0</span>:<span class="number">2</span>]</div><div class="line">p2[<span class="number">0</span>] = <span class="number">5</span></div><div class="line"><span class="keyword">print</span> p1</div><div class="line"><span class="keyword">print</span> p2</div></pre></td></tr></table></figure>
-<pre><code>[5 2 3 5]
-[5 2]
-</code></pre><p>从上可知，List中改变切片中的元素，不会影响原来的数组；而Numpy改变切片中的元素，原来的数组也跟着变了。这是因为：Numpy的切片编程不会创建一个新数组出来，当修改对应的切片也会更改原始的数组数据。这样的机制，可以让Numpy比原生数组操作更快，但编程时需要注意。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">[5, 2]</div><div class="line">[1, 2, 3, 5]</div></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">p1 = np.array([<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">5</span>])</div><div class="line">p2 = p1[<span class="number">0</span>:<span class="number">2</span>]</div><div class="line">p2[<span class="number">0</span>] = <span class="number">5</span></div><div class="line"><span class="keyword">print</span> p1</div><div class="line"><span class="keyword">print</span> p2</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">[5 2 3 5]</div><div class="line">[5 2]</div></pre></td></tr></table></figure>
+<p>从上可知，List中改变切片中的元素，不会影响原来的数组；而Numpy改变切片中的元素，原来的数组也跟着变了。这是因为：Numpy的切片编程不会创建一个新数组出来，当修改对应的切片也会更改原始的数组数据。这样的机制，可以让Numpy比原生数组操作更快，但编程时需要注意。</p>
 <h4 id="6、二维数组的操作"><a href="#6、二维数组的操作" class="headerlink" title="6、二维数组的操作"></a>6、二维数组的操作</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">p1 = np.array([[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>], [<span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>], [<span class="number">2</span>, <span class="number">4</span>, <span class="number">5</span>]])</div><div class="line"><span class="comment">#获取其中一维数组</span></div><div class="line"><span class="keyword">print</span> p1[<span class="number">0</span>]</div></pre></td></tr></table></figure>
-<pre><code>[1 2 3]
-</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#获取其中一个元素，注意它可以是p1[0, 1]，也可以p1[0][1]</span></div><div class="line"><span class="keyword">print</span> p1[<span class="number">0</span>, <span class="number">1</span>]</div><div class="line"><span class="keyword">print</span> p1[<span class="number">0</span>][<span class="number">1</span>]</div></pre></td></tr></table></figure>
-<pre><code>2
-2
-</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#求和是求所有元素的和</span></div><div class="line"><span class="keyword">print</span> p1.sum()</div></pre></td></tr></table></figure>
-<pre><code>41
-[10 14 17]
-</code></pre><p>但，当设置axis参数时，当设置为0时，是计算每一列的结果，然后返回一个一维数组；若是设置为1时，则是计算每一行的结果，然后返回一维数组。对于二维数组，Numpy中很多函数都可以设置axis参数。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[1 2 3]</div></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#获取其中一个元素，注意它可以是p1[0, 1]，也可以p1[0][1]</span></div><div class="line"><span class="keyword">print</span> p1[<span class="number">0</span>, <span class="number">1</span>]</div><div class="line"><span class="keyword">print</span> p1[<span class="number">0</span>][<span class="number">1</span>]</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">2</div><div class="line">2</div></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#求和是求所有元素的和</span></div><div class="line"><span class="keyword">print</span> p1.sum()</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">41</div><div class="line">[10 14 17]</div></pre></td></tr></table></figure>
+<p>但，当设置axis参数时，当设置为0时，是计算每一列的结果，然后返回一个一维数组；若是设置为1时，则是计算每一行的结果，然后返回一维数组。对于二维数组，Numpy中很多函数都可以设置axis参数。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#获取每一列的结果</span></div><div class="line"><span class="keyword">print</span> p1.sum(axis=<span class="number">0</span>)</div></pre></td></tr></table></figure>
-<pre><code>[10 14 17]
-</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#获取每一行的结果</span></div><div class="line"><span class="keyword">print</span> p1.sum(axis=<span class="number">1</span>)</div></pre></td></tr></table></figure>
-<pre><code>[ 6 24 11]
-</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#mean函数也可以设置axis</span></div><div class="line"><span class="keyword">print</span> p1.mean(axis=<span class="number">0</span>)</div></pre></td></tr></table></figure>
-<pre><code>[ 3.33333333  4.66666667  5.66666667]
-</code></pre><h2 id="Pandas使用"><a href="#Pandas使用" class="headerlink" title="Pandas使用"></a>Pandas使用</h2><p>Pandas的Series拥有Numpy的所有功能，而且Pandas还拥有DataFrame，它拥有更强大的功能，咱们主要梳理下Numpy没有的功能：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[10 14 17]</div></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#获取每一行的结果</span></div><div class="line"><span class="keyword">print</span> p1.sum(axis=<span class="number">1</span>)</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[ 6 24 11]</div></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#mean函数也可以设置axis</span></div><div class="line"><span class="keyword">print</span> p1.mean(axis=<span class="number">0</span>)</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[ 3.33333333  4.66666667  5.66666667]</div></pre></td></tr></table></figure>
+<h2 id="Pandas使用"><a href="#Pandas使用" class="headerlink" title="Pandas使用"></a>Pandas使用</h2><p>Pandas的Series拥有Numpy的所有功能，而且Pandas还拥有DataFrame，它拥有更强大的功能，咱们主要梳理下Numpy没有的功能：</p>
 <h4 id="1、简单基本使用"><a href="#1、简单基本使用" class="headerlink" title="1、简单基本使用"></a>1、简单基本使用</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</div><div class="line"></div><div class="line">pd1 = pd.Series([<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>])</div><div class="line"><span class="keyword">print</span> pd1</div></pre></td></tr></table></figure>
-<pre><code>0    1
-1    2
-2    3
-dtype: int64
-</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#也可以求和和标准偏差</span></div><div class="line"><span class="keyword">print</span> pd1.sum()</div><div class="line"><span class="keyword">print</span> pd1.std()</div></pre></td></tr></table></figure>
-<pre><code>6
-1.0
-</code></pre><h4 id="2、索引数组"><a href="#2、索引数组" class="headerlink" title="2、索引数组"></a>2、索引数组</h4><p>（1）简单的Seris索引数组</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">0    1</div><div class="line">1    2</div><div class="line">2    3</div><div class="line">dtype: int64</div></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#也可以求和和标准偏差</span></div><div class="line"><span class="keyword">print</span> pd1.sum()</div><div class="line"><span class="keyword">print</span> pd1.std()</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">6</div><div class="line">1.0</div></pre></td></tr></table></figure>
+<h4 id="2、索引数组"><a href="#2、索引数组" class="headerlink" title="2、索引数组"></a>2、索引数组</h4><p>（1）简单的Seris索引数组</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">p1 = pd.Series(</div><div class="line">    [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>],</div><div class="line">    index = [<span class="string">'a'</span>, <span class="string">'b'</span>, <span class="string">'c'</span>]</div><div class="line">)</div><div class="line"><span class="keyword">print</span> p1</div></pre></td></tr></table></figure>
-<pre><code>a    1
-b    2
-c    3
-dtype: int64
-</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">print</span> p1[<span class="string">'a'</span>]</div></pre></td></tr></table></figure>
-<pre><code>1
-</code></pre><p>（2）DataFrame数组</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">a    1</div><div class="line">b    2</div><div class="line">c    3</div><div class="line">dtype: int64</div></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">print</span> p1[<span class="string">'a'</span>]</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">1</div></pre></td></tr></table></figure>
+<p>（2）DataFrame数组</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">p1 = pd.DataFrame(&#123;</div><div class="line">    <span class="string">'name'</span>: [<span class="string">'Jack'</span>, <span class="string">'Lucy'</span>, <span class="string">'Coke'</span>],</div><div class="line">    <span class="string">'age'</span>: [<span class="number">18</span>, <span class="number">19</span>, <span class="number">21</span>]</div><div class="line">&#125;)</div><div class="line"><span class="keyword">print</span> p1</div></pre></td></tr></table></figure>
-<pre><code>   age  name
-0   18  Jack
-1   19  Lucy
-2   21  Coke
-</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#获取name一列</span></div><div class="line"><span class="keyword">print</span> p1[<span class="string">'name'</span>]</div></pre></td></tr></table></figure>
-<pre><code>0    Jack
-1    Lucy
-2    Coke
-Name: name, dtype: object
-</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#获取姓名的第一个</span></div><div class="line"><span class="keyword">print</span> p1[<span class="string">'name'</span>][<span class="number">0</span>]</div></pre></td></tr></table></figure>
-<pre><code>Jack
-</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#使用p1[0]不能获取第一行，但是可以使用iloc</span></div><div class="line"><span class="keyword">print</span> p1.iloc[<span class="number">0</span>]</div></pre></td></tr></table></figure>
-<pre><code>age       18
-name    Jack
-Name: 0, dtype: object
-</code></pre><p>总结：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">   age  name</div><div class="line">0   18  Jack</div><div class="line">1   19  Lucy</div><div class="line">2   21  Coke</div></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#获取name一列</span></div><div class="line"><span class="keyword">print</span> p1[<span class="string">'name'</span>]</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">0    Jack</div><div class="line">1    Lucy</div><div class="line">2    Coke</div><div class="line">Name: name, dtype: object</div></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#获取姓名的第一个</span></div><div class="line"><span class="keyword">print</span> p1[<span class="string">'name'</span>][<span class="number">0</span>]</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Jack</div></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#使用p1[0]不能获取第一行，但是可以使用iloc</span></div><div class="line"><span class="keyword">print</span> p1.iloc[<span class="number">0</span>]</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">age       18</div><div class="line">name    Jack</div><div class="line">Name: 0, dtype: object</div></pre></td></tr></table></figure>
+<p>总结：</p>
 <ul>
 <li>获取一列使用p1[‘name’]这种索引</li>
 <li>获取一行使用p1.iloc[0]</li>
@@ -155,53 +133,31 @@ Name: 0, dtype: object
 <h4 id="3、apply使用"><a href="#3、apply使用" class="headerlink" title="3、apply使用"></a>3、apply使用</h4><p>apply可以操作Pandas里面的元素，当库里面没用对应的方法时，可以通过apply来进行封装</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">func</span><span class="params">(value)</span>:</span></div><div class="line">    <span class="keyword">return</span> value * <span class="number">3</span></div><div class="line">pd1 = pd.Series([<span class="number">1</span>, <span class="number">2</span>, <span class="number">5</span>])</div></pre></td></tr></table></figure>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">print</span> pd1.apply(func)</div></pre></td></tr></table></figure>
-<pre><code>0     3
-1     6
-2    15
-dtype: int64
-</code></pre><p>同样可以在DataFrame上使用：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">0     3</div><div class="line">1     6</div><div class="line">2    15</div><div class="line">dtype: int64</div></pre></td></tr></table></figure>
+<p>同样可以在DataFrame上使用：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">pd2 = pd.DataFrame(&#123;</div><div class="line">    <span class="string">'name'</span>: [<span class="string">'Jack'</span>, <span class="string">'Lucy'</span>, <span class="string">'Coke'</span>],</div><div class="line">    <span class="string">'age'</span>: [<span class="number">18</span>, <span class="number">19</span>, <span class="number">21</span>]</div><div class="line">&#125;)</div><div class="line"><span class="keyword">print</span> pd2.apply(func)</div></pre></td></tr></table></figure>
-<pre><code>   age          name
-0   54  JackJackJack
-1   57  LucyLucyLucy
-2   63  CokeCokeCoke
-</code></pre><h4 id="4、axis参数"><a href="#4、axis参数" class="headerlink" title="4、axis参数"></a>4、axis参数</h4><p>Pandas设置axis时，与Numpy有点区别：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">   age          name</div><div class="line">0   54  JackJackJack</div><div class="line">1   57  LucyLucyLucy</div><div class="line">2   63  CokeCokeCoke</div></pre></td></tr></table></figure>
+<h4 id="4、axis参数"><a href="#4、axis参数" class="headerlink" title="4、axis参数"></a>4、axis参数</h4><p>Pandas设置axis时，与Numpy有点区别：</p>
 <ul>
 <li>当设置axis为’columns’时，是计算每一行的值</li>
 <li>当设置axis为’index’时，是计算每一列的值</li>
 </ul>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">pd2 = pd.DataFrame(&#123;</div><div class="line">    <span class="string">'weight'</span>: [<span class="number">120</span>, <span class="number">130</span>, <span class="number">150</span>],</div><div class="line">    <span class="string">'age'</span>: [<span class="number">18</span>, <span class="number">19</span>, <span class="number">21</span>]</div><div class="line">&#125;)</div></pre></td></tr></table></figure>
-<pre><code>0    138
-1    149
-2    171
-dtype: int64
-</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#计算每一行的值</span></div><div class="line"><span class="keyword">print</span> pd2.sum(axis=<span class="string">'columns'</span>)</div></pre></td></tr></table></figure>
-<pre><code>0    138
-1    149
-2    171
-dtype: int64
-</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#计算每一列的值</span></div><div class="line"><span class="keyword">print</span> pd2.sum(axis=<span class="string">'index'</span>)</div></pre></td></tr></table></figure>
-<pre><code>age        58
-weight    400
-dtype: int64
-</code></pre><h4 id="5、分组"><a href="#5、分组" class="headerlink" title="5、分组"></a>5、分组</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">pd2 = pd.DataFrame(&#123;</div><div class="line">    <span class="string">'name'</span>: [<span class="string">'Jack'</span>, <span class="string">'Lucy'</span>, <span class="string">'Coke'</span>, <span class="string">'Pol'</span>, <span class="string">'Tude'</span>],</div><div class="line">    <span class="string">'age'</span>: [<span class="number">18</span>, <span class="number">19</span>, <span class="number">21</span>, <span class="number">21</span>, <span class="number">19</span>]</div><div class="line">&#125;)</div><div class="line"><span class="comment">#以年龄分组</span></div><div class="line"><span class="keyword">print</span> pd2.groupby(<span class="string">'age'</span>).groups</div></pre></td></tr></table></figure>
-<pre><code>{18: Int64Index([0], dtype=&apos;int64&apos;), 19: Int64Index([1, 4], dtype=&apos;int64&apos;), 21: Int64Index([2, 3], dtype=&apos;int64&apos;)}
-</code></pre><h4 id="6、向量运算"><a href="#6、向量运算" class="headerlink" title="6、向量运算"></a>6、向量运算</h4><p>需要注意的是，索引数组相加时，对应的索引相加</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">0    138</div><div class="line">1    149</div><div class="line">2    171</div><div class="line">dtype: int64</div></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#计算每一行的值</span></div><div class="line"><span class="keyword">print</span> pd2.sum(axis=<span class="string">'columns'</span>)</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">0    138</div><div class="line">1    149</div><div class="line">2    171</div><div class="line">dtype: int64</div></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#计算每一列的值</span></div><div class="line"><span class="keyword">print</span> pd2.sum(axis=<span class="string">'index'</span>)</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">age        58</div><div class="line">weight    400</div><div class="line">dtype: int64</div></pre></td></tr></table></figure>
+<h4 id="5、分组"><a href="#5、分组" class="headerlink" title="5、分组"></a>5、分组</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">pd2 = pd.DataFrame(&#123;</div><div class="line">    <span class="string">'name'</span>: [<span class="string">'Jack'</span>, <span class="string">'Lucy'</span>, <span class="string">'Coke'</span>, <span class="string">'Pol'</span>, <span class="string">'Tude'</span>],</div><div class="line">    <span class="string">'age'</span>: [<span class="number">18</span>, <span class="number">19</span>, <span class="number">21</span>, <span class="number">21</span>, <span class="number">19</span>]</div><div class="line">&#125;)</div><div class="line"><span class="comment">#以年龄分组</span></div><div class="line"><span class="keyword">print</span> pd2.groupby(<span class="string">'age'</span>).groups</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&#123;18: Int64Index([0], dtype=&apos;int64&apos;), 19: Int64Index([1, 4], dtype=&apos;int64&apos;), 21: Int64Index([2, 3], dtype=&apos;int64&apos;)&#125;</div></pre></td></tr></table></figure>
+<h4 id="6、向量运算"><a href="#6、向量运算" class="headerlink" title="6、向量运算"></a>6、向量运算</h4><p>需要注意的是，索引数组相加时，对应的索引相加</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">pd1 = pd.Series(</div><div class="line">    [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>],</div><div class="line">    index = [<span class="string">'a'</span>, <span class="string">'b'</span>, <span class="string">'c'</span>]</div><div class="line">)</div><div class="line"></div><div class="line">pd2 = pd.Series(</div><div class="line">    [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>],</div><div class="line">    index = [<span class="string">'a'</span>, <span class="string">'c'</span>, <span class="string">'d'</span>]</div><div class="line">)</div></pre></td></tr></table></figure>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">print</span> pd1 + pd2</div></pre></td></tr></table></figure>
-<pre><code>a    2.0
-b    NaN
-c    5.0
-d    NaN
-dtype: float64
-</code></pre><p>出现了NAN值，如果我们期望NAN不出现，如何处理？使用add函数</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">a    2.0</div><div class="line">b    NaN</div><div class="line">c    5.0</div><div class="line">d    NaN</div><div class="line">dtype: float64</div></pre></td></tr></table></figure>
+<p>出现了NAN值，如果我们期望NAN不出现，如何处理？使用add函数，并设置fill_value参数</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">print</span> pd1.add(pd2, fill_value=<span class="number">0</span>)</div></pre></td></tr></table></figure>
-<pre><code>a    2.0
-b    2.0
-c    5.0
-d    3.0
-dtype: float64
-</code></pre><p>同样，它可以应用在Pandas的dataFrame中，只是需要注意列与行都要对应起来。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">a    2.0</div><div class="line">b    2.0</div><div class="line">c    5.0</div><div class="line">d    3.0</div><div class="line">dtype: float64</div></pre></td></tr></table></figure>
+<p>同样，它可以应用在Pandas的dataFrame中，只是需要注意列与行都要对应起来。</p>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>这一周学习了优达学城上分析基础的课程，使用的是Numpy与Pandas。对于Numpy，以前在Tensorflow中用过，但是很不明白，这次学习之后，才知道那么简单，算是有一定的收获。</p>
 ]]></content>
     
@@ -368,11 +324,11 @@ dtype: float64
       <category term="Python" scheme="http://www.liuchungui.com/categories/Python/"/>
     
     
+      <category term="python" scheme="http://www.liuchungui.com/tags/python/"/>
+    
       <category term="word2vec" scheme="http://www.liuchungui.com/tags/word2vec/"/>
     
       <category term="word2vec实践" scheme="http://www.liuchungui.com/tags/word2vec%E5%AE%9E%E8%B7%B5/"/>
-    
-      <category term="python" scheme="http://www.liuchungui.com/tags/python/"/>
     
       <category term="word2vec中文实践" scheme="http://www.liuchungui.com/tags/word2vec%E4%B8%AD%E6%96%87%E5%AE%9E%E8%B7%B5/"/>
     
@@ -440,8 +396,6 @@ dtype: float64
       <category term="Python" scheme="http://www.liuchungui.com/categories/Python/"/>
     
     
-      <category term="python" scheme="http://www.liuchungui.com/tags/python/"/>
-    
       <category term="Jupyter notebook" scheme="http://www.liuchungui.com/tags/Jupyter-notebook/"/>
     
       <category term="Jupyter" scheme="http://www.liuchungui.com/tags/Jupyter/"/>
@@ -449,6 +403,8 @@ dtype: float64
       <category term="Anaconda" scheme="http://www.liuchungui.com/tags/Anaconda/"/>
     
       <category term="conda" scheme="http://www.liuchungui.com/tags/conda/"/>
+    
+      <category term="python" scheme="http://www.liuchungui.com/tags/python/"/>
     
   </entry>
   
@@ -480,11 +436,11 @@ dtype: float64
       <category term="Python" scheme="http://www.liuchungui.com/categories/Python/"/>
     
     
-      <category term="python" scheme="http://www.liuchungui.com/tags/python/"/>
-    
       <category term="Anaconda" scheme="http://www.liuchungui.com/tags/Anaconda/"/>
     
       <category term="conda" scheme="http://www.liuchungui.com/tags/conda/"/>
+    
+      <category term="python" scheme="http://www.liuchungui.com/tags/python/"/>
     
   </entry>
   
