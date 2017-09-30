@@ -190,7 +190,7 @@
     <link href="http://www.liuchungui.com/2017/09/10/Linux%E5%AE%89%E8%A3%85%E5%92%8C%E9%83%A8%E7%BD%B2Redis/"/>
     <id>http://www.liuchungui.com/2017/09/10/Linux安装和部署Redis/</id>
     <published>2017-09-10T07:36:34.000Z</published>
-    <updated>2017-09-21T07:42:12.000Z</updated>
+    <updated>2017-09-30T01:45:16.000Z</updated>
     
     <content type="html"><![CDATA[<blockquote>
 <p>Redis是一个高性能的key-value数据库，和Memcached类似， 它的数据都是缓存在内存中，区别的是redis会周期性的把更新的数据写入磁盘或者把修改操作写入追加的记录文件，并且在此基础上实现了master-slave(主从)同步。</p>
@@ -240,6 +240,10 @@
 <ul>
 <li>刚开始以为是<code>redis.conf</code>这个配置文件没配置好，所以尝试在<code>bind</code>后面添加本地的ip，后来发现不行。后来才知道，bind后面添加ip，指定是Redis所在服务器网卡的ip，不是指定某些IP可以访问本机Redis实例，这是一个误区。这可以参考<a href="https://my.oschina.net/ironwill/blog/902006" target="_blank" rel="external">Redis bind 限制和指定IP访问</a>和<a href="https://stackoverflow.com/questions/25416007/what-does-the-bind-parameter-do-in-redis" target="_blank" rel="external">What does the bind parameter do in Redis?</a></li>
 <li>各种搜索通过防火墙来开启端口，即通过<code>iptables</code>来实现，后来发现还是不行。这在自己建立的服务器应该有作用，可以限制固定的ip来访问。而阿里云，是在阿里云网站进行配置。</li>
+<li>当出现<code>MISCONF Redis is configured to save RDB snapshots</code>错误时，使用redis-cli登录，然后输入<code>config set stop-writes-on-bgsave-error no</code>设置，参考：<a href="https://stackoverflow.com/questions/19581059/misconf-redis-is-configured-to-save-rdb-snapshots" target="_blank" rel="external">MISCONF Redis is configured to save RDB snapshots</a></li>
+</ul>
+<h2 id="补充"><a href="#补充" class="headerlink" title="补充"></a>补充</h2><ul>
+<li>2017.9.30：最好在redis.conf中，设置下logfile，这样在redis出错误时，能看到相关错误信息。</li>
 </ul>
 <h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="http://www.cnblogs.com/wangchunniu1314/p/6339416.html" target="_blank" rel="external">Linux下Redis的安装和部署</a></p>
 <p><a href="http://www.jianshu.com/p/781e8ad3151b" target="_blank" rel="external">redis进阶：密码设置、访问权限控制等安全设置</a></p>
